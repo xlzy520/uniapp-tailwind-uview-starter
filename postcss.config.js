@@ -16,8 +16,8 @@ module.exports = {
         return id
       },
     }),
-    require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
     require('tailwindcss')({ config: './tailwind.config.js' }),
+    require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
     require('autoprefixer')({
       remove: process.env.UNI_PLATFORM !== 'h5',
     }),
