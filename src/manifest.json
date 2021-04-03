@@ -96,6 +96,7 @@
     },
     "router": {
       "mode": "hash"
-    }
+    },
+    "publicPath": "./"
   }
 }

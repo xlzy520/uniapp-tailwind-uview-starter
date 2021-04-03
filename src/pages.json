@@ -3,18 +3,45 @@
     "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
   },
   "pages": [
-    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "uni-app"
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
+      "path": "pages/form/index",
+      "style": {
+        "navigationBarTitleText": "表单"
       }
     }
   ],
+  "tabBar": {
+    "color": "#7F8389",
+    "selectedColor": "#0091FF",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "/static/tabBar/icon-home.png",
+        "selectedIconPath": "/static/tabBar/icon-home-selected.png"
+      },
+      {
+        "pagePath": "pages/form/index",
+        "text": "表单",
+        "iconPath": "/static/tabBar/icon-tabbar-mine.png",
+        "selectedIconPath": "/static/tabBar/icon-tabbar-mine-selected.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
   "globalStyle": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 60,
+    "usingComponents": {}
   }
 }
