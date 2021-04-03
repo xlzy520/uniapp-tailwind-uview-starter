@@ -1,5 +1,5 @@
 <template>
-	<view class="content">
+	<view class="content bg-blue-300 mt-1">
 		<image class="logo" src="/static/logo.png"></image>
 		<view>
 			<text class="title">{{title}}</text>
@@ -23,17 +23,16 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	.content {
-		display: flex;
+    @apply flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 	}
 
 	.logo {
-		height: 200rpx;
-		width: 200rpx;
+    @apply h-20 w-20;
 		margin: 200rpx auto 50rpx auto;
 	}
 
