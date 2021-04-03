@@ -4,24 +4,24 @@
 		<view>
 			<text class="title">{{title}}</text>
 		</view>
-    <u-button>测试</u-button>
+    <u-button>测试按钮热更新</u-button>
   </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				title: 'Hello'
-			}
-		},
-		onLoad() {
+export default {
+  data() {
+    return {
+      title: 'Hello',
+    }
+  },
+  onLoad() {
 
-		},
-		methods: {
+  },
+  methods: {
 
-		}
-	}
+  },
+}
 </script>
 
 <style lang="scss">
