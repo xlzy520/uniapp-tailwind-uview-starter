@@ -4,7 +4,8 @@
 		<view>
 			<text class="title">{{title}}</text>
 		</view>
-	</view>
+    <u-button>测试</u-button>
+  </view>
 </template>
 
 <script>
