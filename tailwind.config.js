@@ -273,10 +273,6 @@ module.exports = {
           boxShadow:
             '0 20upx 30upx -6upx rgba(0, 0, 0, 0.1), 0 8upx 12upx -4upx rgba(0, 0, 0, 0.05)',
         },
-        '.page': {
-          minHeight:
-            '300upx',
-        },
       }
 
       addComponents(buttons)
