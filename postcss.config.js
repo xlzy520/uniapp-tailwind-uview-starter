@@ -1,5 +1,7 @@
 const path = require('path')
+
 module.exports = {
+  // syntax: "postcss-scss",
   parser: require('postcss-comment'),
   plugins: [
     require('postcss-import')({
@@ -14,9 +16,14 @@ module.exports = {
         return id
       }
     }),
+    require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
+    require("tailwindcss")({ config: "./tailwind.config.js" }),
     require('autoprefixer')({
       remove: process.env.UNI_PLATFORM !== 'h5'
     }),
-    require('@dcloudio/vue-cli-plugin-uni/packages/postcss')
+    require("postcss-class-rename")({
+      "\\\\:": "--",
+      "\\\\/": "_",
+    }),
   ]
 }
