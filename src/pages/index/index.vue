@@ -30,6 +30,9 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+    .logo{
+      width: 200px;
+    }
 	}
 
 	.logo {

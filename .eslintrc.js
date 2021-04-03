@@ -33,6 +33,7 @@ module.exports = {
       '^(err|error)$'
     ],
     'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': 'off',
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
     'linebreak-style': 'off',

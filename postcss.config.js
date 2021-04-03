@@ -1,11 +1,11 @@
 const path = require('path')
 
 module.exports = {
-  // syntax: "postcss-scss",
+  syntax: 'postcss-scss',
   parser: require('postcss-comment'),
   plugins: [
     require('postcss-import')({
-      resolve (id, basedir, importOptions) {
+      resolve(id, basedir, importOptions) {
         if (id.startsWith('~@/')) {
           return path.resolve(process.env.UNI_INPUT_DIR, id.substr(3))
         } else if (id.startsWith('@/')) {
@@ -14,16 +14,16 @@ module.exports = {
           return path.resolve(process.env.UNI_INPUT_DIR, id.substr(1))
         }
         return id
-      }
+      },
     }),
     require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
-    require("tailwindcss")({ config: "./tailwind.config.js" }),
+    require('tailwindcss')({ config: './tailwind.config.js' }),
     require('autoprefixer')({
-      remove: process.env.UNI_PLATFORM !== 'h5'
+      remove: process.env.UNI_PLATFORM !== 'h5',
     }),
-    require("postcss-class-rename")({
-      "\\\\:": "--",
-      "\\\\/": "_",
-    }),
-  ]
+    require('postcss-class-rename')({
+      '\\\\:': '--',
+      '\\\\/': '_',
+    })
+  ],
 }
