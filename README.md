@@ -23,6 +23,7 @@
 #### h5
 ```bash
 yarn run serve
+```
 #### 小程序
 ```bash
 yarn run dev:mp-weixin
