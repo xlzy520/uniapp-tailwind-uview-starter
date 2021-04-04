@@ -18,6 +18,17 @@
 
 ![1](https://i0.hdslb.com/bfs/album/0eabcc1cbdead3a5a98662ef2757760af6280bc5.png)
 
+### 启动
+第一步：`yarn`，安装所需依赖
+#### h5
+```bash
+yarn run serve
+#### 小程序
+```bash
+yarn run dev:mp-weixin
+```
+然后打开微信开发者工具选择`/dist/dev/mp-weixin`文件夹
+
 
 ### 项目初始化
 
