@@ -1,5 +1,5 @@
 <template>
-	<view class="page">
+	<view class="page layout-items-center w-1/3">
     <tab-with-data-list :tabs="tabList" list-type="appoint-activity" :list-data="list"
                         @tabChange="tabChange" @itemClick="goDetail" />
   </view>
@@ -55,12 +55,5 @@ export default {
 </script>
 
 <style lang="scss">
-	.content {
-    @apply flex;
-	}
 
-	.logo {
-    @apply h-20 w-20;
-		margin: 200rpx auto 50rpx auto;
-	}
 </style>
