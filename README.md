@@ -9,10 +9,14 @@
 背景：之前用`uniapp`+`uview`开发了一大一小两个小程序，`css`方案用的原子风格的，发现用的还是挺爽的，就在想能不能用上`tailwindcss`，研究之后发现用`Hbuilder`创建的自由度比较低，于是选择了用`Vue-cli4`搭建了一套。
 
 要求：
-1. Node.js > 12
+**1. Node.js > 12**
 
 ### 项目地址
 [demo](https://xiaojuzi.fun/uniapp-tailwind-uview-starter)
+
+### 预览
+
+![1](https://i0.hdslb.com/bfs/album/0eabcc1cbdead3a5a98662ef2757760af6280bc5.png)
 
 
 ### 项目初始化
@@ -133,7 +137,3 @@ yarn add tailwindcss autoprefixer postcss
 1. 官方第2、3步：`@import "uview-ui/index.scss";`改为`@import "~uview-ui/index.scss";`uview前面增加`~`
 2. 第4步，我们是npm方式，npm安装的方式无需"@/"
 3. uview没有代码提示，需要新增一个uview-comp.js，全部引入注册，不需要引入main.js，因为只是为了代码提示。
-
-效果
-
-![image-20210403141354957](/Users/lvzongyuan/Library/Application Support/typora-user-images/image-20210403141354957.png)
