@@ -12,10 +12,10 @@
 **1. Node.js > 12**
 
 ### 项目地址
-[demo](https://xiaojuzi.fun/uniapp-tailwind-uview-starter)
+[github](https://github.com/xlzy520/uniapp-tailwind-uview-starter)
 
 ### 预览
-
+[demo](https://xiaojuzi.fun/uniapp-tailwind-uview-starter)
 ![1](https://i0.hdslb.com/bfs/album/0eabcc1cbdead3a5a98662ef2757760af6280bc5.png)
 
 ### 启动
