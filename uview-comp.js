@@ -29,6 +29,15 @@ import UTimeLine from 'uview-ui/components/u-time-line/u-time-line'
 import UTimeLineItem from 'uview-ui/components/u-time-line-item/u-time-line-item'
 import UField from 'uview-ui/components/u-field/u-field'
 import UEmpty from 'uview-ui/components/u-empty/u-empty'
+import UPopup from 'uview-ui/components/u-popup/u-popup'
+import UCollapse from 'uview-ui/components/u-collapse/u-collapse'
+import UCollapseItem from 'uview-ui/components/u-collapse-item/u-collapse-item'
+import UGrid from 'uview-ui/components/u-grid/u-grid'
+import UGridItem from 'uview-ui/components/u-grid-item/u-grid-item'
+import UDropDown from 'uview-ui/components/u-dropdown/u-dropdown'
+import UDropDownItem from 'uview-ui/components/u-dropdown-item/u-dropdown-item'
+import UCircleProgress from 'uview-ui/components/u-circle-progress/u-circle-progress'
+import UModal from 'uview-ui/components/u-modal/u-modal'
 
 Vue.component('u-upload', UUpload)
 Vue.component('u-row', URow)
@@ -59,4 +68,12 @@ Vue.component('u-time-line', UTimeLine)
 Vue.component('u-time-line-item', UTimeLineItem)
 Vue.component('u-field', UField)
 Vue.component('u-empty', UEmpty)
-
+Vue.component('u-popup', UPopup)
+Vue.component('u-collapse', UCollapse)
+Vue.component('u-collapse-item', UCollapseItem)
+Vue.component('u-grid', UGrid)
+Vue.component('u-grid-item', UGridItem)
+Vue.component('u-dropdown', UDropDown)
+Vue.component('u-dropdown-item', UDropDownItem)
+Vue.component('u-circle-progress', UCircleProgress)
+Vue.component('u-modal', UModal)
