@@ -81,6 +81,11 @@
     "usingComponents": true
   },
   "h5": {
+    "optimization":{
+      "treeShaking":{
+        "enable":true //启用摇树优化
+      }
+    },
     "devServer": {
       // "port": 9527,
       // "proxy": {

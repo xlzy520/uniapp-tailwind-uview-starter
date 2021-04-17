@@ -1,4 +1,5 @@
 const path = require('path')
+const purgecss = require('@fullhuman/postcss-purgecss')
 
 module.exports = {
   syntax: 'postcss-scss',
@@ -18,6 +19,10 @@ module.exports = {
     }),
     require('tailwindcss')({ config: './tailwind.config.js' }),
     require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
+    purgecss({
+      content: ['./**/*.vue', './**/*.wxml', './**/*.html'],
+      css: ['**/*.wxss', '**/*.css'],
+    }),
     require('autoprefixer')({
       remove: process.env.UNI_PLATFORM !== 'h5',
     }),

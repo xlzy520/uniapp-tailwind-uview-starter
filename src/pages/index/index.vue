@@ -1,5 +1,5 @@
 <template>
-	<view class="page layout-items-center w-1/3">
+	<view class="layout-items-center grid w-1_3">
     <tab-with-data-list :tabs="tabList" list-type="appoint-activity" :list-data="list"
                         @tabChange="tabChange" @itemClick="goDetail" />
   </view>

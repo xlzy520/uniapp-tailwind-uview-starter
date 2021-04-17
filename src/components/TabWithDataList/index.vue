@@ -10,8 +10,8 @@
           :key="item.title" @click="handleItemClick(item)">
       <u-image :src="item.imgUrl" width="192" height="192" class="cover"></u-image>
       <view class="content">
-        <view class="title list-item-title">{{ item.title }}</view>
-        <view class="list-item-subtitle">{{ item.desc }}</view>
+        <view class="font-medium text-blue-700 text-sm title">{{ item.title }}</view>
+        <view class="text-pink-400 text-xl subtitle">{{ item.desc }}</view>
       </view>
     </view>
 
