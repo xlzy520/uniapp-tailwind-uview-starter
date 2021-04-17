@@ -61,6 +61,8 @@ yarn add tailwindcss autoprefixer postcss
 
 ### 添加配置
 
+默认配置了两套，一套是专门用于小程序的，生成的tailwindcss没那么大，一套是完整的h5+小程序的
+
 1. 添加`tailwind.config.js`，配置较多，可以前往项目查看
 
 2. 添加`postcss.config.js`
