@@ -15,8 +15,10 @@
 [github](https://github.com/xlzy520/uniapp-tailwind-uview-starter)
 
 ### 预览
-[demo](https://xiaojuzi.fun/uniapp-tailwind-uview-starter)
-![1](https://i0.hdslb.com/bfs/album/0eabcc1cbdead3a5a98662ef2757760af6280bc5.png)
+[live demo](https://xlzy520.cn/uniapp-tailwind-uview-starter)
+
+
+![1](https://img-cdn-aliyun.dcloud.net.cn/stream/plugin_screens/a4a29f30-9533-11eb-b534-33a539a2c06f_0.png?v=1617533933)
 
 ### 安装
 第一步：` yarn `或者`npm i`，安装所需依赖
