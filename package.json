@@ -82,6 +82,7 @@
     "@dcloudio/webpack-uni-mp-loader": "^2.0.0-31620210325001",
     "@dcloudio/webpack-uni-pages-loader": "^2.0.0-31620210325001",
     "@fullhuman/postcss-purgecss": "3.0.0",
+    "@vue/babel-preset-app": "^4.5.12",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "autoprefixer": "9.8.6",
