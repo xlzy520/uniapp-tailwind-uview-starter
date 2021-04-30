@@ -17,15 +17,15 @@ module.exports = {
         return id
       },
     }),
-    require('tailwindcss')({ config: './tailwind.config.js' }),
-    require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
-    purgecss({
-      content: ['./**/*.vue', './**/*.wxml', './**/*.html'],
-      css: ['**/*.wxss', '**/*.css'],
-    }),
+    // purgecss({
+    //   content: ['./**/*.vue', './**/*.wxml', './**/*.html'],
+    //   css: ['**/*.wxss', '**/*.css'],
+    // }),
     require('autoprefixer')({
       remove: process.env.UNI_PLATFORM !== 'h5',
     }),
+    require('@dcloudio/vue-cli-plugin-uni/packages/postcss'),
+    require('tailwindcss')({ config: './tailwind.config.js' }),
     require('postcss-class-rename')({
       '\\\\:': '--',
       '\\\\/': '_',
