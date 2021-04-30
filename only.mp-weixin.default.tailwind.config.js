@@ -21,7 +21,6 @@ module.exports = {
     'borderWidth',
     'boxSizing',
     'clear',
-    'cursor',
     'display',
     'fill',
     'flex',
@@ -141,12 +140,7 @@ module.exports = {
     zIndex: [],
   },
   theme: {
-    screens: {
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
-    },
+    screens: false,
     spacing: {
       px: '1px',
       0: '0px',
