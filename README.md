@@ -38,24 +38,12 @@ yarn run dev:mp-weixin
 然后打开微信开发者工具选择`/dist/dev/mp-weixin`文件夹
 
 
-### 项目初始化
-
-[在Webstorm中或者Vscode中开发uniapp](https://ask.dcloud.net.cn/article/36307)
-
-我选择了默认模板。
-
-我的Webstorm默认使用`pnpm`包管理，这是**第一个坑**，启动项目时报错，于是`rm -rf node_modules`，重新使用`yarn `安装依赖，然后`npm serve`正常启动。
-
-**第二个坑是**要求`Webstorm`设置`Nodejs v12`以上，否则`tailwind`不会智能提示。
-
-如果是想要启动微信小程序的话，选择`dev:mp-weixin`，然后进入微信开发者工具选择`dist`包
-
-![](https://i0.hdslb.com/bfs/album/4dd0df9f0f40695d357731927c561a66d9ca6eaf.png)
-
+### 踩坑
+- 我的Webstorm默认使用`pnpm`包管理，这是**第一个坑**，启动项目时报错，于是`rm -rf node_modules`，重新使用`yarn `安装依赖，然后`npm serve`正常启动。
+- 要求`Webstorm`设置`Nodejs v12`以上，否则`tailwind`不会智能提示。
 
 
 ### 添加配置
 
-默认配置了两套，一套是专门用于小程序的，生成的tailwindcss没那么大，一套是完整的h5+小程序的
-
-1. 添加`tailwind.config.js`，配置较多，可以前往项目查看
+tailwindcss默认配置了两套，一套是专门用于小程序的，生成的tailwindcss没那么大，一套是完整的h5+小程序的
+`tailwind.config.js`，配置较多，可以前往项目查看
