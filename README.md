@@ -8,20 +8,11 @@
 
 背景：之前用`uniapp`+`uview`开发了一大一小两个小程序，`css`方案用的原子风格的，发现用的还是挺爽的，就在想能不能用上`tailwindcss`，研究之后发现用`Hbuilder`创建的自由度比较低，于是选择了用`Vue-cli4`搭建了一套。
 
+### 安装
 要求：
 **1. Node.js > 12**
 
-### 项目地址
-[github](https://github.com/xlzy520/uniapp-tailwind-uview-starter)
-
-### 预览
-[live demo](https://xlzy520.cn/uniapp-tailwind-uview-starter)
-
-
-![1](https://img-cdn-aliyun.dcloud.net.cn/stream/plugin_screens/a4a29f30-9533-11eb-b534-33a539a2c06f_0.png?v=1617533933)
-
-### 安装
-第一步：` yarn `或者`npm i`，安装所需依赖
+第一步：命令行执行` yarn `或者`npm i`，安装所需依赖
 
 ### 启动
 1. (**推荐**)HBuilderX直接点击`运行`或者`发行`
@@ -37,6 +28,14 @@ yarn run dev:mp-weixin
 ```
 然后打开微信开发者工具选择`/dist/dev/mp-weixin`文件夹
 
+### 预览
+[live demo](https://xlzy520.cn/uniapp-tailwind-uview-starter)
+
+
+![1](https://img-cdn-aliyun.dcloud.net.cn/stream/plugin_screens/a4a29f30-9533-11eb-b534-33a539a2c06f_0.png?v=1617533933)
+
+### 项目地址
+[github](https://github.com/xlzy520/uniapp-tailwind-uview-starter)
 
 ### 踩坑
 - 我的Webstorm默认使用`pnpm`包管理，这是**第一个坑**，启动项目时报错，于是`rm -rf node_modules`，重新使用`yarn `安装依赖，然后`npm serve`正常启动。
