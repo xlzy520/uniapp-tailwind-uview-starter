@@ -104,7 +104,7 @@
     "postcss-scss": "^3.0.5",
     "sass": "^1.32.8",
     "sass-loader": "^7.3.1",
-    "tailwindcss": "^2.0.4",
+    "tailwindcss": "2.0.4",
     "vue-template-compiler": "^2.6.11"
   },
   "browserslist": [
