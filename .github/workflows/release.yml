@@ -1,0 +1,30 @@
+name: actions.mini-program
+on: push
+jobs:
+  start:
+    name: Start
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Install and Build 🔧
+        run: |
+            npm install && npm run build:mp-weixin
+
+      - name: mini-program CI
+        uses: echoings/actions.mini-program@0.0.3
+        with:
+          project_type: miniProgram
+          action_type: upload
+          project_path: ./dist/build/mp-weixin
+          version: 1.0.0
+          command_options:
+            --enable-es6
+            --project-ignores=['node_modules/**/*']
+        env:
+          MINI_APP_ID: ${{ secrets.MINI_APP_ID }}
+          MINI_APP_PRIVATE_KEY: ${{ secrets.MINI_APP_PRIVATE_KEY }}

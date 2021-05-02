@@ -1,9 +1,10 @@
 # uniapp-tailwind-uview-starter
-利用uniapp+tailwindcss+uview+sass搭建的一套基础模板内置了
+利用uniapp+tailwindcss+uview+sass搭建的一套基础模板，并且集成了`miniprogram-ci`实现自动构建上传微信小程序。
 
 1. tailwindcss以及flex布局的css工具拓展
-2. 基本的列表和表单demo
-3. 统一的request api请求处理，枚举与正则校验
+2. miniprogram-ci集成，实现通过GitHub Actions自动执行脚本构建打包上传
+3. 基本的列表和表单demo
+4. 统一的request api请求处理，枚举与正则校验
 
 
 背景：之前用`uniapp`+`uview`开发了一大一小两个小程序，`css`方案用的原子风格的，发现用的还是挺爽的，就在想能不能用上`tailwindcss`，研究之后发现用`Hbuilder`创建的自由度比较低，于是选择了用`Vue-cli4`搭建了一套。
@@ -11,6 +12,7 @@
 ### 安装
 要求：
 **1. Node.js > 12**
+**2. 去release.yml配置自动打包构建需要的秘钥，具体查看该[文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/ci.html)**
 
 第一步：命令行执行` yarn `或者`npm i`，安装所需依赖
 
