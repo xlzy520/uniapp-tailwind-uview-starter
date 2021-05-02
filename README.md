@@ -12,6 +12,7 @@
 ### 安装
 要求：
 **1. Node.js > 12**
+
 **2. 去release.yml配置自动打包构建需要的秘钥，具体查看该[文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/ci.html)**
 
 第一步：命令行执行` yarn `或者`npm i`，安装所需依赖
