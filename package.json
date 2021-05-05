@@ -103,7 +103,7 @@
     "postcss-remove-selectors": "^2.0.1",
     "postcss-scss": "^3.0.5",
     "sass": "^1.32.8",
-    "sass-loader": "^7.3.1",
+    "sass-loader": "10.1.1",
     "tailwindcss": "2.0.4",
     "vue-template-compiler": "^2.6.11"
   },
