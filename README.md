@@ -7,18 +7,17 @@
 4. 统一的request api请求处理，枚举与正则校验
 
 
-背景：之前用`uniapp`+`uview`开发了一大一小两个小程序，`css`方案用的原子风格的，发现用的还是挺爽的，就在想能不能用上`tailwindcss`，研究之后发现用`Hbuilder`创建的自由度比较低，于是选择了用`Vue-cli4`搭建了一套。
+>背景：之前用`uniapp`+`uview`开发了一大一小两个小程序，`css`方案用的原子风格的，发现用的还是挺爽的，就在想能不能用上`tailwindcss`，研究之后发现用`Hbuilder`创建的自由度比较低，于是选择了用`Vue-cli4`搭建了一套。
 
-### 安装
-要求：
+### 安装要求：
 **1. Node.js > 12**
 
-**2. 去release.yml配置自动打包构建需要的秘钥，具体查看该[文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/ci.html)**
+**2. (非必要)去release.yml配置自动打包构建需要的秘钥，具体查看该[文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/ci.html)**
 
 第一步：命令行执行` yarn `或者`npm i`，安装所需依赖
 
 ### 启动
-1. (**推荐**)HBuilderX直接点击`运行`或者`发行`
+1. (**强烈推荐**)HBuilderX直接点击`运行`或者`发行`选择相应的平台
    
 2. `webstorm`或者`vscode`启动，稍微麻烦点，具体如下
 #### h5
