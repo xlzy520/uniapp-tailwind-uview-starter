@@ -54,9 +54,38 @@
     "quickapp" : {},
     /* 快应用特有相关 */
     "mp-weixin" : {
-        "appid" : "wx0db38963938fe329",
-        "setting" : {
-            "urlCheck" : false
+      "appid" : "wx0db38963938fe329",
+      "cloudfunctionRoot": "/static/cloudfunctions-tcb/",
+      "setting" : {
+        "urlCheck": false,
+        "es6": true,
+        "enhance": true,
+        "postcss": true,
+        "preloadBackgroundData": false,
+        "minified": true,
+        "newFeature": true,
+        "coverView": true,
+        "nodeModules": true,
+        "autoAudits": false,
+        "showShadowRootInWxmlPanel": true,
+        "scopeDataCheck": true,
+        "uglifyFileName": false,
+        "checkInvalidKey": true,
+        "checkSiteMap": true,
+        "uploadWithSourceMap": true,
+        "babelSetting": {
+          "ignore": [],
+          "disablePlugins": [],
+          "outputPath": ""
+        },
+        "useIsolateContext": true,
+        "useCompilerModule": true,
+        "userConfirmedUseCompilerModuleSwitch": false,
+        "packNpmManually": false,
+        "packNpmRelationList": [],
+        "minifyWXSS": true,
+        "useMultiFrameRuntime": false,
+        "useApiHook": true
         },
         "usingComponents" : true
     },
