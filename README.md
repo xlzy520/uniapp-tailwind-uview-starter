@@ -18,8 +18,10 @@
 
 ### 启动
 1. (**强烈推荐**)HBuilderX直接点击`运行`或者`发行`选择相应的平台
+
+>带来相应的问题：Hbuilder使用的是自身的低于v12的nodejs版本，会导致直接启动失败，需要去`/Applications/HBuilderX.app/Contents/HBuilderX/plugins/node`目录下把node文件替换成高版本的node
    
-2. `webstorm`或者`vscode`启动，稍微麻烦点，具体如下
+2. `webstorm`或者`vscode`启动，稍微麻烦点，但是不会存在上面的问题，具体如下
 #### h5
 ```bash
 yarn run serve
