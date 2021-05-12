@@ -107,7 +107,7 @@
                 "enable" : true //启用摇树优化
             }
         },
-        "devServer" : {},
+        "devServer" : {}, // H5代理功能，用于解决跨域
         // "port": 9527,
         // "proxy": {
         //   "/api": {
