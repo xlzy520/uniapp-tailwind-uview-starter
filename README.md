@@ -10,7 +10,33 @@
 >背景：之前用`uniapp`+`uview`开发了一大一小两个小程序，`css`方案用的原子风格的，发现用的还是挺爽的，就在想能不能用上`tailwindcss`，研究之后发现用`Hbuilder`创建的自由度比较低，于是选择了用`Vue-cli4`搭建了一套。
 
 ### 安装要求：
-**1. Node.js > 12**
+一、 修改tailwindcss源文件代码
+原因：HbuilderX使用的自带的node版本，tailwindcss有一处用了Node11的api，改掉就行咯。他其他地方都是用lodash的，就这里不是
+   文件路径：`node_modules/tailwindcss/lib/util/flattenColorPalette.js`
+   修改为如下代码即可：
+   ```js
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _lodash = _interopRequireDefault(require("lodash"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const flattenColorPalette = colors => Object.assign({}, _lodash.default.flatMap(...Object.entries(colors), ([color, values]) => typeof values == 'object' ? Object.entries(flattenColorPalette(values)).map(([number, hex]) => ({
+  [color + (number === 'DEFAULT' ? '' : `-${number}`)]: hex
+})) : [{
+  [`${color}`]: values
+}]));
+
+var _default = flattenColorPalette;
+exports.default = _default;
+
+```
+
 
 **2. (非必要)去release.yml配置自动打包构建需要的秘钥，具体查看该[文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/ci.html)**
 
