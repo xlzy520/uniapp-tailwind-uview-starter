@@ -25,13 +25,13 @@ if (
     plugins.push([
       require('@dcloudio/vue-cli-plugin-hbuilderx/packages/babel-plugin-console'),
       {
-        file (file) {
+        file(file) {
           file = normalizePath(file)
           if (file.indexOf(input) === 0) {
             return path.relative(input, file)
           }
           return false
-        }
+        },
       }
     ])
   } catch (e) {}
@@ -42,10 +42,8 @@ process.UNI_LIBRARIES.forEach(libraryName => {
   plugins.push([
     'import',
     {
-      'libraryName': libraryName,
-      'customName': (name) => {
-        return `${libraryName}/lib/${name}/${name}`
-      }
+      libraryName,
+      customName: (name) => `${libraryName}/lib/${name}/${name}`,
     }
   ])
 })
@@ -55,9 +53,9 @@ module.exports = {
       '@vue/app',
       {
         modules: 'commonjs',
-        useBuiltIns: process.env.UNI_PLATFORM === 'h5' ? 'usage' : 'entry'
+        useBuiltIns: process.env.UNI_PLATFORM === 'h5' ? 'usage' : 'entry',
       }
     ]
   ],
-  plugins
+  plugins,
 }
