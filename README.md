@@ -15,7 +15,7 @@
 
 
 ### 启动
-1. (**强烈推荐**)HBuilderX直接点击`运行`或者`发行`选择相应的平台
+1. HBuilderX直接点击`运行`或者`发行`选择相应的平台(我的方式)
 2. `webstorm`或者`vscode`启动，稍微麻烦点，具体如下
 #### h5
 ```bash
@@ -26,6 +26,12 @@ yarn run serve
 yarn run dev:mp-weixin
 ```
 然后打开微信开发者工具选择`/dist/dev/mp-weixin`文件夹
+
+### Build
+```bash
+yarn run build:mp-weixin
+```
+然后打开微信开发者工具选择`/dist/build/mp-weixin`文件夹，当然最方便的是直接通过GitHub Actions自动部署
 
 ### 预览
 [live demo](https://xlzy520.cn/uniapp-tailwind-uview-starter)
