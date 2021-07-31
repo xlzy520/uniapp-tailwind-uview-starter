@@ -31,7 +31,7 @@ yarn run dev:mp-weixin
 ```bash
 yarn run build:mp-weixin
 ```
-然后打开微信开发者工具选择`/dist/build/mp-weixin`文件夹，当然最方便的是直接通过GitHub Actions自动部署
+然后打开微信开发者工具选择`/dist/build/mp-weixin`文件夹，当然最方便的是直接通过GitHub Actions自动部署，需要在GitHub中配置secret才可以自动部署小程序
 
 ### 预览
 [live demo](https://xlzy520.cn/uniapp-tailwind-uview-starter)
