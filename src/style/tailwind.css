@@ -3,12 +3,9 @@
 @tailwind utilities;
 
 @layer components {
-
 }
 
-
 @layer utilities {
-
 }
 
 /*默认为row，横向排列*/
@@ -56,14 +53,12 @@
   flex-wrap: wrap;
 }
 
-
 /*上下排列*/
 .layout-col-slide {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-
 
 /*左右垂直居中*/
 
@@ -73,14 +68,12 @@
   align-items: center;
 }
 
-
 /*横向左右垂直居右*/
 .layout-end {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
-
 
 /*纵向左右垂直居中*/
 .layout-col-center {

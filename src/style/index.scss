@@ -1,16 +1,16 @@
-@import "~uview-ui/index.scss";
-
+@import '~uview-ui/index.scss';
 
 .confirm-btn {
   font-size: 32upx;
   height: 88rpx;
   line-height: 88rpx;
-  .u-size-default, &.u-size-default{
-    color: #fff!important;
+  .u-size-default,
+  &.u-size-default {
+    color: #fff !important;
     border-radius: 88rpx;
-    background: linear-gradient(to right, #52D1FF 0%, #5C77FF 100%);
-    &::after{
-      border: none!important;
+    background: linear-gradient(to right, #52d1ff 0%, #5c77ff 100%);
+    &::after {
+      border: none !important;
     }
   }
 }

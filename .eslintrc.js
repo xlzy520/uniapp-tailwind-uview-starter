@@ -1,17 +1,8 @@
-// .eslintrc.js 文件内容， 此处是eslint的规则定义， 可自行修改，可参考eslint官网修改
 module.exports = {
   root: true,
-  extends: [
-    // 'eslint:recommended',
-    'plugin:vue/essential',
-    'airbnb-base'
-  ],
+  extends: ['plugin:vue/essential', 'eslint:recommended', 'prettier'],
   parserOptions: {
-    ecmaVersion: 9,
-    ecmaFeatures: {
-      jsx: false,
-    },
-    sourceType: 'module',
+    ecmaVersion: 2020,
   },
   env: {
     browser: true,
@@ -19,78 +10,33 @@ module.exports = {
     node: true,
     jest: true,
   },
-  plugins: [
-    'node',
-    'vue'
-  ],
+  plugins: ['vue'],
   rules: {
-    'arrow-parens': 'off',
-    'no-tabs': 'off',
-    complexity: ['error', 10],
-    'global-require': 'off',
-    'handle-callback-err': [
-      'error',
-      '^(err|error)$'
-    ],
-    'import/prefer-default-export': 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'import/extensions': 'off',
-    'import/no-unresolved': 'off',
-    'linebreak-style': 'off',
-    'no-catch-shadow': 'error',
-    'no-continue': 'off',
-    'no-div-regex': 'warn',
-    'no-else-return': 'off',
-    'no-param-reassign': 'off',
-    'no-plusplus': 'off',
+    'no-unused-vars': 'off',
+    'no-use-before-define': 'off',
     'no-shadow': 'off',
-    // enable console for this project
-    'no-console': 'off',
-    'no-multi-assign': 'off',
-    'no-underscore-dangle': 'off',
-    'node/no-deprecated-api': 'error',
-    'node/process-exit-as-throw': 'error',
-    'operator-linebreak': [
-      'error',
-      'after',
-      {
-        overrides: {
-          ':': 'before',
-          '?': 'before',
-        },
-      }
-    ],
-    'prefer-arrow-callback': 'off',
-    'prefer-destructuring': 'off',
-    'prefer-template': 'off',
-    'quote-props': [
-      1,
-      'as-needed',
-      {
-        unnecessary: true,
-      }
-    ],
-    semi: [
-      'error',
-      'never'
-    ],
-    camelcase: [
+    camelcase: 'off',
+    'no-magic-numbers': [
       'error',
       {
-        properties: 'never',
-      }
+        enforceConst: true,
+        ignore: [-1, 0, 1],
+        ignoreArrayIndexes: true,
+      },
+    ],
+    'no-warning-comments': [
+      'warn',
+      {
+        terms: ['todo', 'fixme', 'feat', 'perf'],
+        location: 'anywhere',
+      },
     ],
     'func-names': ['error', 'as-needed'],
-    'comma-dangle': [
-      'error',
-      {
-        functions: 'never',
-        arrays: 'never',
-        imports: 'never',
-        exports: 'never',
-        objects: 'always-multiline',
-      }
-    ],
+    'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
+    'arrow-parens': 'off',
+    'prefer-object-spread': 'off',
+    'max-classes-per-file': 'off',
+    'no-redeclare': 'off',
   },
   globals: {
     window: true,
@@ -103,5 +49,6 @@ module.exports = {
     worker: true,
     getApp: true,
     uni: true,
+    uniCloud: true,
   },
-}
+};
