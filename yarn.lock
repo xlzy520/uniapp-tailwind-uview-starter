@@ -901,10 +901,10 @@
   resolved "https://registry.npmmirror.com/@dcloudio/uni-app-plus/download/@dcloudio/uni-app-plus-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991890168&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-app-plus%2Fdownload%2F%40dcloudio%2Funi-app-plus-2.0.0-32920210927002.tgz#d57e425facda0e4fe01e40ef4ca23b17581efba9"
   integrity sha1-1X5CX6zaDk/gHkDvTKI7F1ge+6k=
 
-"@dcloudio/uni-automator@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/uni-automator/download/@dcloudio/uni-automator-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991860953&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-automator%2Fdownload%2F%40dcloudio%2Funi-automator-2.0.0-32920210927002.tgz#299d3668d2e1d48577dfd73597c7cdd6f22c3f89"
-  integrity sha1-KZ02aNLh1IV339c1l8fN1vIsP4k=
+"@dcloudio/uni-automator@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/uni-automator/download/@dcloudio/uni-automator-2.0.0-32920211029004.tgz#e68ae0f4d9b23b330ad849808b84cdbee060e7b7"
+  integrity sha1-5org9NmyOzMK2EmAi4TNvuBg57c=
   dependencies:
     address "^1.1.2"
     debug "^4.1.1"
@@ -916,18 +916,18 @@
     qrcode-terminal "^0.12.0"
     ws "^7.2.3"
 
-"@dcloudio/uni-cli-i18n@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/uni-cli-i18n/download/@dcloudio/uni-cli-i18n-2.0.0-32920210927002.tgz#bbac7ae41f781f08b10c96ba791542e80c31c328"
-  integrity sha1-u6x65B94HwixDJa6eRVC6Awxwyg=
+"@dcloudio/uni-cli-i18n@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/uni-cli-i18n/download/@dcloudio/uni-cli-i18n-2.0.0-32920211029004.tgz?cache=0&sync_timestamp=1636619014997&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-cli-i18n%2Fdownload%2F%40dcloudio%2Funi-cli-i18n-2.0.0-32920211029004.tgz#16e58a1a0832afabde14ef3cb496358288aa5ed3"
+  integrity sha1-FuWKGggyr6veFO88tJY1goiqXtM=
   dependencies:
     i18n "^0.13.3"
     os-locale-s-fix "^1.0.8-fix-1"
 
-"@dcloudio/uni-cli-shared@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/uni-cli-shared/download/@dcloudio/uni-cli-shared-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991860324&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-cli-shared%2Fdownload%2F%40dcloudio%2Funi-cli-shared-2.0.0-32920210927002.tgz#600f6c588eee36011c512213504b1c43e827b5f3"
-  integrity sha1-YA9sWI7uNgEcUSITUEscQ+gntfM=
+"@dcloudio/uni-cli-shared@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/uni-cli-shared/download/@dcloudio/uni-cli-shared-2.0.0-32920211029004.tgz#045f286462e033759683f48dcb63a4b82c6e9e6d"
+  integrity sha1-BF8oZGLgM3WWg/SNy2OkuCxunm0=
   dependencies:
     hash-sum "^1.0.2"
     postcss-urlrewrite "^0.2.2"
@@ -953,10 +953,10 @@
   resolved "https://registry.npmmirror.com/@dcloudio/uni-i18n/download/@dcloudio/uni-i18n-2.0.0-32920210927002.tgz#07a1204a071bbe33426e5ff5742a9e6a4e797bb1"
   integrity sha1-B6EgSgcbvjNCbl/1dCqeak55e7E=
 
-"@dcloudio/uni-migration@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/uni-migration/download/@dcloudio/uni-migration-2.0.0-32920210927002.tgz#9215af63648ca61949b4dfb1df4a411c64730157"
-  integrity sha1-khWvY2SMphlJtN+x30pBHGRzAVc=
+"@dcloudio/uni-migration@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/uni-migration/download/@dcloudio/uni-migration-2.0.0-32920211029004.tgz#b6cb166e0fdb7d66c02a2e9067b7df42aad85d3e"
+  integrity sha1-tssWbg/bfWbAKi6QZ7ffQqrYXT4=
   dependencies:
     commander "^4.0.1"
     fs-extra "^8.1.0"
@@ -1019,41 +1019,46 @@
   resolved "https://registry.npmmirror.com/@dcloudio/uni-quickapp-webview/download/@dcloudio/uni-quickapp-webview-2.0.0-32920210927002.tgz#e991d4ee082278551b126936c54dc9b7a1107548"
   integrity sha1-6ZHU7ggieFUbEmk2xU3Jt6EQdUg=
 
-"@dcloudio/uni-stat@^2.0.0-31920210709003", "@dcloudio/uni-stat@^2.0.0-32920210927002":
+"@dcloudio/uni-stat@^2.0.0-31920210709003":
   version "2.0.0-32920210927002"
   resolved "https://registry.npmmirror.com/@dcloudio/uni-stat/download/@dcloudio/uni-stat-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991861538&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-stat%2Fdownload%2F%40dcloudio%2Funi-stat-2.0.0-32920210927002.tgz#586c87d63d05427dd7d505fe74d22a417e276050"
   integrity sha1-WGyH1j0FQn3X1QX+dNIqQX4nYFA=
 
-"@dcloudio/uni-template-compiler@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/uni-template-compiler/download/@dcloudio/uni-template-compiler-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991859682&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-template-compiler%2Fdownload%2F%40dcloudio%2Funi-template-compiler-2.0.0-32920210927002.tgz#158e1fe55f5d96ca8f5f569181d9f5298aa33439"
-  integrity sha1-FY4f5V9dlsqPX1aRgdn1KYqjNDk=
+"@dcloudio/uni-stat@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/uni-stat/download/@dcloudio/uni-stat-2.0.0-32920211029004.tgz?cache=0&sync_timestamp=1636619679190&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Funi-stat%2Fdownload%2F%40dcloudio%2Funi-stat-2.0.0-32920211029004.tgz#be541ccb35c36275d19bf9fa73a62b21a591ca02"
+  integrity sha1-vlQcyzXDYnXRm/n6c6YrIaWRygI=
+
+"@dcloudio/uni-template-compiler@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/uni-template-compiler/download/@dcloudio/uni-template-compiler-2.0.0-32920211029004.tgz#9ddb570b0543a813622b7d096ffb6ba6c733aa2f"
+  integrity sha1-ndtXCwVDqBNiK30Jb/trpsczqi8=
   dependencies:
     "@babel/parser" "^7.3.3"
     "@babel/traverse" "^7.3.3"
     "@babel/types" "^7.3.3"
     vue-template-compiler "^2.6.10"
 
-"@dcloudio/vue-cli-plugin-hbuilderx@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/vue-cli-plugin-hbuilderx/download/@dcloudio/vue-cli-plugin-hbuilderx-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991860261&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fvue-cli-plugin-hbuilderx%2Fdownload%2F%40dcloudio%2Fvue-cli-plugin-hbuilderx-2.0.0-32920210927002.tgz#7407960b40ae73ec00bf2f8269e54d9f5a53591f"
-  integrity sha1-dAeWC0Cuc+wAvy+CaeVNn1pTWR8=
+"@dcloudio/vue-cli-plugin-hbuilderx@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/vue-cli-plugin-hbuilderx/download/@dcloudio/vue-cli-plugin-hbuilderx-2.0.0-32920211029004.tgz?cache=0&sync_timestamp=1636619204580&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fvue-cli-plugin-hbuilderx%2Fdownload%2F%40dcloudio%2Fvue-cli-plugin-hbuilderx-2.0.0-32920211029004.tgz#f9dd66dd9c98dd9bc5d72764d07b10e0778ce132"
+  integrity sha1-+d1m3ZyY3ZvF1ydk0HsQ4HeM4TI=
   dependencies:
     acorn "^5.2.1"
     css "~2.2.1"
     escodegen "^1.8.1"
 
-"@dcloudio/vue-cli-plugin-uni-optimize@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/vue-cli-plugin-uni-optimize/download/@dcloudio/vue-cli-plugin-uni-optimize-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991860516&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fvue-cli-plugin-uni-optimize%2Fdownload%2F%40dcloudio%2Fvue-cli-plugin-uni-optimize-2.0.0-32920210927002.tgz#073e463c163c5ccc9c4c4eefcb2d1a0ec8ec99af"
-  integrity sha1-Bz5GPBY8XMycTE7vyy0aDsjsma8=
+"@dcloudio/vue-cli-plugin-uni-optimize@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/vue-cli-plugin-uni-optimize/download/@dcloudio/vue-cli-plugin-uni-optimize-2.0.0-32920211029004.tgz#1102453d4e0373595b9ecf3a042b7ab1f2c647a9"
+  integrity sha1-EQJFPU4Dc1lbns86BCt6sfLGR6k=
 
-"@dcloudio/vue-cli-plugin-uni@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/vue-cli-plugin-uni/download/@dcloudio/vue-cli-plugin-uni-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991861159&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fvue-cli-plugin-uni%2Fdownload%2F%40dcloudio%2Fvue-cli-plugin-uni-2.0.0-32920210927002.tgz#586e3a1cfe79376cc21a4d53991cab3878e7fcb5"
-  integrity sha1-WG46HP55N2zCGk1TmRyrOHjn/LU=
+"@dcloudio/vue-cli-plugin-uni@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/vue-cli-plugin-uni/download/@dcloudio/vue-cli-plugin-uni-2.0.0-32920211029004.tgz?cache=0&sync_timestamp=1636619202437&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fvue-cli-plugin-uni%2Fdownload%2F%40dcloudio%2Fvue-cli-plugin-uni-2.0.0-32920211029004.tgz#b69724643e22c7bb9cf8554e351a127d467b53c9"
+  integrity sha1-tpckZD4ix7uc+FVONRoSfUZ7U8k=
   dependencies:
-    "@dcloudio/uni-stat" "^2.0.0-32920210927002"
+    "@dcloudio/uni-stat" "^2.0.0-32920211029004"
     buffer-json "^2.0.0"
     copy-webpack-plugin "^5.1.1"
     cross-env "^5.2.0"
@@ -1073,15 +1078,15 @@
     wrap-loader "^0.2.0"
     xregexp "4.0.0"
 
-"@dcloudio/webpack-uni-mp-loader@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/webpack-uni-mp-loader/download/@dcloudio/webpack-uni-mp-loader-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991860645&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fwebpack-uni-mp-loader%2Fdownload%2F%40dcloudio%2Fwebpack-uni-mp-loader-2.0.0-32920210927002.tgz#cbecf71df513b85928b4984a17ac30e2437425a2"
-  integrity sha1-y+z3HfUTuFkotJhKF6ww4kN0JaI=
+"@dcloudio/webpack-uni-mp-loader@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/webpack-uni-mp-loader/download/@dcloudio/webpack-uni-mp-loader-2.0.0-32920211029004.tgz?cache=0&sync_timestamp=1636619200349&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fwebpack-uni-mp-loader%2Fdownload%2F%40dcloudio%2Fwebpack-uni-mp-loader-2.0.0-32920211029004.tgz#894820eac78c0c3e094e6ae9faf3120fc9e29d93"
+  integrity sha1-iUgg6seMDD4JTmrp+vMSD8ninZM=
 
-"@dcloudio/webpack-uni-pages-loader@^2.0.0-31920210709003":
-  version "2.0.0-32920210927002"
-  resolved "https://registry.npmmirror.com/@dcloudio/webpack-uni-pages-loader/download/@dcloudio/webpack-uni-pages-loader-2.0.0-32920210927002.tgz?cache=0&sync_timestamp=1632991860829&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2F%40dcloudio%2Fwebpack-uni-pages-loader%2Fdownload%2F%40dcloudio%2Fwebpack-uni-pages-loader-2.0.0-32920210927002.tgz#a0f9ca49dc32fe8f10e678382771a316d3f760bb"
-  integrity sha1-oPnKSdwy/o8Q5ng4J3GjFtP3YLs=
+"@dcloudio/webpack-uni-pages-loader@^2.0.0-32920211029004":
+  version "2.0.0-32920211029004"
+  resolved "https://registry.npmmirror.com/@dcloudio/webpack-uni-pages-loader/download/@dcloudio/webpack-uni-pages-loader-2.0.0-32920211029004.tgz#85dca3a1a7980404c11816e5af493ddc6c689361"
+  integrity sha1-hdyjoaeYBATBGBblr0k93Gxok2E=
   dependencies:
     merge "^1.2.1"
     strip-json-comments "^2.0.1"
