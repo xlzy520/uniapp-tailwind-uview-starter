@@ -1,8 +1,6 @@
 <template>
   <view class="layout-col-slide mt-3">
-    <view class="w-1_3 px-3 m-auto text-center text-pink-400 font-medium"
-      >百分比宽度</view
-    >
+    <view class="w-1_3 px-3 m-auto text-center text-pink-400 font-medium">百分比宽度</view>
     <view class="w-24 m-auto truncate text-2xl bg-blue-300">文字溢出省略</view>
     <tab-with-data-list
       :tabs="tabList"
