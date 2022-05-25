@@ -1,7 +1,12 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  content: ['./src/**/*.vue'],
+  content: [
+    './src/**/*.vue',
+    './src/**/*.{vue,js}',
+    './src/pages/**/*.{vue,js}',
+    './index.html',
+  ],
   presets: [],
   darkMode: false, // or 'media' or 'class'
   separator: '_',
