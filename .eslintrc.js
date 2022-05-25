@@ -12,6 +12,7 @@ module.exports = {
   },
   plugins: ['vue'],
   rules: {
+    'vue/script-setup-uses-vars': 'off',
     'no-unused-vars': 'off',
     'no-use-before-define': 'off',
     'no-shadow': 'off',
