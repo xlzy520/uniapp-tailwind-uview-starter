@@ -16,7 +16,7 @@
 
 ### 启动
 1. HBuilderX直接点击`运行`或者`发行`选择相应的平台(我的方式)
-2. `webstorm`或者`vscode`启动，稍微麻烦点，具体如下
+2. `webstorm`或者`vscode`启动，具体如下
 #### h5
 ```bash
 yarn run serve
@@ -49,5 +49,7 @@ yarn run build:mp-weixin
 
 ### 添加配置
 
-tailwindcss默认配置了两套，一套是专门用于小程序的，生成的tailwindcss没那么大，一套是完整的h5+小程序的
-`tailwind.config.js`，配置较多，可以前往项目查看
+~~tailwindcss默认配置了两套，一套是专门用于小程序的，生成的tailwindcss没那么大，一套是完整的h5+小程序的
+`tailwind.config.js`，配置较多，可以前往项目查看~~
+
+升级到tailwindcss 3.x，有了JIT模式，不再需要解决大小的问题
