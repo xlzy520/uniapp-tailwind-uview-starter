@@ -59,6 +59,7 @@
     "setting": {
       "urlCheck": false,
       "es6": true,
+      "compileHotReLoad": false,
       "enhance": true,
       "postcss": true,
       "preloadBackgroundData": false,
