@@ -1,6 +1,53 @@
-const onlyWeiXin = require('./tailwind-config/only.mp-weixin.default.tailwind.config');
-const WeiXinAndH5 = require('./tailwind-config/mp-h5.default.tailwind.config');
+// 升级到3.x之后，可以使用jit模式，所以不需要选择配置以减少编译后大小了。
 
 module.exports = {
-  ...onlyWeiXin,
+  mode: 'jit',
+  content: [
+    './src/**/*.vue',
+    './src/**/*.{vue,js}',
+    './src/pages/**/*.{vue,js}',
+    './index.html',
+  ],
+  theme: {
+    extend: {},
+    // 小程序不能识别 / 斜杠符合，为了统一，建议小程序和h5都是用 _ 代替
+    spacing: {
+      px: '1px',
+      0: '0px',
+      1: '0.25rem',
+      2: '0.5rem',
+      3: '0.75rem',
+      '1_3': '33.3333%',
+      4: '1rem',
+      5: '1.25rem',
+      6: '1.5rem',
+      7: '1.75rem',
+      8: '2rem',
+      9: '2.25rem',
+      10: '2.5rem',
+      11: '2.75rem',
+      12: '3rem',
+      14: '3.5rem',
+      16: '4rem',
+      20: '5rem',
+      24: '6rem',
+      28: '7rem',
+      32: '8rem',
+      36: '9rem',
+      40: '10rem',
+      44: '11rem',
+      48: '12rem',
+      52: '13rem',
+      56: '14rem',
+      60: '15rem',
+      64: '16rem',
+      72: '18rem',
+      80: '20rem',
+      96: '24rem',
+    },
+  },
+  variants: {
+    extend: {},
+  },
+  plugins: [],
 };
