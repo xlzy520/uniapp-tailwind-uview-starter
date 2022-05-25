@@ -4,7 +4,12 @@ const isH5 = process.env.UNI_PLATFORM === 'h5';
 
 module.exports = {
   darkMode: 'class',
-  content: ['./src/**/*.vue', './src/**/*.wxml'],
+  content: [
+    './src/**/*.vue',
+    './src/**/*.{vue,js}',
+    './src/pages/**/*.{vue,js}',
+    './index.html',
+  ],
   corePlugins: [
     'container',
     'alignContent',
