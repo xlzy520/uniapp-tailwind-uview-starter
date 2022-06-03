@@ -3,6 +3,7 @@
     "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
   },
   "pages": [
+
     {
       "path": "pages/index/index",
       "style": {
@@ -10,11 +11,21 @@
       }
     },
     {
+      "path": "pages/csm/lzy",
+      "style": {
+        "navigationBarTitleText": "",
+        "disableScroll": true
+      }
+    },
+
+
+    {
       "path": "pages/form/index",
       "style": {
         "navigationBarTitleText": "表单"
       }
     }
+
   ],
   "tabBar": {
     "color": "#7F8389",
@@ -36,12 +47,13 @@
   },
   "sitemapLocation": "sitemap.json",
   "globalStyle": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
-    "navigationBarTextStyle": "black",
     "enablePullDownRefresh": true,
     "onReachBottomDistance": 60,
-    "usingComponents": {}
+    "usingComponents": {},
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#44c9fb",
+    "navigationBarTitleText": "小程序名字",
+    "navigationBarTextStyle":"#fff",
+    "navigationStyle":"custom"
   }
 }
