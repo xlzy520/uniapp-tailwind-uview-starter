@@ -71,7 +71,6 @@
   "devDependencies": {
     "@babel/runtime": "~7.12.0",
     "@dcloudio/types": "*",
-    "@dcloudio/uni-automator": "^2.0.1-33920220208001",
     "@dcloudio/uni-cli-i18n": "^2.0.1-33920220208001",
     "@dcloudio/uni-cli-shared": "^2.0.1-33920220208001",
     "@dcloudio/uni-migration": "^2.0.1-33920220208001",
