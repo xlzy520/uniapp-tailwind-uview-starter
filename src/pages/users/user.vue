@@ -27,9 +27,11 @@
         <u-button type="primary" @click="submit" class="u-button-submit">
           提交
         </u-button>
+      </u-form-item>
+      <u-form-item>
         <u-button
           v-if="mid"
-          type="primary"
+          type="error"
           @click="onRemove"
           class="u-button-submit"
         >
@@ -98,15 +100,25 @@ export default {
       });
     },
     onRemove() {
-      const index = this.followList.findIndex((item) => item.mid === this.mid);
-      this.followList.splice(index, 1);
-      uni.setStorageSync('followList', JSON.stringify(this.followList));
-      uni.showToast({
-        title: '删除成功',
-        icon: 'none',
-      });
-      uni.switchTab({
-        url: '/pages/users/index',
+      uni.showModal({
+        title: '提示',
+        content: '确定删除吗?',
+        success: (res) => {
+          if (res.confirm) {
+            const index = this.followList.findIndex(
+              (item) => item.mid === this.mid,
+            );
+            this.followList.splice(index, 1);
+            uni.setStorageSync('followList', JSON.stringify(this.followList));
+            uni.showToast({
+              title: '删除成功',
+              icon: 'none',
+            });
+            uni.switchTab({
+              url: '/pages/users/index',
+            });
+          }
+        },
       });
     },
   },

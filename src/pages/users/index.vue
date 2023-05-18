@@ -30,7 +30,7 @@
     <u-divider />
     <u-list>
       <u-list-item v-for="(item, index) in followList" :key="item.mid">
-        <view class="user-item layout-items-center">
+        <view class="user-item layout-items-center" @click="editUser(item)">
           <view class="user-mid text-overflow-hidden">
             {{ item.mid }}
           </view>
@@ -109,6 +109,11 @@ export default {
     addUser() {
       uni.navigateTo({
         url: '/pages/users/user',
+      });
+    },
+    editUser(item) {
+      uni.navigateTo({
+        url: `/pages/users/user?mid=${item.mid}&uname=${item.uname}`,
       });
     },
     onClear() {
