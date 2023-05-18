@@ -30,7 +30,7 @@
       </u-form-item>
       <u-form-item>
         <u-button
-          v-if="mid"
+          v-if="isEdit"
           type="error"
           @click="onRemove"
           class="u-button-submit"
@@ -50,22 +50,22 @@ export default {
         mid: '',
         uname: '',
       },
-      mid: '',
+      isEdit: false,
       followList: [],
+      index: -1,
     };
   },
   computed: {},
   onLoad(options) {
-    const mid = options.mid;
-    const uname = options.uname;
-    if (mid) {
-      this.mid = mid;
-      this.form.mid = mid;
-      this.form.uname = uname;
-    }
     const followList = uni.getStorageSync('followList');
     if (followList) {
       this.followList = JSON.parse(followList);
+    }
+    const index = options.index;
+    if (index !== undefined) {
+      this.form = this.followList[index];
+      this.isEdit = true;
+      this.index = Number(index);
     }
   },
   methods: {
@@ -84,9 +84,8 @@ export default {
         });
         return;
       }
-      const index = this.followList.findIndex((item) => item.mid === this.mid);
-      if (index > -1) {
-        this.followList[index] = this.form;
+      if (this.index > -1) {
+        this.followList[this.index] = this.form;
       } else {
         this.followList.push(this.form);
       }
@@ -105,10 +104,7 @@ export default {
         content: '确定删除吗?',
         success: (res) => {
           if (res.confirm) {
-            const index = this.followList.findIndex(
-              (item) => item.mid === this.mid,
-            );
-            this.followList.splice(index, 1);
+            this.followList.splice(this.index, 1);
             uni.setStorageSync('followList', JSON.stringify(this.followList));
             uni.showToast({
               title: '删除成功',
