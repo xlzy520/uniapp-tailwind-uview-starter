@@ -150,7 +150,7 @@ export default {
       const innerAudioContext = uni.createInnerAudioContext();
       innerAudioContext.autoplay = true;
       innerAudioContext.src =
-        'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/1638.mp3'; //铃声文件的路径
+        'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3'; //铃声文件的路径
       innerAudioContext.onPlay(() => {
         console.log('开始播放');
       });

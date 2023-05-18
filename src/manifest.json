@@ -1,8 +1,8 @@
 {
-    "name" : "Bilibili视频投稿监控",
+    "name" : "B站视频数据监控",
     "appid" : "__UNI__6CC1BCA",
     "description" : "a uniapp-tailwind-uview-starter",
-    "versionName" : "1.0.0",
+    "versionName" : "1.0.1",
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
