@@ -195,7 +195,9 @@ export default {
             title: err.msg || `获取视频列表失败`,
             icon: 'none',
           });
-          throw new Error(err.message);
+        })
+        .finally(() => {
+          uni.hideLoading();
         });
     },
     async getVideoList() {

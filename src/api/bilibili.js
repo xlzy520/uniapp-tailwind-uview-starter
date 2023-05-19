@@ -86,15 +86,18 @@ export const fetchUserVideos = (mid, cookie, pn) => {
           'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.101 Safari/537.36',
       },
       success: (res) => {
-        console.log(res, '===========打印的 ------ ');
+        console.log(res.data, '===========打印的 ------ ');
         const data = res.data.data;
-        if (data.list && data.list.vlist) {
-          return resolve(data.list.vlist);
+        if (data) {
+          if (data.list && data.list.vlist) {
+            return resolve(data.list.vlist);
+          }
+          return resolve([]);
         }
         reject(res.data.message);
       },
       fail: (err) => {
-        console.log(err, '===========打印的 ------ ');
+        console.log(err, '===========打印的 ------ err');
         reject(err);
       },
     });
@@ -132,34 +135,39 @@ function filterWeeksData(data, weeks = 2) {
 }
 
 export const fetchUserVideosService = async (mid, cookie) => {
-  const data = await fetchUserVideos(mid, cookie, 1);
-  const filteredVideoList = filterWeeksData(data, 1);
-  const promises = filteredVideoList.map(async (item) => {
-    const videoInfo = await getVideoInfo(item.bvid);
-    const cid = videoInfo.cid;
-    const stat = videoInfo.stat;
-    item.videoInfo = videoInfo;
-    item.stat = stat;
-    item.cid = cid;
-    await sleep(100);
-    console.log(videoInfo, '===========打印的 ------ getVideoInfo');
-    return fetchVideoOnlineTotalInfo(item.aid, cid).then((total) => {
-      item.total = total;
-      console.log(total, '===========打印的 ------ total');
+  try {
+    const data = await fetchUserVideos(mid, cookie, 1);
+    const filteredVideoList = filterWeeksData(data, 1);
+    const promises = filteredVideoList.map(async (item) => {
+      const videoInfo = await getVideoInfo(item.bvid);
+      const cid = videoInfo.cid;
+      const stat = videoInfo.stat;
+      item.videoInfo = videoInfo;
+      item.stat = stat;
+      item.cid = cid;
+      await sleep(100);
+      console.log(videoInfo, '===========打印的 ------ getVideoInfo');
+      return fetchVideoOnlineTotalInfo(item.aid, cid).then((total) => {
+        item.total = total;
+        console.log(total, '===========打印的 ------ total');
+      });
     });
-  });
-  await Promise.all(promises);
-  return filteredVideoList;
+    await Promise.all(promises);
+    return filteredVideoList;
+  } catch (error) {
+    console.log(error, '===========打印的 ------ error');
+    return Promise.resolve([]);
+  }
 };
 
 export const fetchVideosByUsers = async (users, cookie) => {
-  const promises = users.map(async (item) => {
-    const filteredVideoList = await fetchUserVideosService(item.mid, cookie);
-    await sleep(300);
-    return {
-      ...item,
-      videos: filteredVideoList,
-    };
+  const promises = users.map((item) => {
+    return fetchUserVideosService(item.mid, cookie).then(
+      (filteredVideoList) => {
+        item.videos = filteredVideoList;
+        return item;
+      },
+    );
   });
   const data = await Promise.all(promises);
   return data;
@@ -186,11 +194,11 @@ export const checkLicense = () => {
     let address = '';
     uni.request({
       url: 'https://ip.useragentinfo.com/json',
-      complete: (res) => {
-        console.log(res, '===========打印的 ------ complete');
-        if (res.code === 200) {
-          ip = res.ip;
-          address = res.province + res.city + res.area;
+      complete: ({ data }) => {
+        console.log(data, '===========打印的 ------ complete');
+        if (data.code === 200) {
+          ip = data.ip;
+          address = data.province + data.city + data.area;
         }
         uni.request({
           url: `https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/release/license/auth?key=中二&ip=${ip}&address=${address}`,
