@@ -79,22 +79,36 @@ export const fetchFollowings = (mid = '7560113', cookie) => {
 export const fetchUserVideos = (mid, cookie, pn) => {
   return new Promise((resolve, reject) => {
     uni.request({
-      url: `${baseUrl}space/wbi/arc/search?mid=${mid}&ps=50&pn=${pn}`,
+      methods: 'GET',
+      url: `${baseUrl}space/wbi/arc/search`,
+      data: {
+        mid: mid,
+        ps: 50,
+        tid: 0,
+        pn: pn,
+        keyword: '',
+        order: 'pubdate',
+        platform: 'web',
+        web_location: '1550101',
+        order_avoided: true,
+        w_rid: '9468638126455b11cb2b1b2133598b48',
+        wts: Math.round(new Date().getTime() / 1000),
+      },
       header: {
         Cookie: cookie,
         'User-Agent':
           'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.101 Safari/537.36',
       },
       success: (res) => {
-        console.log(res.data, '===========打印的 ------ ');
-        const data = res.data.data;
+        const data = res.data && res.data.data;
         if (data) {
           if (data.list && data.list.vlist) {
             return resolve(data.list.vlist);
           }
           return resolve([]);
         }
-        reject(res.data.message);
+        // console.error(mid, pn, res.data.message, 'fetchUserVideos');
+        resolve([{ error: res.data.message }]);
       },
       fail: (err) => {
         console.log(err, '===========打印的 ------ err');
@@ -105,7 +119,7 @@ export const fetchUserVideos = (mid, cookie, pn) => {
 };
 
 // 获取视频在线观看人数
-const fetchVideoOnlineTotalInfo = (aid, cid) => {
+export const fetchVideoOnlineTotalInfo = (aid, cid) => {
   return new Promise((resolve, reject) => {
     uni.request({
       url: `${baseUrl}player/online/total?aid=${aid}&cid=${cid}`,
@@ -124,9 +138,12 @@ const fetchVideoOnlineTotalInfo = (aid, cid) => {
 };
 
 function filterWeeksData(data, weeks = 2) {
+  if (data && data.length === 1 && data[0].error) {
+    return data;
+  }
   const nowTime = dayjs();
   const twoWeeksAgo = nowTime.subtract(weeks, 'week');
-  const filteredData = data.filter((item) => {
+  const filteredData = (data || []).filter((item) => {
     const createdAt = dayjs.unix(item.created);
     return createdAt.isAfter(twoWeeksAgo);
   });
@@ -134,22 +151,36 @@ function filterWeeksData(data, weeks = 2) {
   return filteredData;
 }
 
+export const getVideoInfoAndTotal = async (aid, cid) => {
+  const videoInfo = await getVideoInfo(aid);
+  const stat = videoInfo.stat;
+  const total = await fetchVideoOnlineTotalInfo(aid, cid);
+  return {
+    videoInfo,
+    stat,
+    total,
+  };
+};
+
 export const fetchUserVideosService = async (mid, cookie) => {
   try {
     const data = await fetchUserVideos(mid, cookie, 1);
     const filteredVideoList = filterWeeksData(data, 1);
     const promises = filteredVideoList.map(async (item) => {
+      if (item.error) {
+        return item;
+      }
       const videoInfo = await getVideoInfo(item.bvid);
       const cid = videoInfo.cid;
       const stat = videoInfo.stat;
       item.videoInfo = videoInfo;
       item.stat = stat;
       item.cid = cid;
-      await sleep(100);
-      console.log(videoInfo, '===========打印的 ------ getVideoInfo');
+      // await sleep(100);
+      // console.log(videoInfo, '===========打印的 ------ getVideoInfo');
       return fetchVideoOnlineTotalInfo(item.aid, cid).then((total) => {
         item.total = total;
-        console.log(total, '===========打印的 ------ total');
+        // console.log(total, '===========打印的 ------ total');
       });
     });
     await Promise.all(promises);
@@ -161,7 +192,7 @@ export const fetchUserVideosService = async (mid, cookie) => {
 };
 
 export const fetchVideosByUsers = async (users, cookie) => {
-  const promises = users.map((item) => {
+  const promises = users.map(async (item) => {
     return fetchUserVideosService(item.mid, cookie).then(
       (filteredVideoList) => {
         item.videos = filteredVideoList;

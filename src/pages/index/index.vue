@@ -1,6 +1,6 @@
 <template>
   <view class="video-list-page">
-    <view class="mb-2">
+    <view class="mb-2 layout-slide">
       <u-checkbox-group>
         <u-checkbox
           :checked="autoRefresh"
@@ -9,13 +9,20 @@
           @change="changeAutoRefresh"
         ></u-checkbox>
       </u-checkbox-group>
+      <view>
+        <view class="text-12">共 {{ followList.length }} 个用户</view>
+        <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
+        <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
+      </view>
     </view>
-    <view>
-      <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
-      <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
+    <view class="layout-slide">
+      <!--      <u-button type="success" @click="getVideoStatsList">获取视频列表</u-button>-->
+      <u-button type="success" @click="addVideo"> 添加视频 </u-button>
     </view>
-    <view class="">
-      <u-button type="primary" @click="getVideoList">刷新视频数据</u-button>
+    <view class="mt-2">
+      <u-button type="primary" @click="getVideoStatsList">
+        查询视频热度
+      </u-button>
     </view>
     <view class="text-12 video-length layout-slide">
       <view class="">共 {{ videoList.length }} 条视频</view>
@@ -32,6 +39,7 @@
         <view class="video-like"> 点赞 </view>
         <view class="video-coin"> 投币 </view>
         <view class="video-author"> 作者 </view>
+        <view class="video-action"> 操作 </view>
       </view>
       <view
         v-for="(item, index) in videoList"
@@ -39,23 +47,35 @@
         class="video-item"
       >
         <view class="user-item layout-items-center">
-          <view class="video-title">
+          <view class="video-title" @click="openLink(item)">
             {{ item.title }}
           </view>
           <view class="video-user-total text-overflow-hidden">
-            {{ item.onlineTotal }}
+            {{ item.total }}
           </view>
           <view class="video-view">
-            {{ item.view }}
+            {{ item.stat && item.stat.view }}
           </view>
           <view class="video-like">
-            {{ item.like }}
+            {{ item.stat && item.stat.like }}
           </view>
           <view class="video-coin">
-            {{ item.coin }}
+            {{ item.stat && item.stat.coin }}
           </view>
           <view class="video-author text-overflow-hidden">
-            {{ item.uname }}
+            {{ item.owner && item.owner.name }}
+          </view>
+          <view class="video-action">
+            <u-button
+              type="error"
+              size="mini"
+              class="video-action-button"
+              :plain="true"
+              :hairline="true"
+              @click="removeVideo(index)"
+            >
+              删除
+            </u-button>
           </view>
         </view>
       </view>
@@ -65,7 +85,12 @@
 
 <script>
 import dayjs from 'dayjs';
-import { checkLicense, fetchVideosByUsers } from '@/api/bilibili';
+import {
+  checkLicense,
+  fetchVideoOnlineTotalInfo,
+  fetchVideosByUsers,
+  getVideoInfo,
+} from '@/api/bilibili';
 import { DefaultCookie } from '@/utils/constant';
 import { showLoading } from '@/utils';
 
@@ -89,7 +114,7 @@ export default {
   onLoad() {
     checkLicense().then((res) => {
       this.license = true;
-      this.getVideoList();
+      this.getVideoStatsList();
     });
     const autoRefresh = uni.getStorageSync('autoRefresh');
     console.log(autoRefresh, '===========打印的 ------ onShow');
@@ -99,23 +124,24 @@ export default {
     }
   },
   onShow() {
-    const followList = uni.getStorageSync('followList');
-    if (followList) {
-      this.followList = JSON.parse(followList);
-      this.updateVideoList();
+    const videoList = uni.getStorageSync('videoList');
+    if (videoList) {
+      this.videoList = JSON.parse(videoList);
     }
-    const lastUpdateTimeForVideo = uni.getStorageSync('lastUpdateTimeForVideo');
-    if (lastUpdateTimeForVideo) {
-      this.lastUpdateTimeForVideo = lastUpdateTimeForVideo;
-    }
-    console.log(this.videoList, this.followList);
   },
   methods: {
+    openLink(item) {
+      plus.runtime.openURL(`https://www.bilibili.com/video/${item.bvid}`);
+    },
+    removeVideo(index) {
+      this.videoList.splice(index, 1);
+      uni.setStorageSync('videoList', JSON.stringify(this.videoList));
+    },
     startAutoRefresh() {
       this.interval = setInterval(() => {
-        this.getVideoList();
+        this.getVideoStatsList();
         // }, 1000 * 20);
-      }, 1000 * 60 * 10);
+      }, 1000 * 30 * 10);
     },
     changeAutoRefresh(val) {
       console.log(val, '===========打印的 ------ changeAutoRefresh');
@@ -171,136 +197,51 @@ export default {
       }
       return '';
     },
-    fetchUserVideos(users) {
-      return fetchVideosByUsers(users, this.cookie)
-        .then((data) => {
-          console.log(data, '===========打印的 ------ ');
-          uni.showToast({
-            title: '获取视频列表成功',
-            icon: 'none',
-          });
-          const list = data || [];
-          list.forEach((v) => {
-            const index = this.followList.findIndex(
-              (item) => item.mid === v.mid,
-            );
-            if (index > -1) {
-              this.$set(this.followList[index], 'videos', v.videos || []);
-            }
-          });
-          this.updateVideoList();
-        })
-        .catch((err) => {
-          uni.showToast({
-            title: err.msg || `获取视频列表失败`,
-            icon: 'none',
-          });
-        })
-        .finally(() => {
-          uni.hideLoading();
-        });
-    },
-    async getVideoList() {
+    async getVideoStatsList() {
       if (!this.license) {
         return;
       }
-      if (!this.cookie) {
-        uni.showModal({
-          title: '提示',
-          content: '请先填写cookie',
-          showCancel: false,
-        });
+      if (this.videoList.length === 0) {
         return;
       }
-      if (this.followList.length === 0) {
-        uni.showModal({
-          title: '提示',
-          content: '请先填写关注列表',
-          showCancel: false,
+      showLoading('获取数据中...');
+      const videoList = this.videoList;
+      videoList.forEach((video, index) => {
+        getVideoInfo(video.bvid, 'bvid').then((res) => {
+          Object.assign(video, res);
         });
-        return;
-      }
-      const now = new Date();
-      const lastUpdateTime = new Date(this.lastUpdateTimeForVideo);
-      if (
-        this.lastUpdateTimeForVideo &&
-        now.getTime() - lastUpdateTime.getTime() < 60 * 1000
-      ) {
-        uni.showToast({
-          title: '一分钟内不重复获取视频列表',
-          icon: 'none',
-        });
-        return;
-      }
-      showLoading('获取视频列表中...');
-      const users = this.followList
-        .map((v) => {
-          return {
-            mid: v.mid,
-            uname: v.uname,
-          };
-        })
-        .slice(0, 100);
-      this.fetchUserVideos(users)
-        .then((res) => {
-          uni.showToast({
-            title: '获取视频列表成功',
-            icon: 'none',
+        fetchVideoOnlineTotalInfo(video.aid, video.cid)
+          .then((total) => {
+            video.total = total.total;
+            if (video.total > 30) {
+              console.log(1, '===========打印的 ------ ');
+              this.stopRing = false;
+              this.customRing(30);
+            }
+            if (this.isVideoSort) {
+              this.videoList = this.videoList.sort((a, b) => {
+                return b.total - a.total;
+              });
+            }
+          })
+          .finally(() => {
+            if (index === videoList.length - 1) {
+              uni.hideLoading();
+              this.lastUpdateTimeForVideo = this.formatDate(new Date());
+            }
           });
-          uni.setStorageSync('followList', JSON.stringify(this.followList));
-          this.updateVideoList();
-          this.lastUpdateTimeForVideo = Date.now();
-          uni.setStorageSync(
-            'lastUpdateTimeForVideo',
-            this.lastUpdateTimeForVideo,
-          );
-        })
-        .finally(() => {
-          uni.hideLoading();
-        });
+      });
+    },
+    addVideo() {
+      uni.navigateTo({
+        url: '/pages/index/video-add',
+      });
     },
     updateVideoList() {
-      const list = [];
-      let hasHotVideo = false;
-      this.followList.forEach((v) => {
-        if (v.videos) {
-          v.videos.forEach((video) => {
-            const onlineTotal = video.total && video.total.total;
-            if (onlineTotal > 30) {
-              hasHotVideo = true;
-            }
-            list.push({
-              ...video,
-              onlineTotal: video.total && video.total.total,
-              view: video.stat && video.stat.view,
-              like: video.stat && video.stat.like,
-              reply: video.stat && video.stat.reply,
-              coin: video.stat && video.stat.coin,
-              favorite: video.stat && video.stat.favorite,
-              mid: v.mid,
-              uname: v.uname,
-            });
-          });
-        }
-      });
-      if (hasHotVideo) {
-        this.stopRing = false;
-        this.customRing(30);
-      }
-      if (this.isVideoSort) {
-        this.videoList = list.sort((a, b) => {
-          const aTotal = Number(String(a.onlineTotal).replace('+', ''));
-          const bTotal = Number(String(b.onlineTotal).replace('+', ''));
-          if (aTotal > bTotal) {
-            return -1;
-          } else if (aTotal < bTotal) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
-      }
+      const list = this.videoList;
+
       this.videoList = list;
+      uni.setStorageSync('videoList', JSON.stringify(this.videoList));
     },
   },
 };
@@ -345,7 +286,8 @@ export default {
 .video-view,
 .video-user-total,
 .video-like,
-.video-coin {
+.video-coin,
+.video-action {
   font-size: 14px;
   color: #666;
   margin-bottom: 10px;
@@ -364,5 +306,13 @@ export default {
 
 .video-title {
   width: 100px;
+}
+.video-action {
+  width: 400px;
+}
+.video-action-button {
+  width: 100upx;
+  padding-left: 0;
+  margin-left: 0;
 }
 </style>

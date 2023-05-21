@@ -8,6 +8,12 @@
       }
     },
     {
+      "path": "pages/index/video-add",
+      "style": {
+        "navigationBarTitleText": "视频链接"
+      }
+    },
+    {
       "path": "pages/users/index",
       "style": {
         "navigationBarTitleText": "用户列表"
@@ -26,24 +32,6 @@
       }
     }
   ],
-  "tabBar": {
-    "color": "#7F8389",
-    "selectedColor": "#0091FF",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "/static/tabBar/icon-home.png",
-        "selectedIconPath": "/static/tabBar/icon-home-selected.png"
-      },
-      {
-        "pagePath": "pages/users/index",
-        "text": "用户列表",
-        "iconPath": "/static/tabBar/icon-tabbar-mine.png",
-        "selectedIconPath": "/static/tabBar/icon-tabbar-mine-selected.png"
-      }
-    ]
-  },
   "sitemapLocation": "sitemap.json",
   "globalStyle": {
     "navigationBarTextStyle": "black",

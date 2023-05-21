@@ -75,6 +75,7 @@
     "core-js": "^3.30.2",
     "dayjs": "^1.11.7",
     "flyio": "^0.6.2",
+    "lodash-es": "^4.17.21",
     "regenerator-runtime": "^0.13.11",
     "uview-ui": "^2.0.36",
     "vue": "~2.6.14",

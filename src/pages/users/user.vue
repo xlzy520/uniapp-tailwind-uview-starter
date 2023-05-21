@@ -11,6 +11,7 @@
         <u-input
           class="u-border-bottom"
           required
+          clearable
           v-model="form.uname"
           placeholder="请输入昵称"
         />
@@ -19,6 +20,7 @@
         <u-input
           class="u-border-bottom"
           required
+          clearable
           v-model="form.mid"
           placeholder="请输入UID"
         />
