@@ -4,7 +4,7 @@
       <u-checkbox-group>
         <u-checkbox
           :checked="autoRefresh"
-          label="自动刷新(10分钟)"
+          label="自动刷新(3分钟)"
           name="autoRefresh"
           @change="changeAutoRefresh"
         ></u-checkbox>
@@ -131,7 +131,8 @@ export default {
   },
   methods: {
     openLink(item) {
-      plus.runtime.openURL(`https://www.bilibili.com/video/${item.bvid}`);
+      // plus.runtime.openURL(`https://www.bilibili.com/video/${item.bvid}`);
+      plus.runtime.openURL(`bilibili://video/${item.bvid}`);
     },
     removeVideo(index) {
       this.videoList.splice(index, 1);
@@ -141,7 +142,7 @@ export default {
       this.interval = setInterval(() => {
         this.getVideoStatsList();
         // }, 1000 * 20);
-      }, 1000 * 30 * 10);
+      }, 1000 * 60 * 3);
     },
     changeAutoRefresh(val) {
       console.log(val, '===========打印的 ------ changeAutoRefresh');
