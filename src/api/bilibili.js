@@ -221,7 +221,10 @@ export const getVideoInfo = (id, type = 'bvid') => {
 
 export const checkLicense = (license) => {
   // const license = uni.getStorageSync('license');
-  const extId = 'uFtmTHzNYzVAi' + uni.getDeviceInfo().deviceId;
+  let extId = uni.getDeviceInfo().deviceId;
+  if (extId.length < 32) {
+    extId = 'uFtmTHzNYzVAi' + extId;
+  }
   console.log(extId, '===========打印的 ------ checkLicense');
   return new Promise((resolve, reject) => {
     let ip = '';
@@ -235,7 +238,7 @@ export const checkLicense = (license) => {
           address = data.province + data.city + data.area;
         }
         uni.request({
-          url: `https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/release/license/auth2?key=${license}&ip=${ip}&address=${address}&extId=${extId}`,
+          url: `https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/release/license/auth2?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
           success: (res) => {
             console.log(res, '===========打印的 ------ success');
             if (res.data.success) {
