@@ -219,7 +219,10 @@ export const getVideoInfo = (id, type = 'bvid') => {
   });
 };
 
-export const checkLicense = () => {
+export const checkLicense = (license) => {
+  // const license = uni.getStorageSync('license');
+  const extId = 'uFtmTHzNYzVAi' + uni.getDeviceInfo().deviceId;
+  console.log(extId, '===========打印的 ------ checkLicense');
   return new Promise((resolve, reject) => {
     let ip = '';
     let address = '';
@@ -232,11 +235,11 @@ export const checkLicense = () => {
           address = data.province + data.city + data.area;
         }
         uni.request({
-          url: `https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/release/license/auth?key=中二&ip=${ip}&address=${address}`,
+          url: `https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/release/license/auth2?key=${license}&ip=${ip}&address=${address}&extId=${extId}`,
           success: (res) => {
             console.log(res, '===========打印的 ------ success');
             if (res.data.success) {
-              return resolve(res);
+              return resolve(res.data);
             } else {
               return reject(res);
             }

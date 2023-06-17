@@ -10,7 +10,7 @@
         ></u-checkbox>
       </u-checkbox-group>
       <view>
-        <view class="text-12">共 {{ followList.length }} 个用户</view>
+        <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
         <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
         <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
       </view>
@@ -112,10 +112,18 @@ export default {
   },
   computed: {},
   onLoad() {
-    checkLicense().then((res) => {
-      this.license = true;
-      this.getVideoStatsList();
-    });
+    const license = uni.getStorageSync('license');
+    console.log(license, '===========打印的 ------ onLoad');
+    if (!license) {
+      uni.navigateTo({
+        url: '/pages/index/license',
+      });
+    } else {
+      checkLicense(license).then((res) => {
+        this.license = true;
+        this.getVideoStatsList();
+      });
+    }
     const autoRefresh = uni.getStorageSync('autoRefresh');
     console.log(autoRefresh, '===========打印的 ------ onShow');
     this.autoRefresh = !!autoRefresh;
@@ -243,6 +251,9 @@ export default {
 
       this.videoList = list;
       uni.setStorageSync('videoList', JSON.stringify(this.videoList));
+    },
+    closeLicense() {
+      this.licenseShow = false;
     },
   },
 };
