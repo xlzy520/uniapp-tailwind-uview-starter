@@ -4,7 +4,7 @@
       :model="form"
       ref="uForm"
       label-position="top"
-      label-width="200"
+      label-width="100%"
       :border-bottom="false"
     >
       <u-form-item
@@ -21,6 +21,7 @@
           placeholder="请输入视频链接或者BV号"
         />
       </u-form-item>
+      <view class="text-pink-500">APP视频简介长按视频编号可以自动复制</view>
       <u-form-item>
         <u-button type="primary" @click="submit" class="u-button-submit">
           提交
