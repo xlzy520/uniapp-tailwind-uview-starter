@@ -122,8 +122,15 @@
         </view>
       </view>
     </u-modal>
-    <u-modal :show="!stopRing" title="警告" @confirm="stopRing = false">
-      {{ warnText }}
+    <u-modal :show="!stopRing" title="警告" @confirm="stopRingNotice">
+      <view class="flex flex-col">
+        <view class="font-bold text-black">
+          视频：【{{ warnVideoTitle }}】
+        </view>
+        <view class="font-bold text-red-600">
+          {{ warnText }}
+        </view>
+      </view>
     </u-modal>
   </view>
 </template>
@@ -140,6 +147,7 @@ import {
 import { DefaultCookie } from '@/utils/constant';
 import { showLoading } from '@/utils';
 
+const innerAudioContext = uni.createInnerAudioContext();
 export default {
   components: {},
   data() {
@@ -157,12 +165,12 @@ export default {
       showUpperDetail: false,
       currentUpper: {},
       warnText: '',
+      warnVideoTitle: '',
     };
   },
   computed: {},
   onLoad() {
     const license = uni.getStorageSync('license');
-    console.log(license, '===========打印的 ------ onLoad');
     if (!license) {
       uni.navigateTo({
         url: '/pages/index/license',
@@ -174,7 +182,6 @@ export default {
       });
     }
     const autoRefresh = uni.getStorageSync('autoRefresh');
-    console.log(autoRefresh, '===========打印的 ------ onShow');
     this.autoRefresh = !!autoRefresh;
     if (this.autoRefresh) {
       this.startAutoRefresh();
@@ -187,6 +194,10 @@ export default {
     }
   },
   methods: {
+    stopRingNotice() {
+      this.stopRing = true;
+      innerAudioContext.stop();
+    },
     viewUpperDetail(item) {
       this.currentUpper = item.upper;
       this.showUpperDetail = true;
@@ -247,7 +258,6 @@ export default {
       if (count === 0) {
         return;
       }
-      const innerAudioContext = uni.createInnerAudioContext();
       innerAudioContext.autoplay = true;
       innerAudioContext.src =
         'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3'; //铃声文件的路径
@@ -307,7 +317,8 @@ export default {
             } else {
               if (video.watchUpper) {
                 this.stopRing = false;
-                this.warnText = `${video.title} 无置顶`;
+                this.warnVideoTitle = video.title;
+                this.warnText = `置顶丢失`;
                 this.customRing(30);
               }
             }
@@ -318,7 +329,8 @@ export default {
             video.total = total.total;
             if (video.total > 30) {
               this.stopRing = false;
-              this.warnText = `${video.title} 有 ${video.total} 人在线`;
+              this.warnVideoTitle = video.title;
+              this.warnText = `有 ${video.total} 人在线`;
               this.customRing(30);
             }
             if (this.isVideoSort) {
