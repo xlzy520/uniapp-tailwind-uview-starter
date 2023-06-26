@@ -219,6 +219,28 @@ export const getVideoInfo = (id, type = 'bvid') => {
   });
 };
 
+export const getReplyHot = (oid) => {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${baseUrl}/v2/reply/main`,
+      data: {
+        oid,
+        type: 1,
+        mode: 3,
+        next: 0,
+        plat: 1,
+      },
+      success: (res) => {
+        const data = res.data.data;
+        if (data) {
+          return resolve(data);
+        }
+        reject(res.data.message);
+      },
+    });
+  });
+};
+
 export const checkLicense = (license) => {
   // const license = uni.getStorageSync('license');
   let extId = uni.getDeviceInfo().deviceId;

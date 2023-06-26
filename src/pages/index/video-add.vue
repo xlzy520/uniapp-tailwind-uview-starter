@@ -33,6 +33,7 @@
 
 <script>
 import { getVideoInfo, fetchVideoOnlineTotalInfo } from '@/api/bilibili';
+import { showLoading } from '@/utils';
 
 export default {
   data() {
@@ -69,6 +70,7 @@ export default {
         });
         return;
       }
+      showLoading('添加中...');
       aid = aid ? aid[1] : '';
       bvid = bvid ? bvid[1] : '';
       const type = aid ? 'aid' : 'bvid';

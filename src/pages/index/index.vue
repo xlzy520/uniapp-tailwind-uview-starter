@@ -4,7 +4,7 @@
       <u-checkbox-group>
         <u-checkbox
           :checked="autoRefresh"
-          label="自动刷新(3分钟)"
+          label="自动刷新(1分钟)"
           name="autoRefresh"
           @change="changeAutoRefresh"
         ></u-checkbox>
@@ -34,6 +34,7 @@
     <view class="video-list">
       <view class="video-item video-item-title layout-items-center">
         <view class="video-title"> 视频 </view>
+        <view class="video-upper"> 置顶 </view>
         <view class="video-user-total"> 在线 </view>
         <view class="video-view"> 播放 </view>
         <view class="video-like"> 点赞 </view>
@@ -49,6 +50,20 @@
         <view class="user-item layout-items-center">
           <view class="video-title" @click="openLink(item)">
             {{ item.title }}
+          </view>
+          <view class="video-upper">
+            <view
+              v-if="item.upper"
+              class="underline text-blue-500"
+              @click="viewUpperDetail(item)"
+            >
+              存活(查看详情)
+            </view>
+
+            <view v-else>无</view>
+            <view v-if="item.watchUpper" class="font-bold text-orange-500">
+              【监控中】
+            </view>
           </view>
           <view class="video-user-total text-overflow-hidden">
             {{ item.total }}
@@ -66,20 +81,50 @@
             {{ item.owner && item.owner.name }}
           </view>
           <view class="video-action">
-            <u-button
-              type="error"
-              size="mini"
-              class="video-action-button"
-              :plain="true"
-              :hairline="true"
-              @click="removeVideo(index)"
-            >
-              删除
-            </u-button>
+            <view class="layout-items-center">
+              <u-button
+                :type="item.watchUpper ? 'error' : 'primary'"
+                size="mini"
+                class="video-action-button"
+                :plain="true"
+                :hairline="true"
+                @click="watchUpper(index)"
+                :text="item.watchUpper ? '取消监控' : '监控置顶'"
+              >
+              </u-button>
+              <u-button
+                type="error"
+                size="mini"
+                class="video-action-button"
+                :plain="true"
+                :hairline="true"
+                @click="removeVideo(index)"
+              >
+                删除
+              </u-button>
+            </view>
           </view>
         </view>
       </view>
     </view>
+    <u-modal
+      :show="showUpperDetail"
+      title="置顶评论详情"
+      @confirm="showUpperDetail = false"
+    >
+      <view class="flex flex-col">
+        <view>{{ currentUpper.message }}</view>
+        <view v-if="currentUpper.pictures">
+          <u-image
+            v-for="imgSrc in currentUpper.pictures"
+            :src="imgSrc"
+          ></u-image>
+        </view>
+      </view>
+    </u-modal>
+    <u-modal :show="!stopRing" title="警告" @confirm="stopRing = false">
+      {{ warnText }}
+    </u-modal>
   </view>
 </template>
 
@@ -89,6 +134,7 @@ import {
   checkLicense,
   fetchVideoOnlineTotalInfo,
   fetchVideosByUsers,
+  getReplyHot,
   getVideoInfo,
 } from '@/api/bilibili';
 import { DefaultCookie } from '@/utils/constant';
@@ -108,6 +154,9 @@ export default {
       interval: null,
       license: false,
       stopRing: true,
+      showUpperDetail: false,
+      currentUpper: {},
+      warnText: '',
     };
   },
   computed: {},
@@ -138,9 +187,25 @@ export default {
     }
   },
   methods: {
+    viewUpperDetail(item) {
+      this.currentUpper = item.upper;
+      this.showUpperDetail = true;
+    },
     openLink(item) {
       // plus.runtime.openURL(`https://www.bilibili.com/video/${item.bvid}`);
       plus.runtime.openURL(`bilibili://video/${item.bvid}`);
+    },
+    watchUpper(index) {
+      const item = this.videoList[index];
+      if (item) {
+        uni.showToast({
+          title: item.watchUpper ? '取消监控成功' : '监控置顶成功',
+          icon: 'none',
+        });
+      }
+      item.watchUpper = !item.watchUpper;
+      this.$set(this.videoList, index, item);
+      uni.setStorageSync('videoList', JSON.stringify(this.videoList));
     },
     removeVideo(index) {
       this.videoList.splice(index, 1);
@@ -150,7 +215,7 @@ export default {
       this.interval = setInterval(() => {
         this.getVideoStatsList();
         // }, 1000 * 20);
-      }, 1000 * 60 * 3);
+      }, 1000 * 60);
     },
     changeAutoRefresh(val) {
       console.log(val, '===========打印的 ------ changeAutoRefresh');
@@ -215,16 +280,45 @@ export default {
       }
       showLoading('获取数据中...');
       const videoList = this.videoList;
+      console.log(this.videoList, '===========打印的 ------ getVideoStatsList');
       videoList.forEach((video, index) => {
         getVideoInfo(video.bvid, 'bvid').then((res) => {
           Object.assign(video, res);
+          getReplyHot(video.aid).then((res) => {
+            const upper = res.top.upper;
+            if (upper) {
+              const content = upper.content;
+              const message = content.message;
+              const pictures =
+                content.pictures &&
+                content.pictures.map((item) => {
+                  return item.img_src;
+                });
+              const videoIndex = this.videoList.findIndex((item) => {
+                return item.aid === video.aid;
+              });
+              this.$set(this.videoList[videoIndex], 'upper', {
+                mid: upper.mid,
+                uname: upper.uname,
+                avatar: upper.avatar,
+                message,
+                pictures,
+              });
+            } else {
+              if (video.watchUpper) {
+                this.stopRing = false;
+                this.warnText = `${video.title} 无置顶`;
+                this.customRing(30);
+              }
+            }
+          });
         });
         fetchVideoOnlineTotalInfo(video.aid, video.cid)
           .then((total) => {
             video.total = total.total;
             if (video.total > 30) {
-              console.log(1, '===========打印的 ------ ');
               this.stopRing = false;
+              this.warnText = `${video.title} 有 ${video.total} 人在线`;
               this.customRing(30);
             }
             if (this.isVideoSort) {
@@ -267,12 +361,7 @@ export default {
   text-align: center;
   line-height: 50px;
 }
-.text-12 {
-  font-size: 12px;
-}
-.text-16 {
-  font-size: 16px;
-}
+
 .video-length {
   margin-top: 5px;
 }
@@ -297,6 +386,7 @@ export default {
 .video-author,
 .video-view,
 .video-user-total,
+.video-upper,
 .video-like,
 .video-coin,
 .video-action {
@@ -316,15 +406,26 @@ export default {
   min-width: 60px;
 }
 
+.video-upper {
+  width: 80px;
+  min-width: 80px;
+  flex: 0;
+}
+
 .video-title {
   width: 100px;
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .video-action {
-  width: 400px;
+  width: 200px;
+  min-width: 200px;
 }
 .video-action-button {
-  width: 100upx;
-  padding-left: 0;
+  width: 120upx;
+  min-width: 120upx;
   margin-left: 0;
+  margin-right: 10px;
 }
 </style>
