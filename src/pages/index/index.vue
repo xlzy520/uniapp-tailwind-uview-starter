@@ -296,6 +296,9 @@ export default {
           Object.assign(video, res);
           getReplyHot(video.aid).then((res) => {
             const upper = res.top.upper;
+            const videoIndex = this.videoList.findIndex((item) => {
+              return item.aid === video.aid;
+            });
             if (upper) {
               const content = upper.content;
               const message = content.message;
@@ -304,9 +307,6 @@ export default {
                 content.pictures.map((item) => {
                   return item.img_src;
                 });
-              const videoIndex = this.videoList.findIndex((item) => {
-                return item.aid === video.aid;
-              });
               this.$set(this.videoList[videoIndex], 'upper', {
                 mid: upper.mid,
                 uname: upper.uname,
@@ -315,6 +315,7 @@ export default {
                 pictures,
               });
             } else {
+              this.$set(this.videoList[videoIndex], 'upper', null);
               if (video.watchUpper) {
                 this.stopRing = false;
                 this.warnVideoTitle = video.title;
