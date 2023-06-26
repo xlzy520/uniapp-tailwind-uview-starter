@@ -2,7 +2,7 @@
     "name" : "B站视频数据监控",
     "appid" : "__UNI__6CC1BCA",
     "description" : "a uniapp-tailwind-uview-starter",
-    "versionName" : "1.0.4",
+    "versionName" : "1.0.5",
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
