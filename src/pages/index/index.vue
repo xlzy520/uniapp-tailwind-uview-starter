@@ -147,6 +147,7 @@
 
 <script>
 import dayjs from 'dayjs';
+import NoticeUtil from '@/utils/notice';
 import {
   checkLicense,
   fetchVideoOnlineTotalInfo,
@@ -285,6 +286,7 @@ export default {
         console.log('开始播放');
       });
       innerAudioContext.play();
+      NoticeUtil.aOSNotify('B站数据监控', '有新的警告，请前往APP查看');
       innerAudioContext.onError((res) => {
         console.log(res.errMsg);
         console.log(res.errCode);
