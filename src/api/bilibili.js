@@ -222,7 +222,7 @@ export const getVideoInfo = (id, type = 'bvid') => {
 export const getReplyHot = (oid) => {
   return new Promise((resolve, reject) => {
     uni.request({
-      url: `${baseUrl}/v2/reply/main`,
+      url: `${baseUrl}v2/reply/main`,
       data: {
         oid,
         type: 1,
@@ -245,7 +245,7 @@ export const checkLicense = (license) => {
   // const license = uni.getStorageSync('license');
   let extId = uni.getDeviceInfo().deviceId;
   if (extId.length < 32) {
-    extId = 'uFtmTHzNYzVAi' + extId;
+    extId = 'uFtmTHzNYzVA' + extId;
   }
   console.log(extId, '===========打印的 ------ checkLicense');
   return new Promise((resolve, reject) => {
@@ -259,8 +259,13 @@ export const checkLicense = (license) => {
           ip = data.ip;
           address = data.province + data.city + data.area;
         }
+        const BaseUrl = isDev
+          ? 'http://localhost:5000'
+          : 'https://service-bekobsys-1253419200.gz.apigw.tencentcs.com';
         uni.request({
-          url: `https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/release/license/auth2?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
+          url:
+            BaseUrl +
+            `/license/auth2?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
           success: (res) => {
             console.log(res, '===========打印的 ------ success');
             if (res.data.success) {

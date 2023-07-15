@@ -9,11 +9,21 @@
           @change="changeAutoRefresh"
         ></u-checkbox>
       </u-checkbox-group>
-      <view>
-        <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
-        <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
-        <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
+      <view class="layout-items-center">
+        <view class="text-12"> 在线人数提醒： </view>
+        <u-input
+          v-model="remindNum"
+          class="w-8"
+          type="number"
+          :min="0"
+          :max="100"
+          :step="1"
+          @change="changeRemindNum"
+        />
       </view>
+      <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
+      <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
+      <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
     </view>
     <view class="layout-slide">
       <!--      <u-button type="success" @click="getVideoStatsList">获取视频列表</u-button>-->
@@ -146,6 +156,7 @@ import {
 } from '@/api/bilibili';
 import { DefaultCookie } from '@/utils/constant';
 import { showLoading } from '@/utils';
+import { isString } from 'lodash-es';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -166,6 +177,7 @@ export default {
       currentUpper: {},
       warnText: '',
       warnVideoTitle: '',
+      remindNum: 30,
     };
   },
   computed: {},
@@ -182,6 +194,10 @@ export default {
       });
     }
     const autoRefresh = uni.getStorageSync('autoRefresh');
+    const remindNum = uni.getStorageSync('remindNum');
+    if (remindNum) {
+      this.remindNum = remindNum;
+    }
     this.autoRefresh = !!autoRefresh;
     if (this.autoRefresh) {
       this.startAutoRefresh();
@@ -194,6 +210,9 @@ export default {
     }
   },
   methods: {
+    changeRemindNum() {
+      uni.setStorageSync('remindNum', this.remindNum);
+    },
     stopRingNotice() {
       this.stopRing = true;
       innerAudioContext.stop();
@@ -225,6 +244,7 @@ export default {
     startAutoRefresh() {
       this.interval = setInterval(() => {
         this.getVideoStatsList();
+        uni.setStorageSync('videoList', JSON.stringify(this.videoList));
         // }, 1000 * 20);
       }, 1000 * 60);
     },
@@ -264,6 +284,7 @@ export default {
       innerAudioContext.onPlay(() => {
         console.log('开始播放');
       });
+      innerAudioContext.play();
       innerAudioContext.onError((res) => {
         console.log(res.errMsg);
         console.log(res.errCode);
@@ -323,12 +344,17 @@ export default {
                 this.customRing(30);
               }
             }
+            uni.setStorageSync('videoList', JSON.stringify(this.videoList));
           });
         });
         fetchVideoOnlineTotalInfo(video.aid, video.cid)
-          .then((total) => {
-            video.total = total.total;
-            if (video.total > 30) {
+          .then((totalInfo) => {
+            let total = totalInfo.total;
+            if (isString(total) && total.includes('+')) {
+              total = 1000;
+            }
+            video.total = total;
+            if (video.total > this.remindNum) {
               this.stopRing = false;
               this.warnVideoTitle = video.title;
               this.warnText = `有 ${video.total} 人在线`;
@@ -344,6 +370,7 @@ export default {
             if (index === videoList.length - 1) {
               uni.hideLoading();
               this.lastUpdateTimeForVideo = this.formatDate(new Date());
+              uni.setStorageSync('videoList', JSON.stringify(this.videoList));
             }
           });
       });
