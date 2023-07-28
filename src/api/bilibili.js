@@ -241,11 +241,44 @@ export const getReplyHot = (oid) => {
   });
 };
 
+export const submitDynamic = ({ cookie, data }) => {
+  const csrf = cookie.match(/bili_jct=(.+?);/)[1];
+  return new Promise((resolve, reject) => {});
+
+  return service
+    .post(
+      '/x/dynamic/feed/create/dyn?csrf=' + csrf,
+      {
+        dyn_req: {
+          ...data,
+          attach_card: null,
+          upload_id: '7560113_1684937710_6116',
+          meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
+        },
+      },
+      {
+        headers: {
+          origin: 'https://t.bilibili.com',
+          referer: 'https://t.bilibili.com/',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
+
+          cookie,
+        },
+      },
+    )
+    .then((res) => {
+      console.log(res.data, '===========打印的 ------ ');
+      return res.data;
+    });
+};
+
 export const checkLicense = (license) => {
   // const license = uni.getStorageSync('license');
   let extId = uni.getDeviceInfo().deviceId;
   if (extId.length < 32) {
     extId = 'uFtmTHzNYzVA' + extId;
+    extId = extId.padEnd(32, 'c');
   }
   console.log(extId, '===========打印的 ------ checkLicense');
   return new Promise((resolve, reject) => {

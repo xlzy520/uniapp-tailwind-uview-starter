@@ -17,3 +17,6 @@ export const showLoading = (title = '加载中') => {
     mask: true,
   });
 };
+
+export const isH5 = process.env.UNI_PLATFORM === 'h5';
+export const isApp = process.env.UNI_PLATFORM === 'app';

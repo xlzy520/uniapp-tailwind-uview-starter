@@ -34,6 +34,8 @@
 <script>
 import { getVideoInfo, fetchVideoOnlineTotalInfo } from '@/api/bilibili';
 import { showLoading } from '@/utils';
+import { pick, uniqBy } from 'lodash-es';
+import { pickKeysFromVideo } from '@/utils/constant';
 
 export default {
   data() {
@@ -47,8 +49,9 @@ export default {
   computed: {},
   onLoad(options) {
     const videoList = uni.getStorageSync('videoList');
+    const isOld = typeof videoList === 'string';
     if (videoList) {
-      this.videoList = JSON.parse(videoList);
+      this.videoList = isOld ? JSON.parse(videoList) : videoList;
     }
   },
   methods: {
@@ -76,7 +79,7 @@ export default {
       const type = aid ? 'aid' : 'bvid';
       const videoId = aid || bvid;
       return getVideoInfo(videoId, type).then((res) => {
-        const data = res;
+        const data = pick(res, pickKeysFromVideo);
         if (!data) {
           uni.showToast({
             title: '视频不存在',
@@ -95,12 +98,14 @@ export default {
           } else {
             this.videoList.unshift(data);
           }
-          uni.setStorageSync('videoList', JSON.stringify(this.videoList));
+          const uniqVideoList = uniqBy(this.videoList, 'aid');
+          uni.setStorageSync('videoList', uniqVideoList);
           uni.showToast({
             title: '添加成功',
             icon: 'none',
           });
-          uni.navigateTo({
+          this.form.url = '';
+          uni.reLaunch({
             url: '/pages/index/index',
           });
         });

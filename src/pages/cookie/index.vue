@@ -5,6 +5,7 @@
       ref="uForm"
       label-position="top"
       class="lzy-form"
+      label-width="200"
       :border-bottom="false"
     >
       <u-form-item label="CK" required prop="cookie" :border-bottom="false">
@@ -12,9 +13,34 @@
           class="u-border-bottom"
           required
           maxlength="9999"
-          autoHeight
           v-model="form.cookie"
           placeholder="请输入您的CK"
+        />
+      </u-form-item>
+      <u-form-item
+        label="置顶文字"
+        required
+        prop="topText"
+        :border-bottom="false"
+      >
+        <u-textarea
+          class="u-border-bottom"
+          required
+          v-model="form.topText"
+          placeholder="请输入置顶文字"
+        />
+      </u-form-item>
+      <u-form-item
+        label="置顶图片链接"
+        required
+        prop="topImageUrl"
+        :border-bottom="false"
+      >
+        <u-textarea
+          class="u-border-bottom"
+          required
+          v-model="form.topImageUrl"
+          placeholder="请输入置顶图片链接"
         />
       </u-form-item>
       <u-form-item>
@@ -32,52 +58,50 @@ export default {
     return {
       form: {
         cookie: '',
+        topImageUrl: '',
+        topText: '',
       },
+      videoIndex: null,
     };
   },
   computed: {},
   onLoad(options) {
-    const cookie = uni.getStorageSync('cookie');
-    if (cookie) {
-      this.form.cookie = cookie;
+    const videoIndex = options.videoIndex;
+    this.videoIndex = videoIndex;
+    const videoList = uni.getStorageSync('videoList');
+    if (videoList) {
+      this.videoList = JSON.parse(videoList);
+      const video = this.videoList[videoIndex];
+      this.form = {
+        cookie: video.cookie,
+        topImageUrl: video.topImageUrl,
+        topText: video.topText,
+      };
     }
   },
   methods: {
     submit() {
-      if (!this.form.cookie) {
-        uni.showToast({
-          title: '请输入cookie',
-          icon: 'none',
-        });
-        return;
+      // if (!this.form.cookie) {
+      //   uni.showToast({
+      //     title: '请输入cookie',
+      //     icon: 'none',
+      //   });
+      //   return;
+      // }
+      if (this.videoIndex) {
+        this.videoList[this.videoIndex] = {
+          ...this.videoList[this.videoIndex],
+          ...this.form,
+        };
+        uni.setStorageSync('videoList', JSON.stringify(this.videoList));
       }
-      const match = this.form.cookie.match(/DedeUserID=(\d+)/);
-      if (!match) {
-        uni.showModal({
-          title: '提示',
-          content: 'cookie不完整, 请包含DedeUserID',
-          showCancel: false,
-        });
-        return;
-      }
-      const mid = match[1];
-      if (!mid) {
-        uni.showModal({
-          title: '提示',
-          content: 'cookie不完整, 请包含DedeUserID',
-          showCancel: false,
-        });
-        return;
-      }
-      uni.setStorageSync('cookie', this.form.cookie);
-      uni.setStorageSync('mid', mid);
       uni.showToast({
         title: '设置成功',
         icon: 'none',
       });
-      uni.switchTab({
-        url: '/pages/users/index?getUp=1',
-      });
+      // uni.switchTab({
+      //   url: '/pages/users/index?getUp=1',
+      // });
     },
   },
 };

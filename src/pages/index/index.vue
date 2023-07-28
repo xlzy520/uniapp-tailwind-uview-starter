@@ -27,9 +27,9 @@
     </view>
     <view class="layout-slide">
       <!--      <u-button type="success" @click="getVideoStatsList">获取视频列表</u-button>-->
-      <u-button type="success" @click="addVideo"> 添加视频 </u-button>
+      <!--      <u-button type="success" @click="addVideo"> 添加视频 </u-button>-->
     </view>
-    <view class="mt-2">
+    <view class="">
       <u-button type="primary" @click="getVideoStatsList">
         查询视频热度
       </u-button>
@@ -58,7 +58,10 @@
         class="video-item"
       >
         <view class="user-item layout-items-center">
-          <view class="video-title" @click="openLink(item)">
+          <view
+            class="video-title underline !text-blue-500"
+            @click="openLink(item)"
+          >
             {{ item.title }}
           </view>
           <view class="video-upper">
@@ -102,6 +105,17 @@
                 :text="item.watchUpper ? '取消监控' : '监控置顶'"
               >
               </u-button>
+              <!--              <u-button-->
+              <!--                v-if="item.watchUpper"-->
+              <!--                type="primary"-->
+              <!--                size="mini"-->
+              <!--                class="video-action-button !h-8"-->
+              <!--                :plain="true"-->
+              <!--                :hairline="true"-->
+              <!--                @click="autoPost(index)"-->
+              <!--              >-->
+              <!--                自动补置顶评论-->
+              <!--              </u-button>-->
               <u-button
                 type="error"
                 size="mini"
@@ -155,9 +169,9 @@ import {
   getReplyHot,
   getVideoInfo,
 } from '@/api/bilibili';
-import { DefaultCookie } from '@/utils/constant';
-import { showLoading } from '@/utils';
-import { isString } from 'lodash-es';
+import { DefaultCookie, pickKeysFromVideo } from '@/utils/constant';
+import { isApp, showLoading, sleep } from '@/utils';
+import { isString, pick } from 'lodash-es';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -179,9 +193,9 @@ export default {
       warnText: '',
       warnVideoTitle: '',
       remindNum: 30,
+      videoData: [],
     };
   },
-  computed: {},
   onLoad() {
     const license = uni.getStorageSync('license');
     if (!license) {
@@ -189,10 +203,14 @@ export default {
         url: '/pages/index/license',
       });
     } else {
-      checkLicense(license).then((res) => {
-        this.license = true;
-        this.getVideoStatsList();
-      });
+      checkLicense(license)
+        .then((res) => {
+          this.license = true;
+          this.getVideoStatsList();
+        })
+        .catch(() => {
+          uni.setStorageSync('license', '');
+        });
     }
     const autoRefresh = uni.getStorageSync('autoRefresh');
     const remindNum = uni.getStorageSync('remindNum');
@@ -205,12 +223,29 @@ export default {
     }
   },
   onShow() {
-    const videoList = uni.getStorageSync('videoList');
+    let videoList = uni.getStorageSync('videoList');
+    const isOld = typeof videoList === 'string';
     if (videoList) {
-      this.videoList = JSON.parse(videoList);
+      videoList = isOld ? JSON.parse(videoList) : videoList;
+      this.saveVideoData(videoList);
+      if (isApp) {
+        this.getVideoStatsList();
+      }
     }
   },
   methods: {
+    saveVideoData(videoList) {
+      console.log(videoList, '===========打印的 ------ saveVideoData');
+      const videoData = videoList.map((item) => {
+        return {
+          bvid: item.bvid,
+          aid: item.aid,
+          watchUpper: item.watchUpper,
+        };
+      });
+      this.videoData = videoData;
+      uni.setStorageSync('videoData', videoData);
+    },
     changeRemindNum() {
       uni.setStorageSync('remindNum', this.remindNum);
     },
@@ -223,6 +258,10 @@ export default {
       this.showUpperDetail = true;
     },
     openLink(item) {
+      if (process.env.UNI_PLATFORM === 'h5') {
+        window.open(`https://www.bilibili.com/video/${item.bvid}`);
+        return;
+      }
       // plus.runtime.openURL(`https://www.bilibili.com/video/${item.bvid}`);
       plus.runtime.openURL(`bilibili://video/${item.bvid}`);
     },
@@ -236,23 +275,35 @@ export default {
       }
       item.watchUpper = !item.watchUpper;
       this.$set(this.videoList, index, item);
-      uni.setStorageSync('videoList', JSON.stringify(this.videoList));
+      this.saveVideoData(this.videoList);
+    },
+    autoPost(index) {
+      uni.navigateTo({
+        url: '/pages/cookie/index?videoIndex=' + index,
+      });
     },
     removeVideo(index) {
-      this.videoList.splice(index, 1);
-      uni.setStorageSync('videoList', JSON.stringify(this.videoList));
+      uni.showModal({
+        title: '提示',
+        content: '确定删除该视频吗？',
+        success: (res) => {
+          if (res.confirm) {
+            this.videoList.splice(index, 1);
+            this.saveVideoData(this.videoList);
+          }
+        },
+      });
     },
     startAutoRefresh() {
       this.interval = setInterval(() => {
         this.getVideoStatsList();
-        uni.setStorageSync('videoList', JSON.stringify(this.videoList));
         // }, 1000 * 20);
       }, 1000 * 60);
     },
     changeAutoRefresh(val) {
       console.log(val, '===========打印的 ------ changeAutoRefresh');
       this.autoRefresh = !this.autoRefresh;
-      if (!this.autoRefresh) {
+      if (val) {
         this.startAutoRefresh();
       } else {
         clearInterval(this.interval);
@@ -308,89 +359,88 @@ export default {
       if (!this.license) {
         return;
       }
-      if (this.videoList.length === 0) {
+      if (this.videoData.length === 0) {
         return;
       }
       showLoading('获取数据中...');
-      const videoList = this.videoList;
-      console.log(this.videoList, '===========打印的 ------ getVideoStatsList');
-      videoList.forEach((video, index) => {
-        getVideoInfo(video.bvid, 'bvid').then((res) => {
-          Object.assign(video, res);
-          getReplyHot(video.aid).then((res) => {
-            const upper = res.top.upper;
-            const videoIndex = this.videoList.findIndex((item) => {
-              return item.aid === video.aid;
-            });
-            if (upper) {
-              const content = upper.content;
-              const message = content.message;
-              const pictures =
-                content.pictures &&
-                content.pictures.map((item) => {
-                  return item.img_src;
-                });
-              this.$set(this.videoList[videoIndex], 'upper', {
-                mid: upper.mid,
-                uname: upper.uname,
-                avatar: upper.avatar,
-                message,
-                pictures,
+      const promises = this.videoData.map(async (video, index) => {
+        try {
+          const videoInfo = await getVideoInfo(video.bvid, 'bvid');
+          Object.assign(video, pick(videoInfo, pickKeysFromVideo));
+          const hotReply = await getReplyHot(video.aid);
+          const upper = hotReply.top.upper;
+          if (upper) {
+            const content = upper.content;
+            const message = content.message;
+            const pictures =
+              content.pictures &&
+              content.pictures.map((item) => {
+                return item.img_src;
               });
-            } else {
-              this.$set(this.videoList[videoIndex], 'upper', null);
-              if (video.watchUpper) {
-                this.stopRing = false;
-                this.warnVideoTitle = video.title;
-                this.warnText = `置顶丢失`;
-                this.customRing(30);
-              }
-            }
-            uni.setStorageSync('videoList', JSON.stringify(this.videoList));
-          });
-        });
-        fetchVideoOnlineTotalInfo(video.aid, video.cid)
-          .then((totalInfo) => {
-            let total = totalInfo.total;
-            if (isString(total) && total.includes('+')) {
-              total = 1000;
-            }
-            video.total = total;
-            if (video.total > this.remindNum) {
+            this.$set(video, 'upper', {
+              mid: upper.mid,
+              uname: upper.uname,
+              avatar: upper.avatar,
+              message,
+              pictures,
+            });
+          } else {
+            this.$set(this.videoList[index], 'upper', null);
+            if (video.watchUpper) {
               this.stopRing = false;
               this.warnVideoTitle = video.title;
-              this.warnText = `有 ${video.total} 人在线`;
+              this.warnText = `置顶丢失`;
               this.customRing(30);
             }
-            if (this.isVideoSort) {
-              this.videoList = this.videoList.sort((a, b) => {
-                return b.total - a.total;
-              });
-            }
-          })
-          .finally(() => {
-            if (index === videoList.length - 1) {
-              uni.hideLoading();
-              this.lastUpdateTimeForVideo = this.formatDate(new Date());
-              uni.setStorageSync('videoList', JSON.stringify(this.videoList));
-            }
-          });
+          }
+          const totalInfo = await fetchVideoOnlineTotalInfo(
+            video.aid,
+            video.cid,
+          );
+          let total = totalInfo.total;
+          if (isString(total) && total.includes('+')) {
+            total = 1000;
+          }
+          video.total = total;
+          if (video.total > Number(this.remindNum)) {
+            this.stopRing = false;
+            this.warnVideoTitle = video.title;
+            this.warnText = `有 ${video.total} 人在线`;
+            this.customRing(30);
+          }
+          await sleep(300);
+          return video;
+        } catch (err) {
+          console.log(err, '===========打印的 ------ err');
+          return {
+            ...video,
+            message: err.message,
+          };
+        }
       });
+
+      Promise.all(promises)
+        .then((videoList) => {
+          console.log(videoList, '===========打印的 ------ res');
+          this.videoList = videoList.sort((a, b) => {
+            return b.total - a.total;
+          });
+          this.lastUpdateTimeForVideo = this.formatDate(new Date());
+          this.saveVideoData(videoList);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          uni.hideLoading();
+        });
     },
     addVideo() {
-      uni.navigateTo({
+      uni.switchTab({
         url: '/pages/index/video-add',
       });
     },
-    updateVideoList() {
-      const list = this.videoList;
-
-      this.videoList = list;
-      uni.setStorageSync('videoList', JSON.stringify(this.videoList));
-    },
-    closeLicense() {
-      this.licenseShow = false;
-    },
+    postUpperReply() {},
   },
 };
 </script>
