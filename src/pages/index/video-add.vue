@@ -21,7 +21,9 @@
           placeholder="请输入视频链接或者BV号"
         />
       </u-form-item>
-      <view class="text-pink-500">APP视频简介长按视频编号可以自动复制</view>
+      <view class="text-pink-500 text-[20px]">
+        APP视频简介长按视频编号可以自动复制
+      </view>
       <u-form-item>
         <u-button type="primary" @click="submit" class="u-button-submit">
           提交
@@ -49,9 +51,8 @@ export default {
   computed: {},
   onLoad(options) {
     const videoList = uni.getStorageSync('videoList');
-    const isOld = typeof videoList === 'string';
     if (videoList) {
-      this.videoList = isOld ? JSON.parse(videoList) : videoList;
+      this.videoList = videoList;
     }
   },
   methods: {
@@ -87,6 +88,7 @@ export default {
           });
           return;
         }
+        data.watchUpper = false;
         data.isCustom = true;
         return fetchVideoOnlineTotalInfo(data.aid, data.cid).then((total) => {
           data.total = total.total;

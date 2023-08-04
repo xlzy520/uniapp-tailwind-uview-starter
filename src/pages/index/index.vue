@@ -95,16 +95,19 @@
           </view>
           <view class="video-action">
             <view class="layout-items-center">
-              <u-button
-                :type="item.watchUpper ? 'error' : 'primary'"
-                size="mini"
-                class="video-action-button"
-                :plain="true"
-                :hairline="true"
-                @click="watchUpper(index)"
-                :text="item.watchUpper ? '取消监控' : '监控置顶'"
-              >
-              </u-button>
+              <view>
+                <u-button
+                  :type="item.watchUpper ? 'error' : 'primary'"
+                  size="mini"
+                  class="video-action-button"
+                  :plain="true"
+                  :hairline="true"
+                  @click="watchUpper(index)"
+                  :text="item.watchUpper ? '取消监控' : '监控置顶'"
+                >
+                </u-button>
+              </view>
+
               <!--              <u-button-->
               <!--                v-if="item.watchUpper"-->
               <!--                type="primary"-->
@@ -116,16 +119,18 @@
               <!--              >-->
               <!--                自动补置顶评论-->
               <!--              </u-button>-->
-              <u-button
-                type="error"
-                size="mini"
-                class="video-action-button"
-                :plain="true"
-                :hairline="true"
-                @click="removeVideo(index)"
-              >
-                删除
-              </u-button>
+              <view class="ml-2">
+                <u-button
+                  type="error"
+                  size="mini"
+                  class="video-action-button"
+                  :plain="true"
+                  :hairline="true"
+                  @click="removeVideo(index)"
+                >
+                  删除
+                </u-button>
+              </view>
             </view>
           </view>
         </view>
@@ -137,7 +142,7 @@
       @confirm="showUpperDetail = false"
     >
       <view class="flex flex-col">
-        <view>{{ currentUpper.message }}</view>
+        <view class="break-all w-full">{{ currentUpper.message }}</view>
         <view v-if="currentUpper.pictures">
           <u-image
             v-for="imgSrc in currentUpper.pictures"
@@ -193,7 +198,6 @@ export default {
       warnText: '',
       warnVideoTitle: '',
       remindNum: 30,
-      videoData: [],
     };
   },
   onLoad() {
@@ -224,27 +228,17 @@ export default {
   },
   onShow() {
     let videoList = uni.getStorageSync('videoList');
-    const isOld = typeof videoList === 'string';
     if (videoList) {
-      videoList = isOld ? JSON.parse(videoList) : videoList;
-      this.saveVideoData(videoList);
+      this.saveVideoList(videoList);
       if (isApp) {
         this.getVideoStatsList();
       }
     }
   },
   methods: {
-    saveVideoData(videoList) {
-      console.log(videoList, '===========打印的 ------ saveVideoData');
-      const videoData = videoList.map((item) => {
-        return {
-          bvid: item.bvid,
-          aid: item.aid,
-          watchUpper: item.watchUpper,
-        };
-      });
-      this.videoData = videoData;
-      uni.setStorageSync('videoData', videoData);
+    saveVideoList(videoList) {
+      this.videoList = videoList;
+      uni.setStorageSync('videoList', videoList);
     },
     changeRemindNum() {
       uni.setStorageSync('remindNum', this.remindNum);
@@ -275,7 +269,7 @@ export default {
       }
       item.watchUpper = !item.watchUpper;
       this.$set(this.videoList, index, item);
-      this.saveVideoData(this.videoList);
+      this.saveVideoList(this.videoList);
     },
     autoPost(index) {
       uni.navigateTo({
@@ -289,7 +283,7 @@ export default {
         success: (res) => {
           if (res.confirm) {
             this.videoList.splice(index, 1);
-            this.saveVideoData(this.videoList);
+            this.saveVideoList(this.videoList);
           }
         },
       });
@@ -359,11 +353,11 @@ export default {
       if (!this.license) {
         return;
       }
-      if (this.videoData.length === 0) {
+      if (this.videoList.length === 0) {
         return;
       }
       showLoading('获取数据中...');
-      const promises = this.videoData.map(async (video, index) => {
+      const promises = this.videoList.map(async (video, index) => {
         try {
           const videoInfo = await getVideoInfo(video.bvid, 'bvid');
           Object.assign(video, pick(videoInfo, pickKeysFromVideo));
@@ -426,7 +420,7 @@ export default {
             return b.total - a.total;
           });
           this.lastUpdateTimeForVideo = this.formatDate(new Date());
-          this.saveVideoData(videoList);
+          this.saveVideoList(videoList);
         })
         .catch((err) => {
           console.log(err);
@@ -464,12 +458,12 @@ export default {
 .video-list {
   width: 100vw;
   overflow: auto;
-  min-height: 600px;
+  min-height: 80vh;
 }
 .video-item {
 }
 .video-item-title {
-  font-size: 16px;
+  font-size: 32upx;
   color: #333;
   font-weight: 500;
 }
@@ -482,42 +476,36 @@ export default {
 .video-like,
 .video-coin,
 .video-action {
-  font-size: 14px;
+  font-size: 28upx;
   color: #666;
-  margin-bottom: 10px;
-  padding-left: 10px;
-  width: 80px;
-  min-width: 80px;
+  margin-bottom: 20upx;
+  padding-left: 20upx;
+  width: 160upx;
+  min-width: 160upx;
   flex: 0;
 }
 .video-view,
 .video-user-total,
 .video-like,
 .video-coin {
-  width: 60px;
-  min-width: 60px;
+  width: 120upx;
+  min-width: 120upx;
 }
 
 .video-upper {
-  width: 80px;
-  min-width: 80px;
+  width: 160upx;
+  min-width: 160upx;
   flex: 0;
 }
 
 .video-title {
-  width: 100px;
-  max-height: 100px;
+  width: 200upx;
+  max-height: 200upx;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .video-action {
-  width: 200px;
-  min-width: 200px;
 }
 .video-action-button {
-  width: 120upx;
-  min-width: 120upx;
-  margin-left: 0;
-  margin-right: 10px;
 }
 </style>

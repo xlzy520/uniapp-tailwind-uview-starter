@@ -1,10 +1,9 @@
 import dayjs from 'dayjs';
-import { mockFollowList } from '@/api/mock';
-import { sleep } from '@/utils';
+import { isH5 } from '@/utils';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const baseUrl = isDev
+const baseUrl = isH5
   ? 'http://localhost:5000/bili-watch/'
   : 'https://api.bilibili.com/x/';
 
@@ -273,7 +272,45 @@ export const submitDynamic = ({ cookie, data }) => {
     });
 };
 
-export const checkLicense = (license) => {
+export const checkLicenseForWeb = (license) => {
+  let extId = uni.getDeviceInfo().deviceId;
+  if (extId.length < 32) {
+    extId = 'uFtmTHzNYzVA' + extId;
+    extId = extId.padEnd(32, 'c');
+  }
+  return new Promise((resolve, reject) => {
+    let ip = '';
+    let address = '';
+    uni.request({
+      url: 'https://ip.useragentinfo.com/json',
+      complete: ({ data }) => {
+        if (data.code === 200) {
+          ip = data.ip;
+          address = data.province + data.city + data.area;
+        }
+        const BaseUrl = 'http://localhost:5000';
+        uni.request({
+          url:
+            BaseUrl +
+            `/auth?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
+          success: (res) => {
+            if (res.data.success) {
+              return resolve(res.data);
+            } else {
+              uni.setStorageSync('license', '');
+              return reject(res);
+            }
+          },
+          fail: (err) => {
+            return reject(err);
+          },
+        });
+      },
+    });
+  });
+};
+
+export const checkLicenseForAPP = (license) => {
   // const license = uni.getStorageSync('license');
   let extId = uni.getDeviceInfo().deviceId;
   if (extId.length < 32) {
@@ -315,4 +352,8 @@ export const checkLicense = (license) => {
       },
     });
   });
+};
+
+export const checkLicense = (license) => {
+  return isH5 ? checkLicenseForWeb(license) : checkLicenseForAPP(license);
 };
