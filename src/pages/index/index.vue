@@ -98,7 +98,6 @@
               <view>
                 <u-button
                   :type="item.watchUpper ? 'error' : 'primary'"
-                  size="mini"
                   class="video-action-button"
                   :plain="true"
                   :hairline="true"
@@ -122,7 +121,6 @@
               <view class="ml-2">
                 <u-button
                   type="error"
-                  size="mini"
                   class="video-action-button"
                   :plain="true"
                   :hairline="true"
@@ -141,7 +139,7 @@
       title="置顶评论详情"
       @confirm="showUpperDetail = false"
     >
-      <view class="flex flex-col">
+      <view class="flex flex-col text-[18px]">
         <view class="break-all w-full">{{ currentUpper.message }}</view>
         <view v-if="currentUpper.pictures">
           <u-image
@@ -152,7 +150,7 @@
       </view>
     </u-modal>
     <u-modal :show="!stopRing" title="警告" @confirm="stopRingNotice">
-      <view class="flex flex-col">
+      <view class="flex flex-col text-[18px]">
         <view class="font-bold text-black">
           视频：【{{ warnVideoTitle }}】
         </view>
@@ -468,6 +466,7 @@ export default {
   font-weight: 500;
 }
 
+//#ifdef APP-PLUS
 .video-title,
 .video-author,
 .video-view,
@@ -504,8 +503,30 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+//#endif
+
+// #ifdef H5
+
+.video-title,
+.video-author,
+.video-view,
+.video-user-total,
+.video-upper,
+.video-like,
+.video-coin,
 .video-action {
+  font-size: 28upx;
+  color: #666;
+  margin-bottom: 20upx;
+  padding-left: 20upx;
+  flex: 1;
 }
-.video-action-button {
+
+.video-title {
+  width: 10rem;
+  max-height: 200upx;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+//#endif
 </style>
