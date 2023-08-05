@@ -16,6 +16,9 @@
           placeholder="请输入激活码"
         />
       </u-form-item>
+      <view class="font-bold text-[20px] text-red-500" v-if="isH5">
+        请记得打开视频数据后台客户端, 否则会激活失败
+      </view>
       <u-form-item>
         <u-button type="primary" @click="submit" class="u-button-submit">
           提交
@@ -27,9 +30,12 @@
 
 <script>
 import { checkLicense } from '@/api/bilibili';
+import { isH5 } from '@/utils';
+
 export default {
   data() {
     return {
+      isH5: isH5,
       form: {
         license: '',
       },
@@ -62,7 +68,16 @@ export default {
             url: '/pages/index/index',
           });
         })
-        .catch(() => {
+        .catch((err) => {
+          if (err.errMsg === 'request:fail') {
+            uni.showModal({
+              title: '提示',
+              content: '请打开视频数据后台客户端, 否则会激活失败',
+              showCancel: false,
+            });
+            return;
+          }
+          console.log(err, '===========打印的 ------ ');
           uni.showToast({
             title: '激活失败',
             icon: 'none',
