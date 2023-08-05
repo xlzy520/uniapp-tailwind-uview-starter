@@ -200,7 +200,8 @@ export default {
   },
   onLoad() {
     const license = uni.getStorageSync('license');
-    if (!license) {
+    const licenseError = uni.getStorageSync('licenseError');
+    if (!license || licenseError) {
       uni.navigateTo({
         url: '/pages/index/license',
       });
@@ -211,7 +212,7 @@ export default {
           this.getVideoStatsList();
         })
         .catch(() => {
-          uni.setStorageSync('license', '');
+          uni.setStorageSync('licenseError', 'true');
         });
     }
     const autoRefresh = uni.getStorageSync('autoRefresh');

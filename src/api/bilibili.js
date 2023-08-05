@@ -295,9 +295,10 @@ export const checkLicenseForWeb = (license) => {
             `/auth?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
           success: (res) => {
             if (res.data.success) {
+              uni.setStorageSync('licenseError', '');
               return resolve(res.data);
             } else {
-              uni.setStorageSync('license', '');
+              uni.setStorageSync('licenseError', 'true');
               return reject(res);
             }
           },
