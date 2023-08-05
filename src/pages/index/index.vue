@@ -401,7 +401,7 @@ export default {
             this.warnText = `有 ${video.total} 人在线`;
             this.customRing(30);
           }
-          await sleep(300);
+          await sleep(100);
           return video;
         } catch (err) {
           console.log(err, '===========打印的 ------ err');
@@ -414,17 +414,30 @@ export default {
 
       Promise.all(promises)
         .then((videoList) => {
-          console.log(videoList, '===========打印的 ------ res');
-          this.videoList = videoList.sort((a, b) => {
-            return b.total - a.total;
-          });
+          this.videoList = this.videoList
+            .map((item, index) => {
+              return {
+                ...item,
+                ...videoList[index],
+              };
+            })
+            .sort((a, b) => {
+              return b.total - a.total;
+            });
+          console.log(
+            this.videoList,
+            videoList,
+            '===========打印的 ------ res',
+          );
+          // this.videoList = videoList;
           this.lastUpdateTimeForVideo = this.formatDate(new Date());
-          this.saveVideoList(videoList);
+          this.saveVideoList(this.videoList);
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
+          console.log(1, '===========打印的 ------ ');
           uni.hideLoading();
         });
     },
