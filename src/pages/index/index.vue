@@ -368,8 +368,8 @@ export default {
       innerAudioContext.play();
       NoticeUtil.aOSNotify('B站数据监控', '有新的警告，请前往APP查看');
       innerAudioContext.onError((res) => {
-        console.log(res.errMsg);
-        console.log(res.errCode);
+        alert('播放错误, 检查填写的音频链接能否正常打开');
+        console.log(res);
       });
       innerAudioContext.onEnded(() => {
         console.log('播放结束');
