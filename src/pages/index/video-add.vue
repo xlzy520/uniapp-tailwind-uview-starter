@@ -79,39 +79,50 @@ export default {
       bvid = bvid ? bvid[1] : '';
       const type = aid ? 'aid' : 'bvid';
       const videoId = aid || bvid;
-      return getVideoInfo(videoId, type).then((res) => {
-        const data = pick(res, pickKeysFromVideo);
-        if (!data) {
-          uni.showToast({
-            title: '视频不存在',
-            icon: 'none',
-          });
-          return;
-        }
-        data.watchUpper = false;
-        data.isCustom = true;
-        return fetchVideoOnlineTotalInfo(data.aid, data.cid).then((total) => {
-          data.total = total.total;
-          const index = this.videoList.findIndex((item) => {
-            return item.aid === aid;
-          });
-          if (index > -1) {
-            this.videoList.splice(index, 1, data);
-          } else {
-            this.videoList.unshift(data);
+      getVideoInfo(videoId, type)
+        .then((res) => {
+          console.log(res, '===========打印的 ------ ');
+          const data = pick(res, pickKeysFromVideo);
+          if (!data) {
+            uni.showToast({
+              title: '视频不存在',
+              icon: 'none',
+            });
+            return;
           }
-          const uniqVideoList = uniqBy(this.videoList, 'aid');
-          uni.setStorageSync('videoList', uniqVideoList);
+          data.watchUpper = false;
+          data.isCustom = true;
+          return fetchVideoOnlineTotalInfo(data.aid, data.cid).then((total) => {
+            data.total = total.total;
+            const index = this.videoList.findIndex((item) => {
+              return item.aid === aid;
+            });
+            if (index > -1) {
+              this.videoList.splice(index, 1, data);
+            } else {
+              this.videoList.unshift(data);
+            }
+            const uniqVideoList = uniqBy(this.videoList, 'aid');
+            uni.setStorageSync('videoList', uniqVideoList);
+            uni.showToast({
+              title: '添加成功',
+              icon: 'none',
+            });
+            this.form.url = '';
+            uni.reLaunch({
+              url: '/pages/index/index',
+            });
+          });
+        })
+        .catch((error) => {
           uni.showToast({
-            title: '添加成功',
+            title: error,
             icon: 'none',
           });
-          this.form.url = '';
-          uni.reLaunch({
-            url: '/pages/index/index',
-          });
+        })
+        .finally(() => {
+          uni.hideLoading();
         });
-      });
     },
   },
 };
