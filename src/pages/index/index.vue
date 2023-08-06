@@ -25,6 +25,19 @@
       <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
       <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
     </view>
+    <view>
+      <view class="layout-items-center">
+        <view class="text-12"> 提醒音频链接： </view>
+        <u-input
+          class="u-border-bottom"
+          required
+          clearable
+          v-model="audioUrl"
+          placeholder="请输入提醒音频链接"
+          @change="changeAudioUrl"
+        />
+      </view>
+    </view>
     <view class="layout-slide">
       <!--      <u-button type="success" @click="getVideoStatsList">获取视频列表</u-button>-->
       <!--      <u-button type="success" @click="addVideo"> 添加视频 </u-button>-->
@@ -118,7 +131,7 @@
               <!--              >-->
               <!--                自动补置顶评论-->
               <!--              </u-button>-->
-              <view class="ml-2">
+              <view class="ml-1">
                 <u-button
                   type="error"
                   class="video-action-button"
@@ -196,6 +209,8 @@ export default {
       warnText: '',
       warnVideoTitle: '',
       remindNum: 30,
+      audioUrl:
+        'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3',
     };
   },
   onLoad() {
@@ -217,11 +232,15 @@ export default {
     }
     const autoRefresh = uni.getStorageSync('autoRefresh');
     const remindNum = uni.getStorageSync('remindNum');
+    const audioUrl = uni.getStorageSync('audioUrl');
     if (remindNum) {
       this.remindNum = remindNum;
     }
-    if (autoRefresh) {
-      this.autoRefresh = autoRefresh === 'true';
+    if (audioUrl) {
+      this.audioUrl = audioUrl;
+    }
+    if (autoRefresh !== '') {
+      this.autoRefresh = autoRefresh;
     }
     if (this.autoRefresh) {
       this.startAutoRefresh();
@@ -306,6 +325,9 @@ export default {
       }
       uni.setStorageSync('autoRefresh', this.autoRefresh);
     },
+    changeAudioUrl() {
+      uni.setStorageSync('audioUrl', this.audioUrl);
+    },
     systemRing() {
       let main = plus.android.runtimeMainActivity();
       let RingtoneManager = plus.android.importClass(
@@ -326,8 +348,7 @@ export default {
         return;
       }
       innerAudioContext.autoplay = true;
-      innerAudioContext.src =
-        'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3'; //铃声文件的路径
+      innerAudioContext.src = this.audioUrl; //铃声文件的路径
       innerAudioContext.onPlay(() => {
         console.log('开始播放');
       });
@@ -470,7 +491,7 @@ export default {
   margin-right: 10px;
 }
 .video-list {
-  width: 100vw;
+  width: 96vw;
   overflow: auto;
   min-height: 80vh;
 }
@@ -535,6 +556,11 @@ export default {
   color: #666;
   margin-bottom: 20upx;
   padding-left: 20upx;
+  flex: 2;
+}
+
+.video-like,
+.video-coin {
   flex: 1;
 }
 
