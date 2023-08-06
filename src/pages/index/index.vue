@@ -95,7 +95,9 @@
             </view>
           </view>
           <view class="video-user-total text-overflow-hidden">
-            {{ item.total }}
+            <view class="flex">
+              <u-tag :text="item.total" plain></u-tag>
+            </view>
           </view>
           <view class="video-view">
             {{ item.stat && item.stat.view }}
