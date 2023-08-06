@@ -163,6 +163,7 @@
           <u-image
             v-for="imgSrc in currentUpper.pictures"
             :src="imgSrc"
+            :key="imgSrc"
           ></u-image>
         </view>
       </view>
@@ -192,7 +193,7 @@ import {
 } from '@/api/bilibili';
 import { DefaultCookie, pickKeysFromVideo } from '@/utils/constant';
 import { isApp, showLoading, sleep } from '@/utils';
-import { isString, pick } from 'lodash-es';
+import { isEmpty, isString, pick } from 'lodash-es';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -259,6 +260,13 @@ export default {
         this.getVideoStatsList();
       }
     }
+    if (!this.interval && this.autoRefresh) {
+      this.startAutoRefresh();
+    }
+  },
+  onHide() {
+    clearInterval(this.interval);
+    this.interval = null;
   },
   methods: {
     saveVideoList(videoList) {
@@ -432,10 +440,9 @@ export default {
           await sleep(100);
           return video;
         } catch (err) {
-          console.log(err, '===========打印的 ------ err');
           return {
             ...video,
-            message: err,
+            message: isEmpty(err) ? '' : err,
           };
         }
       });
