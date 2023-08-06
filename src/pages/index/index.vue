@@ -220,7 +220,9 @@ export default {
     if (remindNum) {
       this.remindNum = remindNum;
     }
-    this.autoRefresh = !!autoRefresh;
+    if (autoRefresh) {
+      this.autoRefresh = autoRefresh === 'true';
+    }
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
