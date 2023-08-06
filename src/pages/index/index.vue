@@ -73,9 +73,12 @@
         <view class="user-item layout-items-center">
           <view
             class="video-title underline !text-blue-500"
+            :class="item.message ? '!text-red-500' : ''"
             @click="openLink(item)"
           >
-            {{ item.title }}
+            {{
+              item.message ? item.title + '(' + item.message + ')' : item.title
+            }}
           </view>
           <view class="video-upper">
             <view
@@ -430,7 +433,7 @@ export default {
           console.log(err, '===========打印的 ------ err');
           return {
             ...video,
-            message: err.message,
+            message: err,
           };
         }
       });
