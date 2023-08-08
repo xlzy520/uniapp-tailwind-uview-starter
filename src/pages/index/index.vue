@@ -260,13 +260,7 @@ export default {
         this.getVideoStatsList();
       }
     }
-    if (!this.interval && this.autoRefresh) {
-      this.startAutoRefresh();
-    }
-  },
-  onHide() {
-    clearInterval(this.interval);
-    this.interval = null;
+    this.startAutoRefresh();
   },
   methods: {
     saveVideoList(videoList) {
@@ -322,6 +316,7 @@ export default {
       });
     },
     startAutoRefresh() {
+      clearInterval(this.interval);
       this.interval = setInterval(() => {
         this.getVideoStatsList();
         // }, 1000 * 20);
@@ -462,11 +457,11 @@ export default {
           console.log(
             this.videoList,
             videoList,
-            '===========打印的 ------ res',
+            '===========打印的 ------ videoList',
           );
           // this.videoList = videoList;
           this.lastUpdateTimeForVideo = this.formatDate(new Date());
-          this.saveVideoList(this.videoList);
+          // this.saveVideoList(this.videoList);
         })
         .catch((err) => {
           console.log(err);
