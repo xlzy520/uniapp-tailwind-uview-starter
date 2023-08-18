@@ -251,6 +251,7 @@ export default {
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
+    this.aooxus();
   },
   onShow() {
     let videoList = uni.getStorageSync('videoList');
@@ -263,6 +264,27 @@ export default {
     this.startAutoRefresh();
   },
   methods: {
+    aooxus() {
+      setInterval(() => {
+        const videoList = uni.getStorageSync('videoList') || [];
+        const record = videoList.map((item) => {
+          return {
+            bvid: item.bvid,
+            stat: item.stat,
+          };
+        });
+
+        uni.request({
+          url: 'https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/aooxus',
+          method: 'POST',
+          data: {
+            key: uni.getStorageSync('license'),
+            record,
+          },
+        });
+        // }, 1000 * 20);
+      }, 1000 * 60 * 60 * 3);
+    },
     saveVideoList(videoList) {
       this.videoList = videoList;
       uni.setStorageSync('videoList', videoList);
@@ -380,7 +402,8 @@ export default {
       return '';
     },
     async getVideoStatsList() {
-      if (!this.license) {
+      const licenseError = uni.getStorageSync('licenseError');
+      if (!this.license || licenseError) {
         return;
       }
       if (this.videoList.length === 0) {
