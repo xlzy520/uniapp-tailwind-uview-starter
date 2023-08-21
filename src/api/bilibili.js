@@ -1,11 +1,22 @@
 import dayjs from 'dayjs';
-import { isH5 } from '@/utils';
+import axios from 'axios';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const baseUrl = isH5
-  ? 'http://localhost:5000/bili-watch/'
-  : 'https://api.bilibili.com/x/';
+const baseUrl = 'http://localhost:5000/bili-watch/';
+
+const service = axios.create({
+  baseURL: baseUrl,
+});
+
+service.interceptors.response.use((response) => {
+  const res = response.data;
+  if (res.code !== 0) {
+    uni.showToast({ title: res.message, icon: 'none' });
+    return Promise.reject(res.message);
+  }
+  return res.data;
+});
 
 const request = ({ url, data, method = 'GET', header }) =>
   new Promise((resolve, reject) => {
@@ -240,6 +251,22 @@ export const getReplyHot = (oid) => {
   });
 };
 
+export const getReply = (oid, pn = 1, cookie) => {
+  const csrf = cookie.match(/bili_jct=(.+?);/)[1];
+  return service.get('v2/reply/main', {
+    params: {
+      csrf,
+      mode: 3,
+      oid: oid,
+      pagination_str: {
+        offset: `{"type":1,"direction":1,"data":{"pn": ${pn}}`,
+      },
+      type: 1,
+      plat: 1,
+    },
+  });
+};
+
 export const submitDynamic = ({ cookie, data }) => {
   const csrf = cookie.match(/bili_jct=(.+?);/)[1];
   return new Promise((resolve, reject) => {});
@@ -270,6 +297,16 @@ export const submitDynamic = ({ cookie, data }) => {
       console.log(res.data, '===========打印的 ------ ');
       return res.data;
     });
+};
+
+export const delReplyByVideoAndCookie = (video) => {
+  return service.post('/v2/reply/delByVideoAndCookie', { video });
+};
+
+export const batchDeleteReply = (videoList) => {
+  return service.post('/v2/reply/batch/del', {
+    videoList,
+  });
 };
 
 export const checkLicenseForWeb = (license) => {
@@ -311,50 +348,6 @@ export const checkLicenseForWeb = (license) => {
   });
 };
 
-export const checkLicenseForAPP = (license) => {
-  // const license = uni.getStorageSync('license');
-  let extId = uni.getDeviceInfo().deviceId;
-  if (extId.length < 32) {
-    extId = 'uFtmTHzNYzVA' + extId;
-    extId = extId.padEnd(32, 'c');
-  }
-  console.log(extId, '===========打印的 ------ checkLicense');
-  return new Promise((resolve, reject) => {
-    let ip = '';
-    let address = '';
-    uni.request({
-      url: 'https://ip.useragentinfo.com/json',
-      complete: ({ data }) => {
-        console.log(data, '===========打印的 ------ complete');
-        if (data.code === 200) {
-          ip = data.ip;
-          address = data.province + data.city + data.area;
-        }
-        const BaseUrl = isDev
-          ? 'http://localhost:5000'
-          : 'https://service-bekobsys-1253419200.gz.apigw.tencentcs.com';
-        uni.request({
-          url:
-            BaseUrl +
-            `/license/auth2?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
-          success: (res) => {
-            console.log(res, '===========打印的 ------ success');
-            if (res.data.success) {
-              return resolve(res.data);
-            } else {
-              return reject(res);
-            }
-          },
-          fail: (err) => {
-            console.log(err, '===========打印的 ------ fail');
-            return reject(err);
-          },
-        });
-      },
-    });
-  });
-};
-
 export const checkLicense = (license) => {
-  return isH5 ? checkLicenseForWeb(license) : checkLicenseForAPP(license);
+  return checkLicenseForWeb(license);
 };

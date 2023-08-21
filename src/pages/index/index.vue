@@ -1,6 +1,7 @@
 <template>
   <view class="video-list-page">
     <view class="mb-2 layout-slide">
+      <video-add-dialog :video-list="videoList" />
       <u-checkbox-group>
         <u-checkbox
           :checked="autoRefresh"
@@ -21,6 +22,8 @@
           @change="changeRemindNum"
         />
       </view>
+      <!--      <el-button @click="delReplyByVideoAndCookie">触发删评</el-button>-->
+
       <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
       <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
       <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
@@ -49,108 +52,122 @@
     </view>
     <view class="text-12 video-length layout-slide">
       <view class="">共 {{ videoList.length }} 条视频</view>
-      <view class="">
-        上次刷新时间：{{ formatDate(lastUpdateTimeForVideo) }}
-      </view>
+      <view class=""> 上次刷新时间：{{ lastUpdateTimeForVideo }} </view>
     </view>
     <u-divider />
     <view class="video-list">
-      <view class="video-item video-item-title layout-items-center">
-        <view class="video-title"> 视频 </view>
-        <view class="video-upper"> 置顶 </view>
-        <view class="video-user-total"> 在线 </view>
-        <view class="video-view"> 播放 </view>
-        <view class="video-like"> 点赞 </view>
-        <view class="video-coin"> 投币 </view>
-        <view class="video-author"> 作者 </view>
-        <view class="video-action"> 操作 </view>
-      </view>
-      <view
-        v-for="(item, index) in videoList"
-        :key="item.bvid"
-        class="video-item"
-      >
-        <view class="user-item layout-items-center">
-          <view
-            class="video-title underline !text-blue-500"
-            :class="item.message ? '!text-red-500' : ''"
-            @click="openLink(item)"
-          >
-            {{
-              item.message ? item.title + '(' + item.message + ')' : item.title
-            }}
-          </view>
-          <view class="video-upper">
-            <view
-              v-if="item.upper"
-              class="underline text-blue-500"
-              @click="viewUpperDetail(item)"
+      <el-table :data="videoList" style="width: 100%">
+        <el-table-column label="视频" width="300">
+          <template slot-scope="{ row }">
+            <div
+              class="video-title underline"
+              :class="[row.message ? 'text-red-500' : 'text-blue-500']"
+              @click="openLink(row)"
             >
-              存活(查看详情)
-            </view>
-
-            <view v-else>无</view>
-            <view v-if="item.watchUpper" class="font-bold text-orange-500">
-              【监控中】
-            </view>
-          </view>
-          <view class="video-user-total text-overflow-hidden">
-            <view class="flex">
-              <u-tag :text="item.total" plain></u-tag>
-            </view>
-          </view>
-          <view class="video-view">
-            {{ item.stat && item.stat.view }}
-          </view>
-          <view class="video-like">
-            {{ item.stat && item.stat.like }}
-          </view>
-          <view class="video-coin">
-            {{ item.stat && item.stat.coin }}
-          </view>
-          <view class="video-author text-overflow-hidden">
-            {{ item.owner && item.owner.name }}
-          </view>
-          <view class="video-action">
-            <view class="layout-items-center">
-              <view>
-                <u-button
-                  :type="item.watchUpper ? 'error' : 'primary'"
-                  class="video-action-button"
-                  :plain="true"
-                  :hairline="true"
-                  @click="watchUpper(index)"
-                  :text="item.watchUpper ? '取消监控' : '监控置顶'"
-                >
-                </u-button>
-              </view>
-
-              <!--              <u-button-->
-              <!--                v-if="item.watchUpper"-->
-              <!--                type="primary"-->
-              <!--                size="mini"-->
-              <!--                class="video-action-button !h-8"-->
-              <!--                :plain="true"-->
-              <!--                :hairline="true"-->
-              <!--                @click="autoPost(index)"-->
-              <!--              >-->
-              <!--                自动补置顶评论-->
-              <!--              </u-button>-->
-              <view class="ml-1">
-                <u-button
-                  type="error"
-                  class="video-action-button"
-                  :plain="true"
-                  :hairline="true"
-                  @click="removeVideo(index)"
-                >
-                  删除
-                </u-button>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
+              {{
+                row.message ? row.title + '(' + row.message + ')' : row.title
+              }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="置顶">
+          <template slot-scope="{ row }">
+            <div class="video-upper">
+              <div
+                v-if="row.upper"
+                class="underline text-blue-500"
+                @click="viewUpperDetail(row)"
+              >
+                存活(查看详情)
+              </div>
+              <div v-else>无</div>
+              <div v-if="row.watchUpper" class="font-bold text-orange-500">
+                【监控中】
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="在线">
+          <template slot-scope="{ row }">
+            <div class="video-user-total">
+              <div class="flex">
+                <u-tag :text="row.total" plain></u-tag>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="播放">
+          <template slot-scope="{ row }">
+            <div class="video-view">{{ row.stat && row.stat.view }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="点赞">
+          <template slot-scope="{ row }">
+            <div class="video-like">{{ row.stat && row.stat.like }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="投币">
+          <template slot-scope="{ row }">
+            <div class="video-coin">{{ row.stat && row.stat.coin }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="作者">
+          <template slot-scope="{ row }">
+            <div class="video-author">{{ row.owner && row.owner.name }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否删评">
+          <template slot-scope="{ row }">
+            <div class="">
+              {{ row.deleteReply ? '删评中' : '' }}
+              <!--              {{ row.replyCount ? '(共' + row.replyCount + '条)' : '' }}-->
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="400">
+          <template slot-scope="{ row, $index }">
+            <div class="video-action">
+              <el-button
+                size="mini"
+                :type="row.watchUpper ? 'danger' : 'primary'"
+                class="video-action-button"
+                @click="watchUpper($index)"
+              >
+                {{ row.watchUpper ? '取消监控' : '监控置顶' }}
+              </el-button>
+              <el-button size="mini" type="primary" @click="setCK($index)">
+                配置CK与关键词
+              </el-button>
+              <el-button
+                size="mini"
+                :type="row.deleteReply ? 'danger' : 'primary'"
+                @click="changeDeleteReply($index)"
+              >
+                {{ row.deleteReply ? '关闭删评' : '启动删评' }}
+              </el-button>
+              <el-button
+                size="mini"
+                class="!mt-[10px]"
+                type="primary"
+                @click="showDelReplyLog($index)"
+              >
+                删评日志
+              </el-button>
+              <!-- <u-button v-if="row.watchUpper" type="primary" size="mini" class="video-action-button !h-8" :plain="true" :hairline="true" @click="autoPost($index)">
+                自动补置顶评论
+              </u-button> -->
+              <el-button
+                size="mini"
+                type="danger"
+                class="video-action-button"
+                @click="removeVideo($index)"
+              >
+                删除
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
     </view>
     <u-modal
       :show="showUpperDetail"
@@ -178,26 +195,60 @@
         </view>
       </view>
     </u-modal>
+    <el-dialog
+      title="配置该视频的UP的CK"
+      :visible.sync="addCkVisible"
+      width="60%"
+    >
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        label-width="200px"
+        label-position="top"
+      >
+        <el-form-item label="cookie">
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 4, maxRows: 4 }"
+            v-model="form.cookie"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="需要删除的关键词， 以逗号分隔">
+          <el-input type="textarea" v-model="form.keywords"></el-input>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="onSubmitCK">确定</el-button>
+          <el-button @click="addCkVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <delReplyDialog
+      v-if="delReplyLogVisible"
+      :log-list="delLogList"
+      @close="delReplyLogVisible = false"
+    />
   </view>
 </template>
 
 <script>
-import dayjs from 'dayjs';
-import NoticeUtil from '@/utils/notice';
 import {
   checkLicense,
+  delReplyByVideoAndCookie,
   fetchVideoOnlineTotalInfo,
-  fetchVideosByUsers,
   getReplyHot,
   getVideoInfo,
 } from '@/api/bilibili';
 import { DefaultCookie, pickKeysFromVideo } from '@/utils/constant';
-import { isApp, showLoading, sleep } from '@/utils';
+import { formatDate, showLoading, sleep, aooxus } from '@/utils';
 import { isEmpty, isString, pick } from 'lodash-es';
+import VideoAddDialog from './video-add-dialog.vue';
+import delReplyDialog from './del-reply-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
-  components: {},
+  components: { VideoAddDialog, delReplyDialog },
   data() {
     return {
       list: [],
@@ -217,73 +268,86 @@ export default {
       remindNum: 30,
       audioUrl:
         'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3',
+      currentVideoIndex: {},
+      addCkVisible: false,
+      form: {},
+      rules: {
+        cookie: [
+          {
+            required: true,
+            message: '请输入CK',
+            trigger: 'blur',
+          },
+        ],
+      },
+      deleteReplyInterval: null,
+      delReplyLogVisible: false,
+      delReplyLog: {},
     };
   },
-  onLoad() {
-    const license = uni.getStorageSync('license');
-    const licenseError = uni.getStorageSync('licenseError');
-    if (!license || licenseError) {
-      uni.navigateTo({
-        url: '/pages/index/license',
-      });
-    } else {
-      checkLicense(license)
-        .then((res) => {
-          this.license = true;
-          this.getVideoStatsList();
-        })
-        .catch(() => {
-          uni.setStorageSync('licenseError', 'true');
-        });
-    }
-    const autoRefresh = uni.getStorageSync('autoRefresh');
-    const remindNum = uni.getStorageSync('remindNum');
-    const audioUrl = uni.getStorageSync('audioUrl');
-    if (remindNum) {
-      this.remindNum = remindNum;
-    }
-    if (audioUrl) {
-      this.audioUrl = audioUrl;
-    }
-    if (autoRefresh !== '') {
-      this.autoRefresh = autoRefresh;
-    }
-    if (this.autoRefresh) {
-      this.startAutoRefresh();
-    }
-    this.aooxus();
-  },
-  onShow() {
-    let videoList = uni.getStorageSync('videoList');
-    if (videoList) {
-      this.saveVideoList(videoList);
-      if (isApp) {
-        this.getVideoStatsList();
-      }
-    }
-    this.startAutoRefresh();
+  computed: {
+    delLogList() {
+      const video = this.videoList[this.currentVideoIndex];
+      return this.delReplyLog[video.aid] || [];
+    },
   },
   methods: {
-    aooxus() {
-      setInterval(() => {
-        const videoList = uni.getStorageSync('videoList') || [];
-        const record = videoList.map((item) => {
-          return {
-            bvid: item.bvid,
-            stat: item.stat,
-          };
+    startDeleteReply() {
+      clearInterval(this.deleteReplyInterval);
+      this.deleteReplyInterval = setInterval(() => {
+        this.videoList.forEach((video) => {
+          if (video.deleteReply && video.cookie) {
+            this.delReplyByVideoAndCookie(video);
+          }
         });
-
-        uni.request({
-          url: 'https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/aooxus',
-          method: 'POST',
-          data: {
-            key: uni.getStorageSync('license'),
-            record,
-          },
+      }, 1000 * 30);
+    },
+    delReplyByVideoAndCookie(video) {
+      return delReplyByVideoAndCookie(video)
+        .then((res) => {
+          const fullReplyList = res.fullReplyList;
+          const successDelResult = res.delResult
+            .filter((item) => {
+              return item && item.code === 0;
+            })
+            .map((v) => {
+              return {
+                bvid: video.bvid,
+                rpid: v.item.rpid,
+                content: v.item.content.message,
+                ctime: formatDate(v.item.ctime * 1000),
+              };
+            });
+          if (successDelResult.length) {
+            this.$message.success(
+              '总评论数：' +
+                fullReplyList.length +
+                '，删除评论数：' +
+                successDelResult.length,
+            );
+            if (!this.delReplyLog[video.aid]) {
+              this.delReplyLog[video.aid] = [];
+            }
+            this.delReplyLog[video.aid].push(...successDelResult);
+          }
+          console.log(this.delReplyLog, '===========打印的 ------ ');
+          const index = this.videoList.findIndex((item) => {
+            return item.aid === video.aid;
+          });
+          this.videoList.splice(index, 1, {
+            ...video,
+            replyCount: fullReplyList.length,
+          });
+          console.log(this.videoList);
+          console.log(res, '===========打印的 ------ ');
+        })
+        .catch((err) => {
+          uni.showModal({
+            title: '提示',
+            content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
+            showCancel: false,
+          });
         });
-        // }, 1000 * 20);
-      }, 1000 * 60 * 60 * 3);
     },
     saveVideoList(videoList) {
       this.videoList = videoList;
@@ -301,12 +365,7 @@ export default {
       this.showUpperDetail = true;
     },
     openLink(item) {
-      if (process.env.UNI_PLATFORM === 'h5') {
-        window.open(`https://www.bilibili.com/video/${item.bvid}`);
-        return;
-      }
-      // plus.runtime.openURL(`https://www.bilibili.com/video/${item.bvid}`);
-      plus.runtime.openURL(`bilibili://video/${item.bvid}`);
+      window.open(`https://www.bilibili.com/video/${item.bvid}`);
     },
     watchUpper(index) {
       const item = this.videoList[index];
@@ -319,11 +378,6 @@ export default {
       item.watchUpper = !item.watchUpper;
       this.$set(this.videoList, index, item);
       this.saveVideoList(this.videoList);
-    },
-    autoPost(index) {
-      uni.navigateTo({
-        url: '/pages/cookie/index?videoIndex=' + index,
-      });
     },
     removeVideo(index) {
       uni.showModal({
@@ -341,11 +395,9 @@ export default {
       clearInterval(this.interval);
       this.interval = setInterval(() => {
         this.getVideoStatsList();
-        // }, 1000 * 20);
       }, 1000 * 60);
     },
     changeAutoRefresh(val) {
-      console.log(val, '===========打印的 ------ changeAutoRefresh');
       this.autoRefresh = !this.autoRefresh;
       if (val) {
         this.startAutoRefresh();
@@ -358,21 +410,6 @@ export default {
     changeAudioUrl() {
       uni.setStorageSync('audioUrl', this.audioUrl);
     },
-    systemRing() {
-      let main = plus.android.runtimeMainActivity();
-      let RingtoneManager = plus.android.importClass(
-        'android.media.RingtoneManager',
-      );
-      let uri = RingtoneManager.getActualDefaultRingtoneUri(
-        main,
-        RingtoneManager.TYPE_NOTIFICATION,
-      );
-      let MediaPlayer = plus.android.importClass('android.media.MediaPlayer');
-      let player = MediaPlayer.create(main, uri);
-      player.setLooping(false);
-      player.prepare();
-      player.start();
-    },
     customRing(count) {
       if (count === 0) {
         return;
@@ -383,7 +420,6 @@ export default {
         console.log('开始播放');
       });
       innerAudioContext.play();
-      NoticeUtil.aOSNotify('B站数据监控', '有新的警告，请前往APP查看');
       innerAudioContext.onError((res) => {
         alert('播放错误, 检查填写的音频链接能否正常打开');
         console.log(res);
@@ -395,18 +431,9 @@ export default {
         }
       });
     },
-    formatDate(time) {
-      if (time) {
-        return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
-      }
-      return '';
-    },
     async getVideoStatsList() {
       const licenseError = uni.getStorageSync('licenseError');
-      if (!this.license || licenseError) {
-        return;
-      }
-      if (this.videoList.length === 0) {
+      if (!this.license || licenseError || this.videoList.length === 0) {
         return;
       }
       showLoading('获取数据中...');
@@ -477,29 +504,107 @@ export default {
             .sort((a, b) => {
               return b.total - a.total;
             });
-          console.log(
-            this.videoList,
-            videoList,
-            '===========打印的 ------ videoList',
-          );
-          // this.videoList = videoList;
-          this.lastUpdateTimeForVideo = this.formatDate(new Date());
-          // this.saveVideoList(this.videoList);
+          this.lastUpdateTimeForVideo = formatDate();
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
-          console.log(1, '===========打印的 ------ ');
           uni.hideLoading();
         });
     },
-    addVideo() {
-      uni.switchTab({
-        url: '/pages/index/video-add',
+    postUpperReply() {},
+    setCK(index) {
+      this.currentVideoIndex = index;
+      this.addCkVisible = true;
+      this.form = {
+        cookie: this.videoList[index].cookie,
+        keywords: this.videoList[index].keywords.replace('，', ','),
+      };
+    },
+    onSubmitCK() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          const cookie = this.form.cookie;
+          const csrfMatches = cookie.match(/bili_jct=(.+?);/);
+          if (!csrfMatches) {
+            uni.showToast({
+              title: 'cookie格式不正确',
+              icon: 'none',
+            });
+            return;
+          }
+
+          const video = {
+            ...this.videoList[this.currentVideoIndex],
+            ...this.form,
+          };
+          this.videoList.splice(this.currentVideoIndex, 1, video);
+          this.saveVideoList(this.videoList);
+          this.addCkVisible = false;
+          this.$message.success('设置成功');
+        }
       });
     },
-    postUpperReply() {},
+    changeDeleteReply(index) {
+      const video = this.videoList[index];
+      if (!video.deleteReply && !video.cookie) {
+        uni.showToast({
+          title: '请先配置该视频作者的CK',
+          icon: 'none',
+        });
+        return;
+      }
+      video.deleteReply = !video.deleteReply;
+      this.videoList.splice(index, 1, video);
+      this.saveVideoList(this.videoList);
+    },
+    showDelReplyLog(index) {
+      this.currentVideoIndex = index;
+      this.delReplyLogVisible = true;
+    },
+  },
+  mounted() {
+    const license = uni.getStorageSync('license');
+    const licenseError = uni.getStorageSync('licenseError');
+    if (!license || licenseError) {
+      uni.navigateTo({
+        url: '/pages/index/license',
+      });
+    } else {
+      checkLicense(license)
+        .then((res) => {
+          this.license = true;
+          this.getVideoStatsList();
+        })
+        .catch(() => {
+          uni.setStorageSync('licenseError', 'true');
+        });
+    }
+    const autoRefresh = uni.getStorageSync('autoRefresh');
+    const remindNum = uni.getStorageSync('remindNum');
+    const audioUrl = uni.getStorageSync('audioUrl');
+    if (remindNum) {
+      this.remindNum = remindNum;
+    }
+    if (audioUrl) {
+      this.audioUrl = audioUrl;
+    }
+    if (autoRefresh !== '') {
+      this.autoRefresh = autoRefresh;
+    }
+    if (this.autoRefresh) {
+      this.startAutoRefresh();
+    }
+    this.startDeleteReply();
+    let videoList = uni.getStorageSync('videoList');
+    if (videoList) {
+      this.videoList = videoList;
+    }
+    aooxus();
+  },
+  onShow() {
+    // this.startAutoRefresh();
   },
 };
 </script>
@@ -525,52 +630,11 @@ export default {
   overflow: auto;
   min-height: 80vh;
 }
-.video-item {
-}
 .video-item-title {
   font-size: 32upx;
   color: #333;
   font-weight: 500;
 }
-
-//#ifdef APP-PLUS
-.video-title,
-.video-author,
-.video-view,
-.video-user-total,
-.video-upper,
-.video-like,
-.video-coin,
-.video-action {
-  font-size: 28upx;
-  color: #666;
-  margin-bottom: 20upx;
-  padding-left: 20upx;
-  width: 160upx;
-  min-width: 160upx;
-  flex: 0;
-}
-.video-view,
-.video-user-total,
-.video-like,
-.video-coin {
-  width: 120upx;
-  min-width: 120upx;
-}
-
-.video-upper {
-  width: 160upx;
-  min-width: 160upx;
-  flex: 0;
-}
-
-.video-title {
-  width: 200upx;
-  max-height: 200upx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-//#endif
 
 // #ifdef H5
 
@@ -584,8 +648,6 @@ export default {
 .video-action {
   font-size: 28upx;
   color: #666;
-  margin-bottom: 20upx;
-  padding-left: 20upx;
   flex: 2;
 }
 

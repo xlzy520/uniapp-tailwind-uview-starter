@@ -17,7 +17,8 @@
       "webpack-env",
       "@dcloudio/types",
       "miniprogram-api-typings",
-      "mini-types"
+      "mini-types",
+      "element-ui"
     ],
     "paths": {
       "@/*": [

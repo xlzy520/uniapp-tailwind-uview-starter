@@ -85,3 +85,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+.el-dialog__header, .el-dialog__body{
+  font-size: 24px;
+  padding: 10px 15px!important;
+}
