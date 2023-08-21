@@ -300,7 +300,7 @@ export default {
             this.delReplyByVideoAndCookie(video);
           }
         });
-      }, 1000 * 30);
+      }, 1000 * 10);
     },
     delReplyByVideoAndCookie(video) {
       return delReplyByVideoAndCookie(video)
@@ -517,9 +517,10 @@ export default {
     setCK(index) {
       this.currentVideoIndex = index;
       this.addCkVisible = true;
+      const keywords = this.videoList[index].keywords;
       this.form = {
         cookie: this.videoList[index].cookie,
-        keywords: this.videoList[index].keywords.replace('，', ','),
+        keywords: keywords?.replace('，', ','),
       };
     },
     onSubmitCK() {
@@ -567,20 +568,17 @@ export default {
   mounted() {
     const license = uni.getStorageSync('license');
     const licenseError = uni.getStorageSync('licenseError');
-    if (!license || licenseError) {
-      uni.navigateTo({
-        url: '/pages/index/license',
-      });
-    } else {
-      checkLicense(license)
-        .then((res) => {
-          this.license = true;
-          this.getVideoStatsList();
-        })
-        .catch(() => {
-          uni.setStorageSync('licenseError', 'true');
+    checkLicense(license)
+      .then((res) => {
+        this.license = true;
+        this.getVideoStatsList();
+      })
+      .catch(() => {
+        uni.setStorageSync('licenseError', 'true');
+        uni.navigateTo({
+          url: '/pages/index/license',
         });
-    }
+      });
     const autoRefresh = uni.getStorageSync('autoRefresh');
     const remindNum = uni.getStorageSync('remindNum');
     const audioUrl = uni.getStorageSync('audioUrl');

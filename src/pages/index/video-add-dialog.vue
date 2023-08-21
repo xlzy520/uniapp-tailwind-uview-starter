@@ -98,6 +98,7 @@ export default {
             }
             data.watchUpper = false;
             data.isCustom = true;
+            data.deleteReply = false;
             return fetchVideoOnlineTotalInfo(data.aid, data.cid).then(
               (total) => {
                 data.total = total.total;
