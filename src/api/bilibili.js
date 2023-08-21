@@ -316,33 +316,20 @@ export const checkLicenseForWeb = (license) => {
     extId = extId.padEnd(32, 'c');
   }
   return new Promise((resolve, reject) => {
-    let ip = '';
-    let address = '';
+    const BaseUrl = 'http://localhost:5000';
     uni.request({
-      url: 'https://ip.useragentinfo.com/json',
-      complete: ({ data }) => {
-        if (data.code === 200) {
-          ip = data.ip;
-          address = data.province + data.city + data.area;
+      url: BaseUrl + `/auth?key=${license}&extId=${extId}&type=视频数据监控`,
+      success: (res) => {
+        if (res.data.success) {
+          uni.setStorageSync('licenseError', '');
+          return resolve(res.data);
+        } else {
+          uni.setStorageSync('licenseError', 'true');
+          return reject(res);
         }
-        const BaseUrl = 'http://localhost:5000';
-        uni.request({
-          url:
-            BaseUrl +
-            `/auth?key=${license}&ip=${ip}&address=${address}&extId=${extId}&type=视频数据监控`,
-          success: (res) => {
-            if (res.data.success) {
-              uni.setStorageSync('licenseError', '');
-              return resolve(res.data);
-            } else {
-              uni.setStorageSync('licenseError', 'true');
-              return reject(res);
-            }
-          },
-          fail: (err) => {
-            return reject(err);
-          },
-        });
+      },
+      fail: (err) => {
+        return reject(err);
       },
     });
   });
