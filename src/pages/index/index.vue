@@ -23,6 +23,9 @@
           @change="changeRemindNum"
         />
       </view>
+      <view class="" v-if="false">
+        <el-button type="success">有更新(客户端有更新，立即下载)</el-button>
+      </view>
       <!--      <el-button @click="delReplyByVideoAndCookie">触发删评</el-button>-->
 
       <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
@@ -201,6 +204,20 @@
       :visible.sync="addCkVisible"
       width="60%"
     >
+      <div class="">
+        CK 获取方式：
+        <div class="text-red-500">
+          如果你安装了我的插件，那么可以直接点击【复制CK】按钮
+        </div>
+        <div class="text-red-500">
+          如果没有安装，那么需要看下面的教程
+          <a
+            href="https://www.yuque.com/xlzy520/doc/ifqklkxxxf3cq8is?singleDoc#"
+          >
+            《B站获取CK教程》
+          </a>
+        </div>
+      </div>
       <el-form
         ref="form"
         :model="form"
@@ -291,15 +308,17 @@ export default {
   },
   methods: {
     startDeleteReply() {
-      clearInterval(this.deleteReplyInterval);
-      this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(() => {
+      const run = () => {
         this.videoList.forEach((video) => {
           if (video.deleteReply && video.cookie) {
             this.delReplyByVideoAndCookie(video);
           }
         });
-      }, 1000 * 15);
+      };
+      run();
+      clearInterval(this.deleteReplyInterval);
+      this.deleteReplyInterval = null;
+      this.deleteReplyInterval = setInterval(run, 1000 * 10);
     },
     delReplyByVideoAndCookie(video) {
       const keywords = localStorage.getItem('keywords');
@@ -565,6 +584,7 @@ export default {
       video.deleteReply = !video.deleteReply;
       this.videoList.splice(index, 1, video);
       this.saveVideoList(this.videoList);
+      this.startDeleteReply();
     },
     showDelReplyLog(index) {
       this.currentVideoIndex = index;
@@ -580,6 +600,8 @@ export default {
         this.getVideoStatsList();
       })
       .catch(() => {
+        clearInterval(this.deleteReplyInterval);
+        this.deleteReplyInterval = null;
         uni.setStorageSync('licenseError', 'true');
         uni.navigateTo({
           url: '/pages/index/license',
