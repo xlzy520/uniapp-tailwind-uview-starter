@@ -1,8 +1,9 @@
 <template>
   <view class="video-list-page">
-    <view class="mb-2 layout-slide">
+    <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
-      <u-checkbox-group>
+      <set-keywords-dialog class="ml-2" />
+      <u-checkbox-group class="ml-2">
         <u-checkbox
           :checked="autoRefresh"
           label="自动刷新(1分钟)"
@@ -136,7 +137,7 @@
                 {{ row.watchUpper ? '取消监控' : '监控置顶' }}
               </el-button>
               <el-button size="mini" type="primary" @click="setCK($index)">
-                配置CK与关键词
+                CK配置
               </el-button>
               <el-button
                 size="mini"
@@ -145,14 +146,14 @@
               >
                 {{ row.deleteReply ? '关闭删评' : '启动删评' }}
               </el-button>
-              <el-button
-                size="mini"
-                class="!mt-[10px]"
-                type="primary"
-                @click="showDelReplyLog($index)"
-              >
-                删评日志
-              </el-button>
+              <!--              <el-button-->
+              <!--                size="mini"-->
+              <!--                class="!mt-[10px]"-->
+              <!--                type="primary"-->
+              <!--                @click="showDelReplyLog($index)"-->
+              <!--              >-->
+              <!--                删评日志-->
+              <!--              </el-button>-->
               <!-- <u-button v-if="row.watchUpper" type="primary" size="mini" class="video-action-button !h-8" :plain="true" :hairline="true" @click="autoPost($index)">
                 自动补置顶评论
               </u-button> -->
@@ -214,10 +215,6 @@
             v-model="form.cookie"
           ></el-input>
         </el-form-item>
-        <el-form-item label="需要删除的关键词， 以逗号分隔">
-          <el-input type="textarea" v-model="form.keywords"></el-input>
-        </el-form-item>
-
         <el-form-item>
           <el-button type="primary" @click="onSubmitCK">确定</el-button>
           <el-button @click="addCkVisible = false">取消</el-button>
@@ -245,10 +242,11 @@ import { formatDate, showLoading, sleep, aooxus } from '@/utils';
 import { isEmpty, isString, pick } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
+import setKeywordsDialog from './set-keywords-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
-  components: { VideoAddDialog, delReplyDialog },
+  components: { VideoAddDialog, delReplyDialog, setKeywordsDialog },
   data() {
     return {
       list: [],
@@ -294,16 +292,26 @@ export default {
   methods: {
     startDeleteReply() {
       clearInterval(this.deleteReplyInterval);
+      this.deleteReplyInterval = null;
       this.deleteReplyInterval = setInterval(() => {
         this.videoList.forEach((video) => {
           if (video.deleteReply && video.cookie) {
             this.delReplyByVideoAndCookie(video);
           }
         });
-      }, 1000 * 10);
+      }, 1000 * 15);
     },
     delReplyByVideoAndCookie(video) {
-      return delReplyByVideoAndCookie(video)
+      const keywords = localStorage.getItem('keywords');
+      if (!keywords) {
+        return;
+      }
+      const maxWords = localStorage.getItem('maxWords') || 30;
+      return delReplyByVideoAndCookie({
+        ...video,
+        keywords,
+        maxWords,
+      })
         .then((res) => {
           const fullReplyList = res.fullReplyList;
           const successDelResult = res.delResult
@@ -517,10 +525,8 @@ export default {
     setCK(index) {
       this.currentVideoIndex = index;
       this.addCkVisible = true;
-      const keywords = this.videoList[index].keywords;
       this.form = {
         cookie: this.videoList[index].cookie,
-        keywords: keywords?.replace('，', ','),
       };
     },
     onSubmitCK() {

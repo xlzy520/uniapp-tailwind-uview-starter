@@ -1,6 +1,6 @@
 <template>
   <view class="add-video">
-    <u-button type="primary" @click="visible = true">添加视频</u-button>
+    <u-button type="success" @click="visible = true">添加视频</u-button>
     <el-dialog title="添加视频" :visible.sync="visible" width="60%">
       <u-form
         :model="form"
