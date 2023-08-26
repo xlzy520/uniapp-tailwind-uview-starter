@@ -1,9 +1,9 @@
 <template>
   <view class="ml-2">
-    <el-button v-if="hasNewVersion" type="success" @click="visible = true">
-      更新客户端({{ version }})
-    </el-button>
-    <el-tag v-else>{{ currentVersion }}</el-tag>
+    <u-button v-if="hasNewVersion" type="success" @click="visible = true">
+      更新客户端({{ currentVersion }} -> {{ version }})
+    </u-button>
+    <u-tag v-else :text="currentVersion"></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
         <div class="text-16 font-bold text-black">1.0.3</div>
@@ -12,6 +12,9 @@
           2. 当评论超过60条时，补充检查最新一页的评论
         </div>
         <div class="text-red-500 mt-1">3. 置顶没有检测在内</div>
+        <div class="text-red-500 mt-1">
+          4. 修复如果以逗号结尾，会删除全部评论的问题
+        </div>
       </div>
       <div class="mt-4 text-center mb-2">
         <el-button type="primary" @click="onDownload">
@@ -34,10 +37,7 @@ export default {
   },
   computed: {
     hasNewVersion() {
-      if (this.version !== this.currentVersion) {
-        return ``;
-      }
-      return this.currentVersion;
+      return this.version !== this.currentVersion;
     },
   },
   methods: {
