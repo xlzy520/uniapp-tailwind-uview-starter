@@ -328,10 +328,14 @@ export default {
       this.deleteReplyInterval = setInterval(run, 1000 * 13);
     },
     delReplyByVideoAndCookie(video) {
-      const keywords = localStorage.getItem('keywords');
+      let keywords = localStorage.getItem('keywords');
       if (!keywords) {
         return;
       }
+      keywords = keywords
+        .split(',')
+        .filter((item) => item)
+        .join(',');
       const maxWords = localStorage.getItem('maxWords') || 30;
       return delReplyByVideoAndCookie({
         ...video,

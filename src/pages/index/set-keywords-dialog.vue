@@ -41,10 +41,13 @@ export default {
         .replace(/\s+/g, '') // 替换所有空格
         .replace(/\s/g, '') // 替换单个空格
         .replace(/，/g, ','); // 替换所有逗号为英文逗号
-      localStorage.setItem('keywords', keywords);
+      const lastKeywords = keywords
+        .split(',')
+        .filter((item) => item)
+        .join(',');
+      localStorage.setItem('keywords', lastKeywords);
       localStorage.setItem('maxWords', this.maxWords);
-      const splitKeywords = keywords.split(',');
-      this.$message({
+      const splitKeywords = this.$message({
         message: `关键词配置成功，共${splitKeywords.length}个`,
         type: 'success',
       });
