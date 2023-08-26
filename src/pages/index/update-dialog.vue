@@ -3,8 +3,11 @@
     <u-button type="success" @click="visible = true">{{ text }}</u-button>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
-        <div class="text-16 font-bold text-black">1.0.0</div>
+        <div class="text-16 font-bold text-black">1.0.1</div>
         <div class="text-red-500 mt-1">1. 修复楼中楼删评不完整</div>
+        <div class="text-red-500 mt-1">
+          2. 当评论超过60条时，补充检查最新一页的评论
+        </div>
       </div>
       <div class="mt-4 text-center mb-2">
         <el-button type="primary" @click="onDownload">
