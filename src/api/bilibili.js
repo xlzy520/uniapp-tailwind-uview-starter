@@ -322,6 +322,8 @@ export const checkLicenseForWeb = (license) => {
       success: (res) => {
         if (res.data.success) {
           uni.setStorageSync('licenseError', '');
+          localStorage.setItem('version', res.data.version || '');
+          localStorage.setItem('currentVersion', res.data.currentVersion || '');
           return resolve(res.data);
         } else {
           uni.setStorageSync('licenseError', 'true');

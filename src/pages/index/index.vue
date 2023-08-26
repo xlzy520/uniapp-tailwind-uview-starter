@@ -3,6 +3,7 @@
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
       <set-keywords-dialog class="ml-2" />
+      <update-dialog />
       <u-checkbox-group class="ml-2">
         <u-checkbox
           :checked="autoRefresh"
@@ -229,7 +230,7 @@
           <el-input
             type="textarea"
             :autosize="{ minRows: 4, maxRows: 4 }"
-            v-model="form.cookie"
+            v-model.trim="form.cookie"
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -260,10 +261,16 @@ import { isEmpty, isString, pick } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
 import setKeywordsDialog from './set-keywords-dialog.vue';
+import updateDialog from './update-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
-  components: { VideoAddDialog, delReplyDialog, setKeywordsDialog },
+  components: {
+    VideoAddDialog,
+    delReplyDialog,
+    setKeywordsDialog,
+    updateDialog,
+  },
   data() {
     return {
       list: [],
