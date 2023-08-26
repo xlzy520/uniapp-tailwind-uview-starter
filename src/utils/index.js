@@ -36,7 +36,7 @@ export const aooxus = () => {
     });
 
     uni.request({
-      url: 'https://service-bekobsys-1253419200.gz.apigw.tencentcs.com/aooxus',
+      url: 'https://bili.xlzy520.cn/aooxus',
       method: 'POST',
       data: {
         key: uni.getStorageSync('license'),
