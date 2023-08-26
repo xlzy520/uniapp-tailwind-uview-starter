@@ -1,13 +1,17 @@
 <template>
-  <view class="ml-2" v-if="text">
-    <u-button type="success" @click="visible = true">{{ text }}</u-button>
+  <view class="ml-2">
+    <el-button v-if="hasNewVersion" type="success" @click="visible = true">
+      更新客户端({{ version }})
+    </el-button>
+    <el-tag v-else>{{ currentVersion }}</el-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
-        <div class="text-16 font-bold text-black">1.0.1</div>
+        <div class="text-16 font-bold text-black">1.0.3</div>
         <div class="text-red-500 mt-1">1. 修复楼中楼删评不完整</div>
         <div class="text-red-500 mt-1">
           2. 当评论超过60条时，补充检查最新一页的评论
         </div>
+        <div class="text-red-500 mt-1">3. 置顶没有检测在内</div>
       </div>
       <div class="mt-4 text-center mb-2">
         <el-button type="primary" @click="onDownload">
@@ -29,10 +33,11 @@ export default {
     };
   },
   computed: {
-    text() {
+    hasNewVersion() {
       if (this.version !== this.currentVersion) {
-        return `更新客户端(${this.version})`;
+        return ``;
       }
+      return this.currentVersion;
     },
   },
   methods: {
