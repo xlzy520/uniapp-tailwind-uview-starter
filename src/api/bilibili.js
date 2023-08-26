@@ -7,6 +7,7 @@ const baseUrl = 'http://localhost:5000/bili-watch/';
 
 const service = axios.create({
   baseURL: baseUrl,
+  timeout: 10000,
 });
 
 service.interceptors.response.use((response) => {
