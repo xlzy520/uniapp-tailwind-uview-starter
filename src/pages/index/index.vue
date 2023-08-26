@@ -588,6 +588,14 @@ export default {
         });
         return;
       }
+      const keywords = localStorage.getItem('keywords');
+      if (!keywords) {
+        uni.showToast({
+          title: '请先设置删评关键词',
+          icon: 'none',
+        });
+        return;
+      }
       video.deleteReply = !video.deleteReply;
       this.videoList.splice(index, 1, video);
       this.saveVideoList(this.videoList);
