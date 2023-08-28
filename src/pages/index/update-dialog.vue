@@ -10,7 +10,13 @@
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
-        <div class="text-16 font-bold text-black">1.0.4</div>
+        <div class="text-16 font-bold text-black mt-2">1.0.5</div>
+        <div class="text-red-500 mt-1 font-bold">
+          1. 优化查询评论列表的速度，减少超时情况
+        </div>
+        <div class="text-red-500 mt-1">2. 延长网页超时时间</div>
+
+        <div class="text-16 font-bold text-black mt-2">1.0.4</div>
         <div class="text-red-500 mt-1">1. 跳过视频作者自己的评论</div>
 
         <div class="text-16 font-bold text-black mt-2">1.0.3</div>
@@ -50,6 +56,7 @@ export default {
   methods: {
     close() {
       this.visible = false;
+      localStorage.setItem('noticeVersion', this.version);
     },
     onDownload() {
       window.open(
@@ -60,6 +67,12 @@ export default {
   mounted() {
     this.version = localStorage.getItem('version') || '';
     this.currentVersion = localStorage.getItem('currentVersion') || '';
+    const noticeVersion = localStorage.getItem('noticeVersion');
+    if (this.hasNewVersion) {
+      if (noticeVersion !== this.version) {
+        this.visible = true;
+      }
+    }
   },
 };
 </script>
