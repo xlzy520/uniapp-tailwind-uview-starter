@@ -47,7 +47,8 @@ export default {
         .join(',');
       localStorage.setItem('keywords', lastKeywords);
       localStorage.setItem('maxWords', this.maxWords);
-      const splitKeywords = this.$message({
+      const splitKeywords = lastKeywords.split(',');
+      this.$message({
         message: `关键词配置成功，共${splitKeywords.length}个`,
         type: 'success',
       });
