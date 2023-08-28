@@ -3,7 +3,11 @@
     <u-button v-if="hasNewVersion" type="success" @click="visible = true">
       更新客户端({{ currentVersion }} -> {{ version }})
     </u-button>
-    <u-tag v-else :text="currentVersion"></u-tag>
+    <u-tag
+      v-else
+      :text="currentVersion + '更新内容'"
+      @click="visible = true"
+    ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
         <div class="text-16 font-bold text-black">1.0.4</div>
@@ -19,7 +23,7 @@
           4. 修复如果以逗号结尾，会删除全部评论的问题
         </div>
       </div>
-      <div class="mt-4 text-center mb-2">
+      <div class="mt-4 text-center mb-2" v-if="hasNewVersion">
         <el-button type="primary" @click="onDownload">
           立即下载最新客户端
         </el-button>
