@@ -6,7 +6,10 @@
     <u-tag v-else :text="currentVersion"></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
-        <div class="text-16 font-bold text-black">1.0.3</div>
+        <div class="text-16 font-bold text-black">1.0.4</div>
+        <div class="text-red-500 mt-1">1. 跳过视频作者自己的评论</div>
+
+        <div class="text-16 font-bold text-black mt-2">1.0.3</div>
         <div class="text-red-500 mt-1">1. 修复楼中楼删评不完整</div>
         <div class="text-red-500 mt-1">
           2. 当评论超过60条时，补充检查最新一页的评论
