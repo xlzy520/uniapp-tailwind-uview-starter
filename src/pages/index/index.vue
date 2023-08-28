@@ -325,7 +325,7 @@ export default {
       run();
       clearInterval(this.deleteReplyInterval);
       this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 13);
+      this.deleteReplyInterval = setInterval(run, 1000 * 15);
     },
     delReplyByVideoAndCookie(video) {
       let keywords = localStorage.getItem('keywords');
@@ -469,87 +469,110 @@ export default {
         }
       });
     },
+    formatDate,
     async getVideoStatsList() {
       const licenseError = uni.getStorageSync('licenseError');
-      if (!this.license || licenseError || this.videoList.length === 0) {
+      if (!this.license || licenseError) {
         return;
       }
-      showLoading('获取数据中...');
-      const promises = this.videoList.map(async (video, index) => {
+      if (this.videoList.length === 0) {
+        return;
+      }
+      const updateVideoData = async (video) => {
         try {
           const videoInfo = await getVideoInfo(video.bvid, 'bvid');
           Object.assign(video, pick(videoInfo, pickKeysFromVideo));
-          const hotReply = await getReplyHot(video.aid);
-          const upper = hotReply.top.upper;
-          if (upper) {
-            const content = upper.content;
-            const message = content.message;
-            const pictures =
-              content.pictures &&
-              content.pictures.map((item) => {
-                return item.img_src;
+          getReplyHot(video.aid).then((hotReply) => {
+            const upper = hotReply.top.upper;
+            if (upper) {
+              const content = upper.content;
+              const message = content.message;
+              const pictures =
+                content.pictures &&
+                content.pictures.map((item) => {
+                  return item.img_src;
+                });
+              this.$set(video, 'upper', {
+                mid: upper.mid,
+                uname: upper.uname,
+                avatar: upper.avatar,
+                message,
+                pictures,
               });
-            this.$set(video, 'upper', {
-              mid: upper.mid,
-              uname: upper.uname,
-              avatar: upper.avatar,
-              message,
-              pictures,
-            });
-          } else {
-            this.$set(this.videoList[index], 'upper', null);
-            if (video.watchUpper) {
+            } else {
+              this.$set(video, 'upper', null);
+              if (video.watchUpper) {
+                this.stopRing = false;
+                this.warnVideoTitle = video.title;
+                this.warnText = `置顶丢失`;
+                this.customRing(30);
+              }
+            }
+          });
+
+          fetchVideoOnlineTotalInfo(video.aid, video.cid).then((totalInfo) => {
+            let total = totalInfo.total;
+            if (isString(total) && total.includes('+')) {
+              total = 1000;
+            }
+            video.total = total;
+            if (video.total > Number(this.remindNum)) {
               this.stopRing = false;
               this.warnVideoTitle = video.title;
-              this.warnText = `置顶丢失`;
+              this.warnText = `有 ${video.total} 人在线`;
               this.customRing(30);
             }
-          }
-          const totalInfo = await fetchVideoOnlineTotalInfo(
-            video.aid,
-            video.cid,
-          );
-          let total = totalInfo.total;
-          if (isString(total) && total.includes('+')) {
-            total = 1000;
-          }
-          video.total = total;
-          if (video.total > Number(this.remindNum)) {
-            this.stopRing = false;
-            this.warnVideoTitle = video.title;
-            this.warnText = `有 ${video.total} 人在线`;
-            this.customRing(30);
-          }
+          });
           await sleep(100);
-          return video;
+          // this.changeSortBy();
+          // this.$set(this.videoList, index, video);
         } catch (err) {
-          return {
-            ...video,
-            message: isEmpty(err) ? '' : err,
-          };
+          this.$set(video, 'message', isEmpty(err) ? '' : err);
         }
-      });
+      };
+      for (const video of this.videoList) {
+        await updateVideoData(video);
+      }
+      this.lastUpdateTimeForVideo = this.formatDate(new Date());
+      // showLoading('获取数据中...');
+      // const promises = this.videoList.map(async (video, index) => {
+      //   return await updateVideoData(video);
+      // });
+      // promises 顺序执行就行
 
-      Promise.all(promises)
-        .then((videoList) => {
-          this.videoList = this.videoList
-            .map((item, index) => {
-              return {
-                ...item,
-                ...videoList[index],
-              };
-            })
-            .sort((a, b) => {
-              return b.total - a.total;
-            });
-          this.lastUpdateTimeForVideo = formatDate();
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          uni.hideLoading();
-        });
+      // Promise.all(promises)
+      //   .then((videoList) => {
+      //     this.videoList = this.videoList
+      //       .map((item, index) => {
+      //         return {
+      //           ...item,
+      //           ...videoList[index],
+      //         };
+      //       })
+      //       .sort((a, b) => {
+      //         return b.total - a.total;
+      //       });
+      //     console.log(
+      //       this.videoList,
+      //       videoList,
+      //       '===========打印的 ------ videoList',
+      //     );
+      //     // this.videoList = videoList;
+      //     this.lastUpdateTimeForVideo = this.formatDate(new Date());
+      //     // this.saveVideoList(this.videoList);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   })
+      //   .finally(() => {
+      //     console.log(1, '===========打印的 ------ ');
+      //     uni.hideLoading();
+      //   });
+    },
+    addVideo() {
+      uni.switchTab({
+        url: '/pages/index/video-add',
+      });
     },
     postUpperReply() {},
     setCK(index) {
