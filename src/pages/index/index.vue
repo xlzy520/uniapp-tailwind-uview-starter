@@ -64,15 +64,15 @@
       <el-table :data="videoList" style="width: 100%">
         <el-table-column label="视频" width="300">
           <template slot-scope="{ row }">
-            <div
-              class="video-title underline"
-              :class="[row.message ? 'text-red-500' : 'text-blue-500']"
-              @click="openLink(row)"
-            >
-              {{
-                row.message ? row.title + '(' + row.message + ')' : row.title
-              }}
-            </div>
+            <el-tooltip :content="formatVideoTitle(row)">
+              <div
+                class="video-title underline"
+                :class="[row.message ? '!text-red-500' : '!text-blue-500']"
+                @click="openLink(row)"
+              >
+                {{ formatVideoTitle(row) }}
+              </div>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column label="置顶">
@@ -402,6 +402,11 @@ export default {
       this.currentUpper = item.upper;
       this.showUpperDetail = true;
     },
+    formatVideoTitle(video) {
+      return video.message
+        ? video.title + '(' + video.message + ')'
+        : video.title;
+    },
     openLink(item) {
       window.open(`https://www.bilibili.com/video/${item.bvid}`);
     },
@@ -725,7 +730,6 @@ export default {
 }
 
 .video-title {
-  width: 10rem;
   max-height: 200upx;
   overflow: hidden;
   text-overflow: ellipsis;
