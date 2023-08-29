@@ -29,7 +29,10 @@
           4. 修复如果以逗号结尾，会删除全部评论的问题
         </div>
       </div>
-      <div class="mt-4 text-center mb-2" v-if="hasNewVersion">
+      <div
+        class="mt-4 text-center mb-2"
+        v-if="hasNewVersion || !currentVersion"
+      >
         <el-button type="primary" @click="onDownload">
           立即下载最新客户端
         </el-button>
@@ -68,6 +71,9 @@ export default {
     this.version = localStorage.getItem('version') || '';
     this.currentVersion = localStorage.getItem('currentVersion') || '';
     const noticeVersion = localStorage.getItem('noticeVersion');
+    if (!this.currentVersion) {
+      this.visible = true;
+    }
     if (this.hasNewVersion) {
       if (noticeVersion !== this.version) {
         this.visible = true;
