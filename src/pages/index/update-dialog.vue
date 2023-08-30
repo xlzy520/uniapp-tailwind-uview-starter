@@ -22,6 +22,7 @@
           3. 增加记录导入、导出功能，避免因为某些操作导致记录全无
         </div>
         <div class="text-red-500 mt-1 font-bold">4. 增加排序功能</div>
+        <div class="text-red-500 mt-1 font-bold">5. 修复弹幕查询失败的问题</div>
         <div class="text-16 font-bold text-black mt-2">1.0.5</div>
         <div class="text-red-500 mt-1 font-bold">
           1. 优化查询评论列表的速度，减少超时情况
