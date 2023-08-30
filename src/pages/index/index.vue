@@ -12,6 +12,17 @@
           @change="changeAutoRefresh"
         ></u-checkbox>
       </u-checkbox-group>
+      <div class="layout-items-center mx-2">
+        <div class="text-[15px] mr-1">排序属性(从高到低)</div>
+        <el-select v-model="sortBy" @change="changeSortBy">
+          <el-option
+            v-for="item in sortFieldOptions"
+            :key="item.value"
+            :label="item.text"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </div>
       <view class="layout-items-center ml-1">
         <view class="text-12"> 在线人数提醒： </view>
         <u-input
@@ -263,7 +274,7 @@ import {
 } from '@/api/bilibili';
 import { DefaultCookie, pickKeysFromVideo } from '@/utils/constant';
 import { formatDate, showLoading, sleep, aooxus } from '@/utils';
-import { isEmpty, isString, pick } from 'lodash-es';
+import { isEmpty, isString, pick, get } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
 import setKeywordsDialog from './set-keywords-dialog.vue';
@@ -313,6 +324,13 @@ export default {
       deleteReplyInterval: null,
       delReplyLogVisible: false,
       delReplyLog: {},
+      sortBy: 'total',
+      sortFieldOptions: [
+        { text: '在线人数', value: 'total' },
+        { text: '播放量', value: 'stat.view' },
+        { text: '点赞数', value: 'stat.like' },
+        { text: '投币数', value: 'stat.coin' },
+      ],
     };
   },
   computed: {
@@ -429,8 +447,17 @@ export default {
           });
         });
     },
+    changeSortBy() {
+      localStorage.setItem('sortBy', this.sortBy);
+      this.videoList = this.videoList.sort((a, b) => {
+        const aProp = get(a, this.sortBy);
+        const bProp = get(b, this.sortBy);
+        return bProp - aProp;
+      });
+    },
     saveVideoList(videoList) {
       this.videoList = videoList;
+      this.changeSortBy();
       uni.setStorageSync('videoList', videoList);
     },
     changeRemindNum() {
@@ -571,7 +598,6 @@ export default {
             }
           });
           await sleep(100);
-          // this.changeSortBy();
           // this.$set(this.videoList, index, video);
         } catch (err) {
           this.$set(video, 'message', isEmpty(err) ? '' : err);
@@ -580,6 +606,7 @@ export default {
       for (const video of this.videoList) {
         await updateVideoData(video);
       }
+      this.changeSortBy();
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
       // showLoading('获取数据中...');
       // const promises = this.videoList.map(async (video, index) => {
@@ -699,6 +726,10 @@ export default {
     const autoRefresh = uni.getStorageSync('autoRefresh');
     const remindNum = uni.getStorageSync('remindNum');
     const audioUrl = uni.getStorageSync('audioUrl');
+    const sortBy = localStorage.getItem('sortBy');
+    if (sortBy) {
+      this.sortBy = sortBy;
+    }
     if (remindNum) {
       this.remindNum = remindNum;
     }
