@@ -39,7 +39,7 @@
   "sitemapLocation": "sitemap.json",
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "Bilibili视频投稿监控",
+    "navigationBarTitleText": "执笔（视频数据监控，评论、弹幕删除）",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },

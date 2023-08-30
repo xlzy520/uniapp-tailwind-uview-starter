@@ -304,6 +304,10 @@ export const delReplyByVideoAndCookie = (video) => {
   return service.post('/v2/reply/delByVideoAndCookie', { video });
 };
 
+export const delDm = (video) => {
+  return service.post('/delDm', { video });
+};
+
 export const batchDeleteReply = (videoList) => {
   return service.post('/v2/reply/batch/del', {
     videoList,

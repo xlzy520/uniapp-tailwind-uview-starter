@@ -143,13 +143,16 @@
               <el-button size="mini" type="primary" @click="setCK($index)">
                 CK配置
               </el-button>
-              <el-button
-                size="mini"
-                :type="row.deleteReply ? 'danger' : 'primary'"
-                @click="changeDeleteReply($index)"
-              >
-                {{ row.deleteReply ? '关闭删评' : '启动删评' }}
-              </el-button>
+              <el-tooltip content="删除符合关键词的评论和弹幕">
+                <el-button
+                  size="mini"
+                  :type="row.deleteReply ? 'danger' : 'primary'"
+                  @click="changeDeleteReply($index)"
+                >
+                  {{ row.deleteReply ? '关闭删评' : '启动删评' }}
+                </el-button>
+              </el-tooltip>
+
               <!--              <el-button-->
               <!--                size="mini"-->
               <!--                class="!mt-[10px]"-->
@@ -250,6 +253,7 @@
 <script>
 import {
   checkLicense,
+  delDm,
   delReplyByVideoAndCookie,
   fetchVideoOnlineTotalInfo,
   getReplyHot,
@@ -319,6 +323,7 @@ export default {
         this.videoList.forEach((video) => {
           if (video.deleteReply && video.cookie) {
             this.delReplyByVideoAndCookie(video);
+            this.delDm(video);
           }
         });
       };
@@ -326,6 +331,39 @@ export default {
       clearInterval(this.deleteReplyInterval);
       this.deleteReplyInterval = null;
       this.deleteReplyInterval = setInterval(run, 1000 * 15);
+    },
+    delDm(video) {
+      let keywords = localStorage.getItem('keywords');
+      if (!keywords) {
+        return;
+      }
+      keywords = keywords
+        .split(',')
+        .filter((item) => item)
+        .join(',');
+      const maxWords = localStorage.getItem('maxWords') || 30;
+      return delDm({
+        ...video,
+        keywords,
+        maxWords,
+      })
+        .then((res) => {
+          console.log(res, '===========打印的 ------ ');
+          const { allCount, delCount } = res;
+
+          if (allCount && delCount) {
+            this.$message.success(
+              '总弹幕数：' + allCount + '，删除弹幕数：' + delCount,
+            );
+          }
+        })
+        .catch((err) => {
+          uni.showModal({
+            title: '提示',
+            content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
+            showCancel: false,
+          });
+        });
     },
     delReplyByVideoAndCookie(video) {
       let keywords = localStorage.getItem('keywords');
