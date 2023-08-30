@@ -12,7 +12,7 @@
           @change="changeAutoRefresh"
         ></u-checkbox>
       </u-checkbox-group>
-      <view class="layout-items-center">
+      <view class="layout-items-center ml-1">
         <view class="text-12"> 在线人数提醒： </view>
         <u-input
           v-model="remindNum"
@@ -27,6 +27,8 @@
       <view class="" v-if="false">
         <el-button type="success">有更新(客户端有更新，立即下载)</el-button>
       </view>
+      <import-and-export />
+
       <!--      <el-button @click="delReplyByVideoAndCookie">触发删评</el-button>-->
 
       <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
@@ -266,10 +268,12 @@ import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
 import setKeywordsDialog from './set-keywords-dialog.vue';
 import updateDialog from './update-dialog.vue';
+import ImportAndExport from '@/pages/index/importAndExport.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
   components: {
+    ImportAndExport,
     VideoAddDialog,
     delReplyDialog,
     setKeywordsDialog,
