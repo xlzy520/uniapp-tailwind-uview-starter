@@ -10,6 +10,18 @@
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="">
+        <div class="text-16 font-bold text-black mt-2">1.1.0</div>
+        <div class="text-red-500 mt-1 font-bold">
+          1. 增加弹幕删除功能，与评论共用一套关键词
+        </div>
+        <div class="text-red-500 mt-1 font-bold">
+          2.
+          增加删评、删弹幕的日志记录功能，记录哪些评论和弹幕因为包含什么关键词而删除，日志文件保存在客户端目录中
+        </div>
+        <div class="text-red-500 mt-1 font-bold">
+          3. 增加记录导入、导出功能，避免因为某些操作导致记录全无
+        </div>
+        <div class="text-red-500 mt-1 font-bold">4. 增加排序功能</div>
         <div class="text-16 font-bold text-black mt-2">1.0.5</div>
         <div class="text-red-500 mt-1 font-bold">
           1. 优化查询评论列表的速度，减少超时情况
