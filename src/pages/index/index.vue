@@ -371,12 +371,13 @@ export default {
       })
         .then((res) => {
           console.log(res, '===========打印的 ------ ');
-          const { allCount, delCount } = res;
-
-          if (allCount && delCount) {
-            this.$message.success(
-              '总弹幕数：' + allCount + '，删除弹幕数：' + delCount,
-            );
+          if (res) {
+            const { allCount, delCount } = res;
+            if (allCount && delCount) {
+              this.$message.success(
+                '总弹幕数：' + allCount + '，删除弹幕数：' + delCount,
+              );
+            }
           }
         })
         .catch((err) => {
@@ -700,7 +701,9 @@ export default {
       video.deleteReply = !video.deleteReply;
       this.videoList.splice(index, 1, video);
       this.saveVideoList(this.videoList);
-      this.startDeleteReply();
+      if (video.deleteReply) {
+        this.startDeleteReply();
+      }
     },
     showDelReplyLog(index) {
       this.currentVideoIndex = index;

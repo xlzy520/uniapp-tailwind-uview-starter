@@ -10,14 +10,27 @@ const service = axios.create({
   timeout: 60 * 1000,
 });
 
-service.interceptors.response.use((response) => {
-  const res = response.data;
-  if (res.code !== 0) {
-    uni.showToast({ title: res.message, icon: 'none' });
-    return Promise.reject(res.message);
-  }
-  return res.data;
-});
+service.interceptors.response.use(
+  (response) => {
+    const res = response.data;
+    console.log(res, '===========打印的 ------ interceptors');
+    if (res.code !== 0) {
+      uni.showToast({ title: res.message, icon: 'none' });
+      return Promise.reject(res.message);
+    }
+    return res.data;
+  },
+  (err) => {
+    console.log(err, '===========打印的 ------ interceptors err ');
+    // 如果是超时
+    if (err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1) {
+      uni.showModal({
+        title: '提示',
+        content: '请求超时，确认是否需要重启客户端',
+      });
+    }
+  },
+);
 
 const request = ({ url, data, method = 'GET', header }) =>
   new Promise((resolve, reject) => {
@@ -36,6 +49,7 @@ const request = ({ url, data, method = 'GET', header }) =>
         }
       },
       fail(err) {
+        console.log(2, '===========打印的 ------ fail');
         reject(err);
       },
     });
