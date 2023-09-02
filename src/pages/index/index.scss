@@ -1,0 +1,49 @@
+.test-header {
+  background: #3b89ff;
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  line-height: 50px;
+}
+
+.video-length {
+  margin-top: 5px;
+}
+.video-list-page {
+  padding: 10px;
+  margin-right: 10px;
+}
+.video-list {
+  width: 96vw;
+  overflow: auto;
+  min-height: 80vh;
+}
+.video-item-title {
+  font-size: 32upx;
+  color: #333;
+  font-weight: 500;
+}
+
+.video-title,
+.video-author,
+.video-view,
+.video-user-total,
+.video-upper,
+.video-like,
+.video-coin,
+.video-action {
+  font-size: 28upx;
+  color: #666;
+  flex: 2;
+}
+
+.video-like,
+.video-coin {
+  flex: 1;
+}
+
+.video-title {
+  max-height: 200upx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -4,7 +4,7 @@
       <video-add-dialog :video-list="videoList" />
       <set-keywords-dialog class="ml-2" />
       <update-dialog />
-      <u-checkbox-group class="ml-2">
+      <u-checkbox-group class="ml-1 font-bold text-black">
         <u-checkbox
           :checked="autoRefresh"
           label="自动刷新(1分钟)"
@@ -12,9 +12,9 @@
           @change="changeAutoRefresh"
         ></u-checkbox>
       </u-checkbox-group>
-      <div class="layout-items-center mx-2">
-        <div class="text-[15px] mr-1">排序属性(从高到低)</div>
-        <el-select v-model="sortBy" @change="changeSortBy">
+      <div class="layout-items-center ml-1">
+        <div class="text-[15px] font-bold">排序属性(↓)：</div>
+        <el-select v-model="sortBy" @change="changeSortBy" class="w-5">
           <el-option
             v-for="item in sortFieldOptions"
             :key="item.value"
@@ -24,10 +24,10 @@
         </el-select>
       </div>
       <view class="layout-items-center ml-1">
-        <view class="text-12"> 在线人数提醒： </view>
+        <view class="text-[15px] font-bold"> 在线人数提醒： </view>
         <u-input
           v-model="remindNum"
-          class="w-8"
+          class="w-4"
           type="number"
           :min="0"
           :max="100"
@@ -68,9 +68,11 @@
         查询视频热度
       </u-button>
     </view>
-    <view class="text-12 video-length layout-slide">
-      <view class="">共 {{ videoList.length }} 条视频</view>
-      <view class=""> 上次刷新时间：{{ lastUpdateTimeForVideo }} </view>
+    <view class="text-[14px] font-bold text-pink-500 video-length layout-slide">
+      <view class=""> 共 {{ videoList.length }} 条视频 </view>
+      <view class="">
+        上次刷新时间：{{ formatDate(lastUpdateTimeForVideo) }}
+      </view>
     </view>
     <u-divider />
     <view class="video-list">
@@ -160,7 +162,11 @@
               >
                 {{ row.watchUpper ? '取消监控' : '监控置顶' }}
               </el-button>
-              <el-button size="mini" type="primary" @click="setCK($index)">
+              <el-button
+                size="mini"
+                type="primary"
+                @click="showCKConfigDialog($index)"
+              >
                 CK配置
               </el-button>
               <el-tooltip content="删除符合关键词的评论和弹幕">
@@ -172,18 +178,14 @@
                   {{ row.deleteReply ? '关闭删评' : '启动删评' }}
                 </el-button>
               </el-tooltip>
-
-              <!--              <el-button-->
-              <!--                size="mini"-->
-              <!--                class="!mt-[10px]"-->
-              <!--                type="primary"-->
-              <!--                @click="showDelReplyLog($index)"-->
-              <!--              >-->
-              <!--                删评日志-->
-              <!--              </el-button>-->
-              <!-- <u-button v-if="row.watchUpper" type="primary" size="mini" class="video-action-button !h-8" :plain="true" :hairline="true" @click="autoPost($index)">
-                自动补置顶评论
-              </u-button> -->
+              <el-button
+                v-if="row.watchUpper"
+                type="primary"
+                size="mini"
+                @click="autoPost($index)"
+              >
+                补置顶
+              </el-button>
               <el-button
                 size="mini"
                 type="danger"
@@ -223,49 +225,12 @@
         </view>
       </view>
     </u-modal>
-    <el-dialog
-      title="配置该视频的UP的CK"
-      :visible.sync="addCkVisible"
-      width="60%"
-    >
-      <div class="">
-        CK 获取方式：
-        <div class="text-red-500">
-          如果你安装了我的插件，那么可以直接点击【复制CK】按钮
-        </div>
-        <div class="text-red-500">
-          如果没有安装，那么需要看下面的教程
-          <a
-            href="https://www.yuque.com/xlzy520/doc/ifqklkxxxf3cq8is?singleDoc#"
-          >
-            《B站获取CK教程》
-          </a>
-        </div>
-      </div>
-      <el-form
-        ref="form"
-        :model="form"
-        :rules="rules"
-        label-width="200px"
-        label-position="top"
-      >
-        <el-form-item label="cookie">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            v-model.trim="form.cookie"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmitCK">确定</el-button>
-          <el-button @click="addCkVisible = false">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-    <delReplyDialog
-      v-if="delReplyLogVisible"
-      :log-list="delLogList"
-      @close="delReplyLogVisible = false"
+    <set-ck-dialog
+      v-if="addCkVisible"
+      :video-list="videoList"
+      :current-video-index="currentVideoIndex"
+      @close="addCkVisible = false"
+      @submit="onSubmitCookie"
     />
   </view>
 </template>
@@ -286,7 +251,8 @@ import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
 import setKeywordsDialog from './set-keywords-dialog.vue';
 import updateDialog from './update-dialog.vue';
-import ImportAndExport from '@/pages/index/importAndExport.vue';
+import ImportAndExport from './importAndExport.vue';
+import setCkDialog from './set-ck-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -296,6 +262,7 @@ export default {
     delReplyDialog,
     setKeywordsDialog,
     updateDialog,
+    setCkDialog,
   },
   data() {
     return {
@@ -316,18 +283,8 @@ export default {
       remindNum: 30,
       audioUrl:
         'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3',
-      currentVideoIndex: {},
+      currentVideoIndex: null,
       addCkVisible: false,
-      form: {},
-      rules: {
-        cookie: [
-          {
-            required: true,
-            message: '请输入CK',
-            trigger: 'blur',
-          },
-        ],
-      },
       deleteReplyInterval: null,
       delReplyLogVisible: false,
       delReplyLog: {},
@@ -340,12 +297,7 @@ export default {
       ],
     };
   },
-  computed: {
-    delLogList() {
-      const video = this.videoList[this.currentVideoIndex];
-      return this.delReplyLog[video.aid] || [];
-    },
-  },
+  computed: {},
   methods: {
     startDeleteReply() {
       const run = () => {
@@ -627,37 +579,6 @@ export default {
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
     },
     postUpperReply() {},
-    setCK(index) {
-      this.currentVideoIndex = index;
-      this.addCkVisible = true;
-      this.form = {
-        cookie: this.videoList[index].cookie,
-      };
-    },
-    onSubmitCK() {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          const cookie = this.form.cookie;
-          const csrfMatches = cookie.match(/bili_jct=(.+?);/);
-          if (!csrfMatches) {
-            uni.showToast({
-              title: 'cookie格式不正确',
-              icon: 'none',
-            });
-            return;
-          }
-
-          const video = {
-            ...this.videoList[this.currentVideoIndex],
-            ...this.form,
-          };
-          this.videoList.splice(this.currentVideoIndex, 1, video);
-          this.saveVideoList(this.videoList);
-          this.addCkVisible = false;
-          this.$message.success('设置成功');
-        }
-      });
-    },
     changeDeleteReply(index) {
       const video = this.videoList[index];
       if (!video.deleteReply && !video.cookie) {
@@ -682,9 +603,19 @@ export default {
         this.startDeleteReply();
       }
     },
-    showDelReplyLog(index) {
+    showCKConfigDialog(index) {
       this.currentVideoIndex = index;
-      this.delReplyLogVisible = true;
+      this.addCkVisible = true;
+    },
+    onSubmitCookie(cookie) {
+      const video = {
+        ...this.videoList[this.currentVideoIndex],
+        cookie,
+      };
+      this.videoList.splice(this.currentVideoIndex, 1, video);
+      this.saveVideoList(this.videoList);
+      this.addCkVisible = false;
+      this.$message.success('设置成功');
     },
   },
   mounted() {
@@ -735,56 +666,5 @@ export default {
 </script>
 
 <style lang="scss">
-.test-header {
-  background: #3b89ff;
-  color: #fff;
-  font-size: 20px;
-  text-align: center;
-  line-height: 50px;
-}
-
-.video-length {
-  margin-top: 5px;
-}
-.video-list-page {
-  padding: 10px;
-  margin-right: 10px;
-}
-.video-list {
-  width: 96vw;
-  overflow: auto;
-  min-height: 80vh;
-}
-.video-item-title {
-  font-size: 32upx;
-  color: #333;
-  font-weight: 500;
-}
-
-// #ifdef H5
-
-.video-title,
-.video-author,
-.video-view,
-.video-user-total,
-.video-upper,
-.video-like,
-.video-coin,
-.video-action {
-  font-size: 28upx;
-  color: #666;
-  flex: 2;
-}
-
-.video-like,
-.video-coin {
-  flex: 1;
-}
-
-.video-title {
-  max-height: 200upx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-//#endif
+@import 'index';
 </style>
