@@ -90,7 +90,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="置顶">
+        <el-table-column label="置顶" width="160">
           <template slot-scope="{ row }">
             <div class="video-upper">
               <div
@@ -107,7 +107,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="在线">
+        <el-table-column label="在线" width="100">
           <template slot-scope="{ row }">
             <div class="video-user-total">
               <div class="flex">
@@ -116,42 +116,41 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="播放">
+        <el-table-column label="播放" width="120">
           <template slot-scope="{ row }">
             <div class="video-view">{{ row.stat && row.stat.view }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="点赞">
+        <el-table-column label="点赞" width="120">
           <template slot-scope="{ row }">
             <div class="video-like">{{ row.stat && row.stat.like }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="投币">
+        <el-table-column label="投币" width="100">
           <template slot-scope="{ row }">
             <div class="video-coin">{{ row.stat && row.stat.coin }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="作者">
+        <el-table-column label="作者" width="120">
           <template slot-scope="{ row }">
             <div class="video-author">{{ row.owner && row.owner.name }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="投稿时间">
+        <el-table-column label="投稿时间" width="120">
           <template slot-scope="{ row }">
             <div class="video-author">
               {{ row.ctime && formatDate(row.ctime * 1000) }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="是否删评">
+        <el-table-column label="删评" width="100">
           <template slot-scope="{ row }">
             <div class="">
               {{ row.deleteReply ? '删评中' : '' }}
-              <!--              {{ row.replyCount ? '(共' + row.replyCount + '条)' : '' }}-->
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="400">
+        <el-table-column label="操作" width="">
           <template slot-scope="{ row, $index }">
             <div class="video-action">
               <el-button
@@ -187,13 +186,12 @@
                 补置顶
               </el-button>
               <el-button
-                size="mini"
                 type="danger"
-                class="video-action-button"
+                icon="el-icon-delete"
+                size="mini"
+                circle
                 @click="removeVideo($index)"
-              >
-                删除
-              </el-button>
+              ></el-button>
             </div>
           </template>
         </el-table-column>
