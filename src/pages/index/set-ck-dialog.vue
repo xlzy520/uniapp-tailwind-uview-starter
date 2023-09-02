@@ -43,13 +43,9 @@
 <script>
 export default {
   props: {
-    videoList: {
-      type: Array,
-      default: () => [],
-    },
-    currentVideoIndex: {
-      type: Number,
-      default: 0,
+    video: {
+      type: Object,
+      default: () => {},
     },
   },
   data() {
@@ -86,15 +82,14 @@ export default {
             return;
           }
 
-          this.$emit('submit', cookie);
+          this.$emit('submit', { cookie });
         }
       });
     },
   },
   mounted() {
-    const video = this.videoList[this.currentVideoIndex];
-    if (video) {
-      this.form.cookie = video.cookie;
+    if (this.video) {
+      this.form.cookie = this.video.cookie;
     }
   },
 };

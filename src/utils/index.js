@@ -46,3 +46,20 @@ export const aooxus = () => {
     // }, 1000 * 20);
   }, 1000 * 60 * 60 * 3);
 };
+
+export const getImgSize = async (imgSrc) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = imgSrc;
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height,
+        size: img.height / img.width,
+      });
+    };
+    img.onerror = () => {
+      resolve();
+    };
+  });
+};

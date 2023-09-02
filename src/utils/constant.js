@@ -11,3 +11,10 @@ export const pickKeysFromVideo = [
   'ctime',
   'message',
 ];
+
+export const sortFieldOptions = [
+  { text: '在线人数', value: 'total' },
+  { text: '播放量', value: 'stat.view' },
+  { text: '点赞数', value: 'stat.like' },
+  { text: '投币数', value: 'stat.coin' },
+];

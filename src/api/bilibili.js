@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import axios from 'axios';
+import qs from 'qs';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -13,7 +14,6 @@ const service = axios.create({
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
-    console.log(res, '===========打印的 ------ interceptors');
     if (res.code !== 0) {
       uni.showToast({ title: res.message, icon: 'none' });
       return Promise.reject(res.message);
@@ -21,7 +21,6 @@ service.interceptors.response.use(
     return res.data;
   },
   (err) => {
-    console.log(err, '===========打印的 ------ interceptors err ');
     // 如果是超时
     if (err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1) {
       uni.showModal({
@@ -230,39 +229,22 @@ export const fetchVideosByUsers = async (users, cookie) => {
 };
 
 export const getVideoInfo = (id, type = 'bvid') => {
-  return new Promise((resolve, reject) => {
-    uni.request({
-      url: `${baseUrl}web-interface/view?${type}=${id}`,
-      success: (res) => {
-        const data = res.data.data;
-        if (data) {
-          return resolve(data);
-        }
-        reject(res.data.message);
-      },
-    });
+  return service.get('web-interface/view', {
+    params: {
+      [type]: id,
+    },
   });
 };
 
 export const getReplyHot = (oid) => {
-  return new Promise((resolve, reject) => {
-    uni.request({
-      url: `${baseUrl}v2/reply/main`,
-      data: {
-        oid,
-        type: 1,
-        mode: 3,
-        next: 0,
-        plat: 1,
-      },
-      success: (res) => {
-        const data = res.data.data;
-        if (data) {
-          return resolve(data);
-        }
-        reject(res.data.message);
-      },
-    });
+  return service.get('v2/reply/main', {
+    params: {
+      oid,
+      type: 1,
+      mode: 3,
+      next: 0,
+      plat: 1,
+    },
   });
 };
 
@@ -284,34 +266,14 @@ export const getReply = (oid, pn = 1, cookie) => {
 
 export const submitDynamic = ({ cookie, data }) => {
   const csrf = cookie.match(/bili_jct=(.+?);/)[1];
-  return new Promise((resolve, reject) => {});
-
-  return service
-    .post(
-      '/x/dynamic/feed/create/dyn?csrf=' + csrf,
-      {
-        dyn_req: {
-          ...data,
-          attach_card: null,
-          upload_id: '7560113_1684937710_6116',
-          meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
-        },
-      },
-      {
-        headers: {
-          origin: 'https://t.bilibili.com',
-          referer: 'https://t.bilibili.com/',
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-
-          cookie,
-        },
-      },
-    )
-    .then((res) => {
-      console.log(res.data, '===========打印的 ------ ');
-      return res.data;
-    });
+  return service.post('/x/dynamic/feed/create/dyn?csrf=' + csrf, {
+    dyn_req: {
+      ...data,
+      attach_card: null,
+      upload_id: '7560113_1684937710_6116',
+      meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
+    },
+  });
 };
 
 export const delReplyByVideoAndCookie = (video) => {
@@ -328,7 +290,7 @@ export const batchDeleteReply = (videoList) => {
   });
 };
 
-export const checkLicenseForWeb = (license) => {
+export const checkLicense = (license) => {
   let extId = uni.getDeviceInfo().deviceId;
   if (extId.length < 32) {
     extId = 'uFtmTHzNYzVA' + extId;
@@ -356,6 +318,41 @@ export const checkLicenseForWeb = (license) => {
   });
 };
 
-export const checkLicense = (license) => {
-  return checkLicenseForWeb(license);
+// 发送评论
+export const sendReply = ({ cookie, oid, message, pictures }) => {
+  const csrf = cookie.match(/bili_jct=(.+?);/)[1];
+  const formdata = {
+    oid,
+    type: 1,
+    message,
+    csrf,
+    pictures,
+    sync_to_dynamic: 0,
+    ts: Math.floor(Date.now() / 1000),
+    vote: 0,
+  };
+  const data = qs.stringify(formdata);
+  return service.post('/v2/reply/add', data, {
+    headers: {
+      zhibiCookie: cookie,
+    },
+  });
+};
+
+// 设置置顶评论
+export const setTopReply = ({ cookie, oid, rpid }) => {
+  const csrf = cookie.match(/bili_jct=(.+?);/)[1];
+  const formdata = {
+    oid,
+    type: 1,
+    rpid,
+    action: 1,
+    csrf,
+  };
+  const data = qs.stringify(formdata);
+  return service.post('/v2/reply/top', data, {
+    headers: {
+      zhibiCookie: cookie,
+    },
+  });
 };

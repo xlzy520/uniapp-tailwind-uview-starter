@@ -2,7 +2,7 @@
   <view class="video-list-page">
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
-      <set-keywords-dialog class="ml-2" />
+      <set-keywords-dialog class="ml-1" />
       <update-dialog />
       <u-checkbox-group class="ml-1 font-bold text-black">
         <u-checkbox
@@ -39,12 +39,6 @@
         <el-button type="success">有更新(客户端有更新，立即下载)</el-button>
       </view>
       <import-and-export />
-
-      <!--      <el-button @click="delReplyByVideoAndCookie">触发删评</el-button>-->
-
-      <!--        <view class="text-12">共 {{ followList.length }} 个用户</view>-->
-      <!--        <u-button @click="systemRing">测试系统铃声</u-button>-->
-      <!--        <u-button @click="customRing">测试自定义铃声</u-button>-->
     </view>
     <view>
       <view class="layout-items-center">
@@ -58,10 +52,6 @@
           @change="changeAudioUrl"
         />
       </view>
-    </view>
-    <view class="layout-slide">
-      <!--      <u-button type="success" @click="getVideoStatsList">获取视频列表</u-button>-->
-      <!--      <u-button type="success" @click="addVideo"> 添加视频 </u-button>-->
     </view>
     <view class="">
       <u-button type="primary" @click="getVideoStatsList">
@@ -181,7 +171,7 @@
                 v-if="row.watchUpper"
                 type="primary"
                 size="mini"
-                @click="autoPost($index)"
+                @click="showSetTopReplyConfig($index)"
               >
                 补置顶
               </el-button>
@@ -225,10 +215,15 @@
     </u-modal>
     <set-ck-dialog
       v-if="addCkVisible"
-      :video-list="videoList"
-      :current-video-index="currentVideoIndex"
+      :video="currentVideo"
       @close="addCkVisible = false"
-      @submit="onSubmitCookie"
+      @submit="onUpdateVideoConfig"
+    />
+    <set-top-reply-dialog
+      v-if="setTopReplyVisible"
+      :video="currentVideo"
+      @close="setTopReplyVisible = false"
+      @submit="onUpdateVideoConfig"
     />
   </view>
 </template>
@@ -241,9 +236,11 @@ import {
   fetchVideoOnlineTotalInfo,
   getReplyHot,
   getVideoInfo,
+  sendReply,
+  setTopReply,
 } from '@/api/bilibili';
-import { DefaultCookie, pickKeysFromVideo } from '@/utils/constant';
-import { formatDate, showLoading, sleep, aooxus } from '@/utils';
+import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
+import { formatDate, sleep, getImgSize } from '@/utils';
 import { isEmpty, isString, pick, get } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
@@ -251,6 +248,7 @@ import setKeywordsDialog from './set-keywords-dialog.vue';
 import updateDialog from './update-dialog.vue';
 import ImportAndExport from './importAndExport.vue';
 import setCkDialog from './set-ck-dialog.vue';
+import setTopReplyDialog from './set-top-reply-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -261,13 +259,10 @@ export default {
     setKeywordsDialog,
     updateDialog,
     setCkDialog,
+    setTopReplyDialog,
   },
   data() {
     return {
-      list: [],
-      followList: [],
-      isVideoSort: true,
-      cookie: DefaultCookie,
       lastUpdateTimeForVideo: '',
       videoList: [],
       autoRefresh: true,
@@ -281,25 +276,26 @@ export default {
       remindNum: 30,
       audioUrl:
         'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/bili-video-watch.mp3',
-      currentVideoIndex: null,
+      currentVideoIndex: 0,
       addCkVisible: false,
       deleteReplyInterval: null,
-      delReplyLogVisible: false,
-      delReplyLog: {},
       sortBy: 'total',
-      sortFieldOptions: [
-        { text: '在线人数', value: 'total' },
-        { text: '播放量', value: 'stat.view' },
-        { text: '点赞数', value: 'stat.like' },
-        { text: '投币数', value: 'stat.coin' },
-      ],
+      sortFieldOptions,
+      setTopReplyVisible: false,
     };
   },
-  computed: {},
+  computed: {
+    currentVideo() {
+      return this.videoList[this.currentVideoIndex];
+    },
+  },
   methods: {
     startDeleteReply() {
       const run = () => {
-        this.videoList.forEach((video) => {
+        const validVideoList = this.videoList.filter((item) => {
+          return !['稿件不可见', '啥都木有'].includes(item.message);
+        });
+        validVideoList.forEach((video) => {
           if (video.deleteReply && video.cookie) {
             this.delReplyByVideoAndCookie(video);
             const currentVersion = localStorage.getItem('currentVersion');
@@ -384,12 +380,7 @@ export default {
                 '，删除评论数：' +
                 successDelResult.length,
             );
-            if (!this.delReplyLog[video.aid]) {
-              this.delReplyLog[video.aid] = [];
-            }
-            this.delReplyLog[video.aid].push(...successDelResult);
           }
-          console.log(this.delReplyLog, '===========打印的 ------ ');
           const index = this.videoList.findIndex((item) => {
             return item.aid === video.aid;
           });
@@ -397,8 +388,6 @@ export default {
             ...video,
             replyCount: fullReplyList.length,
           });
-          console.log(this.videoList);
-          console.log(res, '===========打印的 ------ ');
         })
         .catch((err) => {
           uni.showModal({
@@ -517,6 +506,7 @@ export default {
         try {
           const videoInfo = await getVideoInfo(video.bvid, 'bvid');
           Object.assign(video, pick(videoInfo, pickKeysFromVideo));
+          video.message = '';
           getReplyHot(video.aid).then((hotReply) => {
             const upper = hotReply.top.upper;
             if (upper) {
@@ -541,6 +531,7 @@ export default {
                 this.warnVideoTitle = video.title;
                 this.warnText = `置顶丢失`;
                 this.customRing(30);
+                this.addTopReply(video);
               }
             }
           });
@@ -605,15 +596,90 @@ export default {
       this.currentVideoIndex = index;
       this.addCkVisible = true;
     },
-    onSubmitCookie(cookie) {
+    onUpdateVideoConfig(config) {
       const video = {
         ...this.videoList[this.currentVideoIndex],
-        cookie,
+        ...config,
       };
       this.videoList.splice(this.currentVideoIndex, 1, video);
       this.saveVideoList(this.videoList);
       this.addCkVisible = false;
+      this.setTopReplyVisible = false;
       this.$message.success('设置成功');
+    },
+    showSetTopReplyConfig(index) {
+      this.currentVideoIndex = index;
+      this.setTopReplyVisible = true;
+    },
+    async addTopReply(video) {
+      const topReply = video.topReply;
+      if (!topReply) {
+        const message = `【${video.title}】请先配置该视频需要补充的置顶内容，否则无法自动补置顶`;
+        this.$alert(message, '提示');
+        return;
+      }
+      const cookie = video.cookie;
+      if (!cookie) {
+        const message = `【${video.title}】请先配置该视频作者的CK，否则无法自动补置顶`;
+        this.$alert(message, '提示');
+        return;
+      }
+      const message = topReply.message;
+      const img1 = topReply.img1;
+      const img2 = topReply.img2;
+      const getImgText = (height, width, img, size) => {
+        return `{"img_height":${height},"img_width":${width},"img_src":"${img}","img_size":${size}}`;
+      };
+      const img1Size = await getImgSize(img1);
+      if (!img1Size) {
+        alert('图片1加载失败, 请重新选择文件上传');
+        return;
+      }
+      let pictures = `[${getImgText(
+        img1Size.height,
+        img1Size.width,
+        img1,
+        img1Size.size,
+      )}]`;
+      if (img2) {
+        const img2Size = await getImgSize(img2);
+        if (!img2Size) {
+          alert('图片2加载失败, 请重新填写图片链接');
+          return;
+        }
+        pictures = `[${getImgText(
+          img1Size.height,
+          img1Size.width,
+          img1,
+          img1Size.size,
+        )},${getImgText(
+          img2Size.height,
+          img2Size.width,
+          img2,
+          img2Size.size,
+        )}]`;
+      }
+      return sendReply({
+        oid: video.aid,
+        cookie: video.cookie,
+        message,
+        pictures,
+      })
+        .then(async (res) => {
+          await sleep(1000);
+          setTopReply({
+            ...video,
+            oid: video.aid,
+            rpid: res.rpid,
+          }).then((res) => {
+            this.$alert(`【${video.title}】补置顶成功`, '提示');
+            this.stopRing = true;
+            this.getVideoStatsList();
+          });
+        })
+        .catch((err) => {
+          console.log(err, '===========打印的 ------ ');
+        });
     },
   },
   mounted() {
