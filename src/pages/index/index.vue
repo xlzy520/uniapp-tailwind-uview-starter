@@ -134,6 +134,13 @@
             <div class="video-author">{{ row.owner && row.owner.name }}</div>
           </template>
         </el-table-column>
+        <el-table-column label="投稿时间">
+          <template slot-scope="{ row }">
+            <div class="video-author">
+              {{ row.ctime && formatDate(row.ctime * 1000) }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="是否删评">
           <template slot-scope="{ row }">
             <div class="">
@@ -604,53 +611,20 @@ export default {
           await sleep(100);
           // this.$set(this.videoList, index, video);
         } catch (err) {
-          this.$set(video, 'message', isEmpty(err) ? '' : err);
+          const errMessage = isEmpty(err) ? '' : err;
+          this.$set(video, 'message', errMessage);
+          this.saveVideoList(this.videoList);
         }
       };
-      for (const video of this.videoList) {
+      const validVideoList = this.videoList.filter((item) => {
+        return !['稿件不可见', '啥都木有'].includes(item.message);
+      });
+      console.log(validVideoList, '===========打印的 ------ getVideoStatsList');
+      for (const video of validVideoList) {
         await updateVideoData(video);
       }
       this.changeSortBy();
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
-      // showLoading('获取数据中...');
-      // const promises = this.videoList.map(async (video, index) => {
-      //   return await updateVideoData(video);
-      // });
-      // promises 顺序执行就行
-
-      // Promise.all(promises)
-      //   .then((videoList) => {
-      //     this.videoList = this.videoList
-      //       .map((item, index) => {
-      //         return {
-      //           ...item,
-      //           ...videoList[index],
-      //         };
-      //       })
-      //       .sort((a, b) => {
-      //         return b.total - a.total;
-      //       });
-      //     console.log(
-      //       this.videoList,
-      //       videoList,
-      //       '===========打印的 ------ videoList',
-      //     );
-      //     // this.videoList = videoList;
-      //     this.lastUpdateTimeForVideo = this.formatDate(new Date());
-      //     // this.saveVideoList(this.videoList);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   })
-      //   .finally(() => {
-      //     console.log(1, '===========打印的 ------ ');
-      //     uni.hideLoading();
-      //   });
-    },
-    addVideo() {
-      uni.switchTab({
-        url: '/pages/index/video-add',
-      });
     },
     postUpperReply() {},
     setCK(index) {
@@ -753,7 +727,6 @@ export default {
     if (videoList) {
       this.videoList = videoList;
     }
-    aooxus();
   },
   onShow() {
     // this.startAutoRefresh();

@@ -8,4 +8,6 @@ export const pickKeysFromVideo = [
   'title',
   'stat',
   'owner',
+  'ctime',
+  'message',
 ];
