@@ -70,18 +70,13 @@ export default {
         })
         .catch((err) => {
           if (err.errMsg === 'request:fail') {
-            uni.showModal({
-              title: '提示',
-              content: '请打开视频数据后台客户端, 否则会激活失败',
-              showCancel: false,
+            this.$alert('请双击运行下载的客户端, 否则会激活失败', '提示', {
+              type: 'error',
+              confirmButtonText: '确定',
             });
             return;
           }
-          console.log(err, '===========打印的 ------ ');
-          uni.showToast({
-            title: '激活失败',
-            icon: 'none',
-          });
+          this.$message.error('激活失败, 可能是切换了浏览器');
         });
     },
   },
