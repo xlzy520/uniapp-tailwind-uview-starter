@@ -10,6 +10,8 @@
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="max-h-[50vh] overflow-auto text-[18px]">
+        <div class="text-[20px] font-bold text-black">1.1.3</div>
+        <div class="text-red-500 mt-1 font-bold">1. 一些bug修复</div>
         <div class="text-[20px] font-bold text-black">1.1.0(增加弹幕删除)</div>
         <div class="text-red-500 mt-1 font-bold">
           1. 增加弹幕删除功能，与评论共用一套关键词
