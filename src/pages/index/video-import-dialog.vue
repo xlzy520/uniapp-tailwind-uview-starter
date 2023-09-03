@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       form: {
-        mid: '7560113',
+        mid: '',
       },
       visible: false,
       list: [],
