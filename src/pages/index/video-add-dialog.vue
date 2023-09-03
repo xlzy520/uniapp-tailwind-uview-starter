@@ -10,7 +10,7 @@
         :border-bottom="false"
       >
         <u-form-item
-          label="视频链接或者BV号"
+          label="视频链接或者BV号（支持多个，换行输入）"
           required
           prop="url"
           :border-bottom="false"
@@ -24,9 +24,6 @@
             placeholder="请输入视频链接或者BV号, 如果是多个，请换行输入"
           />
         </u-form-item>
-        <view class="text-pink-500 text-[20px]">
-          APP视频简介长按视频编号可以自动复制
-        </view>
         <u-form-item>
           <u-button type="primary" @click="submit" class="u-button-submit">
             提交
