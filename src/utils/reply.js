@@ -7,6 +7,12 @@ export const getReplyData = async (topReply) => {
     messageList[Math.floor(Math.random() * messageList.length)];
   const img1 = topReply.img1;
   const img2 = topReply.img2;
+  if (!img1 && !img2) {
+    return {
+      message: randomMessage,
+      pictures: undefined,
+    };
+  }
   const getImgText = (height, width, img, size) => {
     return `{"img_height":${height},"img_width":${width},"img_src":"${img}","img_size":${size}}`;
   };
