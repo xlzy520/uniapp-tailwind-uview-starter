@@ -299,10 +299,7 @@ export default {
         validVideoList.forEach((video) => {
           if (video.deleteReply && video.cookie) {
             this.delReplyByVideoAndCookie(video);
-            const currentVersion = localStorage.getItem('currentVersion');
-            if (currentVersion !== '1.0.5') {
-              // this.delDm(video);
-            }
+            this.delDm(video);
           }
         });
       };
