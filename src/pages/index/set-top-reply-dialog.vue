@@ -7,7 +7,9 @@
   >
     <div class="text-red-500">
       <el-link
-        type="primary"
+        class="font-bold !text-[24px]"
+        type="success"
+        target="_blank"
         href="https://service-8zqb5ngm-1253419200.gz.apigw.tencentcs.com/bilibili/upload.html"
       >
         图片上传点这里
