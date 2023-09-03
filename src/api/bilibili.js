@@ -1,58 +1,12 @@
 import dayjs from 'dayjs';
-import axios from 'axios';
+import request from '@/utils/request';
 import qs from 'qs';
+import service from '@/utils/request';
+import axios from 'axios';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 const baseUrl = 'http://localhost:5000/bili-watch/';
-
-const service = axios.create({
-  baseURL: baseUrl,
-  timeout: 60 * 1000,
-});
-
-service.interceptors.response.use(
-  (response) => {
-    const res = response.data;
-    if (res.code !== 0) {
-      uni.showToast({ title: res.message, icon: 'none' });
-      return Promise.reject(res.message);
-    }
-    return res.data;
-  },
-  (err) => {
-    // 如果是超时
-    if (err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1) {
-      uni.showModal({
-        title: '提示',
-        content: '请求超时，确认是否需要重启客户端',
-      });
-    }
-  },
-);
-
-const request = ({ url, data, method = 'GET', header }) =>
-  new Promise((resolve, reject) => {
-    uni.request({
-      url: `${baseUrl}${url}`,
-      method,
-      data,
-      header,
-      success(res) {
-        const data = res.data;
-        if (data.code === 0) {
-          resolve(data.data);
-        } else {
-          uni.showToast({ title: data.message, icon: 'none' });
-          reject(data);
-        }
-      },
-      fail(err) {
-        console.log(2, '===========打印的 ------ fail');
-        reject(err);
-      },
-    });
-  });
 
 export const fetchFollowings = (mid = '7560113', cookie) => {
   const allData = [];
@@ -296,26 +250,21 @@ export const checkLicense = (license) => {
     extId = 'uFtmTHzNYzVA' + extId;
     extId = extId.padEnd(32, 'c');
   }
-  return new Promise((resolve, reject) => {
-    const BaseUrl = 'http://localhost:5000';
-    uni.request({
-      url: BaseUrl + `/auth?key=${license}&extId=${extId}&type=视频数据监控`,
-      success: (res) => {
-        if (res.data.success) {
-          uni.setStorageSync('licenseError', '');
-          localStorage.setItem('version', res.data.version || '');
-          localStorage.setItem('currentVersion', res.data.currentVersion || '');
-          return resolve(res.data);
-        } else {
-          uni.setStorageSync('licenseError', 'true');
-          return reject(res);
-        }
-      },
-      fail: (err) => {
-        return reject(err);
-      },
+  return axios
+    .get(
+      `http://localhost:5000/auth?key=${license}&extId=${extId}&type=视频数据监控`,
+    )
+    .then((res) => {
+      if (res.data.success) {
+        uni.setStorageSync('licenseError', '');
+        localStorage.setItem('version', res.data.version || '');
+        localStorage.setItem('currentVersion', res.data.currentVersion || '');
+        return res.data;
+      } else {
+        uni.setStorageSync('licenseError', 'true');
+        return Promise.reject(res);
+      }
     });
-  });
 };
 
 // 发送评论
@@ -354,5 +303,11 @@ export const setTopReply = ({ cookie, oid, rpid }) => {
     headers: {
       zhibiCookie: cookie,
     },
+  });
+};
+
+export const getSpaceInfo = (cookie) => {
+  return service.post('/space/myinfo', {
+    cookie,
   });
 };
