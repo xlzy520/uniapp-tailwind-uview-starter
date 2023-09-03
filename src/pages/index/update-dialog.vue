@@ -1,6 +1,6 @@
 <template>
   <view class="ml-1">
-    <u-button v-if="hasNewVersion" type="success" @click="visible = true">
+    <u-button v-if="hasNewVersion" type="error" @click="visible = true">
       更新客户端({{ currentVersion }} -> {{ version }})
     </u-button>
     <u-tag
@@ -11,6 +11,12 @@
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="max-h-[50vh] overflow-auto text-[18px]">
+        <div class="text-[20px] font-bold text-black">
+          v2.1.0(更新吧-2023-09-03)
+        </div>
+        <div class="text-red-500 font-bold mt-1">
+          1. 增加根据用户ID批量导入视频的功能，更加方便
+        </div>
         <div class="text-[20px] font-bold text-black">
           v2.0.0(更新吧-2023-09-03)
         </div>
