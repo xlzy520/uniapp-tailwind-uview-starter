@@ -311,3 +311,15 @@ export const getSpaceInfo = (cookie) => {
     cookie,
   });
 };
+
+export const getUserVideoList = (mid) => {
+  return axios
+    .get(baseUrl + '/getUserVideos', {
+      params: {
+        mid,
+      },
+    })
+    .then((res) => {
+      return res.data;
+    });
+};

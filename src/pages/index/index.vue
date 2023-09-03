@@ -2,7 +2,10 @@
   <view class="video-list-page">
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
-      <set-keywords-dialog class="ml-1" />
+      <video-import-dialog
+        :video-list="videoList"
+        @updateVideoList="addVideoList"
+      />
       <update-dialog />
       <u-checkbox-group class="ml-1 font-bold text-black">
         <u-checkbox
@@ -133,13 +136,13 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="删评" width="100">
-          <template slot-scope="{ row }">
-            <div class="">
-              {{ row.deleteReply ? '删评中' : '' }}
-            </div>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column label="删评" width="100">-->
+        <!--          <template slot-scope="{ row }">-->
+        <!--            <div class="">-->
+        <!--              {{ row.deleteReply ? '删评中' : '' }}-->
+        <!--            </div>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column label="操作" width="">
           <template slot-scope="{ row, $index }">
             <div class="video-action">
@@ -156,17 +159,17 @@
                 type="primary"
                 @click="showCKConfigDialog($index)"
               >
-                CK配置
+                作者CK配置
               </el-button>
-              <el-tooltip content="删除符合关键词的评论和弹幕">
-                <el-button
-                  size="mini"
-                  :type="row.deleteReply ? 'danger' : 'primary'"
-                  @click="changeDeleteReply($index)"
-                >
-                  {{ row.deleteReply ? '关闭删评' : '启动删评' }}
-                </el-button>
-              </el-tooltip>
+              <!--              <el-tooltip content="删除符合关键词的评论和弹幕">-->
+              <!--                <el-button-->
+              <!--                  size="mini"-->
+              <!--                  :type="row.deleteReply ? 'danger' : 'primary'"-->
+              <!--                  @click="changeDeleteReply($index)"-->
+              <!--                >-->
+              <!--                  {{ row.deleteReply ? '关闭删评' : '启动删评' }}-->
+              <!--                </el-button>-->
+              <!--              </el-tooltip>-->
               <el-button
                 v-if="row.watchUpper"
                 type="primary"
@@ -175,13 +178,19 @@
               >
                 补置顶
               </el-button>
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-                circle
-                @click="removeVideo($index)"
-              ></el-button>
+              <el-popconfirm
+                class="ml-[5px]"
+                title="确定删除该视频吗？"
+                @confirm="removeVideo($index)"
+              >
+                <el-button
+                  slot="reference"
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  circle
+                ></el-button>
+              </el-popconfirm>
             </div>
           </template>
         </el-table-column>
@@ -250,6 +259,7 @@ import ImportAndExport from './importAndExport.vue';
 import setCkDialog from './set-ck-dialog.vue';
 import setTopReplyDialog from './set-top-reply-dialog.vue';
 import { getReplyData } from '@/utils/reply';
+import videoImportDialog from './video-import-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -261,6 +271,7 @@ export default {
     updateDialog,
     setCkDialog,
     setTopReplyDialog,
+    videoImportDialog,
   },
   data() {
     return {
@@ -291,109 +302,9 @@ export default {
     },
   },
   methods: {
-    startDeleteReply() {
-      const run = () => {
-        const validVideoList = this.videoList.filter((item) => {
-          return !['稿件不可见', '啥都木有'].includes(item.message);
-        });
-        validVideoList.forEach((video) => {
-          if (video.deleteReply && video.cookie) {
-            this.delReplyByVideoAndCookie(video);
-            this.delDm(video);
-          }
-        });
-      };
-      run();
-      clearInterval(this.deleteReplyInterval);
-      this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 15);
-    },
-    delDm(video) {
-      let keywords = localStorage.getItem('keywords');
-      if (!keywords) {
-        return;
-      }
-      keywords = keywords
-        .split(',')
-        .filter((item) => item)
-        .join(',');
-      const maxWords = localStorage.getItem('maxWords') || 30;
-      return delDm({
-        ...video,
-        keywords,
-        maxWords,
-      })
-        .then((res) => {
-          console.log(res, '===========打印的 ------ ');
-          if (res) {
-            const { allCount, delCount } = res;
-            if (allCount && delCount) {
-              this.$message.success(
-                '总弹幕数：' + allCount + '，删除弹幕数：' + delCount,
-              );
-            }
-          }
-        })
-        .catch((err) => {
-          uni.showModal({
-            title: '提示',
-            content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
-            showCancel: false,
-          });
-        });
-    },
-    delReplyByVideoAndCookie(video) {
-      let keywords = localStorage.getItem('keywords');
-      if (!keywords) {
-        return;
-      }
-      keywords = keywords
-        .split(',')
-        .filter((item) => item)
-        .join(',');
-      const maxWords = localStorage.getItem('maxWords') || 30;
-      return delReplyByVideoAndCookie({
-        ...video,
-        keywords,
-        maxWords,
-      })
-        .then((res) => {
-          const fullReplyList = res.fullReplyList;
-          const successDelResult = res.delResult
-            .filter((item) => {
-              return item && item.code === 0;
-            })
-            .map((v) => {
-              return {
-                bvid: video.bvid,
-                rpid: v.item.rpid,
-                content: v.item.content.message,
-                ctime: formatDate(v.item.ctime * 1000),
-              };
-            });
-          if (successDelResult.length) {
-            this.$message.success(
-              '总评论数：' +
-                fullReplyList.length +
-                '，删除评论数：' +
-                successDelResult.length,
-            );
-          }
-          const index = this.videoList.findIndex((item) => {
-            return item.aid === video.aid;
-          });
-          this.videoList.splice(index, 1, {
-            ...video,
-            replyCount: fullReplyList.length,
-          });
-        })
-        .catch((err) => {
-          uni.showModal({
-            title: '提示',
-            content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
-            showCancel: false,
-          });
-        });
+    addVideoList(videoList) {
+      this.saveVideoList(videoList);
+      this.getVideoStatsList();
     },
     changeSortBy() {
       localStorage.setItem('sortBy', this.sortBy);
@@ -440,16 +351,8 @@ export default {
       this.saveVideoList(this.videoList);
     },
     removeVideo(index) {
-      uni.showModal({
-        title: '提示',
-        content: '确定删除该视频吗？',
-        success: (res) => {
-          if (res.confirm) {
-            this.videoList.splice(index, 1);
-            this.saveVideoList(this.videoList);
-          }
-        },
-      });
+      this.videoList.splice(index, 1);
+      this.saveVideoList(this.videoList);
     },
     startAutoRefresh() {
       clearInterval(this.interval);
@@ -565,31 +468,6 @@ export default {
       this.changeSortBy();
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
     },
-    postUpperReply() {},
-    changeDeleteReply(index) {
-      const video = this.videoList[index];
-      if (!video.deleteReply && !video.cookie) {
-        uni.showToast({
-          title: '请先配置该视频作者的CK',
-          icon: 'none',
-        });
-        return;
-      }
-      const keywords = localStorage.getItem('keywords');
-      if (!keywords) {
-        uni.showToast({
-          title: '请先设置删评关键词',
-          icon: 'none',
-        });
-        return;
-      }
-      video.deleteReply = !video.deleteReply;
-      this.videoList.splice(index, 1, video);
-      this.saveVideoList(this.videoList);
-      if (video.deleteReply) {
-        this.startDeleteReply();
-      }
-    },
     showCKConfigDialog(index) {
       this.currentVideoIndex = index;
       this.addCkVisible = true;
@@ -681,7 +559,6 @@ export default {
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
-    this.startDeleteReply();
     let videoList = uni.getStorageSync('videoList');
     if (videoList) {
       this.videoList = videoList;
