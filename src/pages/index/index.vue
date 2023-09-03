@@ -627,7 +627,7 @@ export default {
       const { message, pictures } = await getReplyData(topReply);
       return sendReply({
         oid: video.aid,
-        cookie: video.cookie,
+        cookie: topReply.cookie,
         message,
         pictures,
       })
