@@ -69,7 +69,7 @@ export default {
           });
         })
         .catch((err) => {
-          if (err.errMsg === 'request:fail') {
+          if (err.message === 'Network Error') {
             this.$alert('请双击运行下载的客户端, 否则会激活失败', '提示', {
               type: 'error',
               confirmButtonText: '确定',
