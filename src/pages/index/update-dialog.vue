@@ -23,7 +23,10 @@
         <div class="text-red-500 mt-1 font-bold">
           3. 增加配置CK时，CK的有效性检测
         </div>
-        <div class="text-red-500 mt-1 font-bold">4. 其他体验性优化</div>
+        <div class="text-red-500 mt-1 font-bold">
+          4. 稿件失效之后不再更新数据，不再删评、删弹幕
+        </div>
+        <div class="text-red-500 mt-1 font-bold">5. 其他体验性优化</div>
 
         <div class="text-[20px] font-bold text-black mt-1">1.1.3</div>
         <div class="text-red-500 mt-1 font-bold">1. 一些bug修复</div>
