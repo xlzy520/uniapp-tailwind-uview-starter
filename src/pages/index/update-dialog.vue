@@ -11,7 +11,21 @@
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="max-h-[50vh] overflow-auto text-[18px]">
-        <div class="text-[20px] font-bold text-black">1.1.3</div>
+        <div class="text-[20px] font-bold text-black">
+          v2.0.0(更新吧-2023-09-03)
+        </div>
+        <div class="text-red-500 mt-1 font-bold">
+          1. 修复弹幕一直提示删除超时的问题
+        </div>
+        <div class="text-red-500 mt-1 font-bold">
+          2. 增加自动补充置顶评论的功能，支持图片链接和随机话术配置
+        </div>
+        <div class="text-red-500 mt-1 font-bold">
+          3. 增加配置CK时，CK的有效性检测
+        </div>
+        <div class="text-red-500 mt-1 font-bold">4. 其他体验性优化</div>
+
+        <div class="text-[20px] font-bold text-black mt-1">1.1.3</div>
         <div class="text-red-500 mt-1 font-bold">1. 一些bug修复</div>
         <div class="text-[20px] font-bold text-black mt-1">
           1.1.0(增加弹幕删除)
