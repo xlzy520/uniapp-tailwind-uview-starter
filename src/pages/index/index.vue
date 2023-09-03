@@ -522,6 +522,8 @@ export default {
                 message,
                 pictures,
               });
+              this.stopRing = true;
+              innerAudioContext && innerAudioContext.stop();
             } else {
               this.$set(video, 'upper', null);
               if (video.watchUpper) {
