@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import { getSpaceInfo } from '@/api/bilibili';
+
 export default {
   props: {
     video: {
@@ -69,8 +71,23 @@ export default {
     close() {
       this.$emit('close');
     },
+    getSpaceInfo() {
+      return getSpaceInfo(this.form.cookie)
+        .then((res) => {
+          const ownerMid = this.video.owner.mid;
+          if (ownerMid === res.mid) {
+            this.$message.success('配置的CK是当前视频UP主的CK');
+          } else {
+            this.$message.error('配置的CK不是当前视频UP主的CK, 无法操作该视频');
+          }
+          return res;
+        })
+        .catch(() => {
+          this.$message.error('CK不正确或者已过期, 请配置正确的CK');
+        });
+    },
     onSubmitCK() {
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate(async (valid) => {
         if (valid) {
           const cookie = this.form.cookie;
           const csrfMatches = cookie.match(/bili_jct=(.+?);/);
@@ -79,6 +96,10 @@ export default {
               title: 'cookie格式不正确',
               icon: 'none',
             });
+            return;
+          }
+          const userInfo = await this.getSpaceInfo();
+          if (!userInfo) {
             return;
           }
 
