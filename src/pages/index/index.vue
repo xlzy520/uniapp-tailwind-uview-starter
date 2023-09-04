@@ -620,6 +620,9 @@ export default {
     async addTopReply(video) {
       const topReply = video.topReply;
       if (!topReply) {
+        return;
+      }
+      if (!topReply.message) {
         const message = `【${video.title}】请先配置该视频需要补充的置顶内容，否则无法自动补置顶`;
         this.$alert(message, '提示');
         return;
