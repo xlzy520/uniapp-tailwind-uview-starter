@@ -43,6 +43,7 @@
         <el-button type="success">有更新(客户端有更新，立即下载)</el-button>
       </view>
       <import-and-export />
+      <remove-record />
     </view>
     <view>
       <view class="layout-items-center">
@@ -261,6 +262,7 @@ import setCkDialog from './set-ck-dialog.vue';
 import setTopReplyDialog from './set-top-reply-dialog.vue';
 import { getReplyData } from '@/utils/reply';
 import videoImportDialog from './video-import-dialog.vue';
+import removeRecord from './removeRecord.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -273,6 +275,7 @@ export default {
     setCkDialog,
     setTopReplyDialog,
     videoImportDialog,
+    removeRecord,
   },
   data() {
     return {
