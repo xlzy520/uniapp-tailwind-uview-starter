@@ -12,6 +12,12 @@
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="max-h-[50vh] overflow-auto text-[18px]">
         <div class="text-[20px] font-bold text-black">
+          v2.1.0(更新吧-2023-09-08)
+        </div>
+        <div class="text-red-500 font-bold mt-1">
+          1. 增加清空失效稿件、清空全部稿件的功能
+        </div>
+        <div class="text-[20px] font-bold text-black">
           v2.1.0(更新吧-2023-09-03)
         </div>
         <div class="text-red-500 font-bold mt-1">
@@ -119,6 +125,22 @@ export default {
       if (noticeVersion !== this.version) {
         this.visible = true;
       }
+    }
+    const noticeRemoveRecordVersion = localStorage.getItem(
+      'noticeRemoveRecordVersion',
+    );
+    if (!noticeRemoveRecordVersion) {
+      this.$alert(
+        '增加清空失效稿件、清空全部稿件的功能',
+        '2023-09-08 更新内容',
+        {
+          type: 'success',
+          confirmButtonText: '确定',
+          callback: () => {
+            localStorage.setItem('noticeRemoveRecordVersion', this.version);
+          },
+        },
+      );
     }
   },
 };
