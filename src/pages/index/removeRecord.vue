@@ -29,9 +29,31 @@ export default {
         });
         uni.setStorageSync('videoList', validVideoList);
       } else if (command === 'all') {
+        this.exportData();
         uni.setStorageSync('videoList', []);
       }
       location.reload();
+    },
+    exportData() {
+      const videoList = uni.getStorageSync('videoList') || [];
+      let keywords = localStorage.getItem('keywords');
+      const data = {
+        videoList: videoList,
+        keywords,
+      };
+      const fileName = '执笔视频数据监控记录备份.json';
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: 'application/json',
+      });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+
+      link.click();
+      URL.revokeObjectURL(url);
+      this.$message.success('导出备份数据成功');
     },
   },
 };
