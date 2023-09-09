@@ -40,14 +40,27 @@
           v-model.trim="form.cookie"
         ></el-input>
       </el-form-item>
+      <el-form-item label="文字发送模式" prop="message">
+        <el-radio-group v-model="form.sendTextType">
+          <el-radio label="fixed">固定(将整个输入框的内容发送)</el-radio>
+          <el-radio label="random">
+            随机(以逗号分隔，发布时会随机从里面取一句话)
+          </el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item
-        label="需要发布的文字，以逗号分隔，发布时会随机从里面取一句话"
+        :label="
+          '需要发布的文字' +
+          (form.sendTextType === 'fixed'
+            ? '，输入框的内容为完整的一个评论'
+            : '，以逗号分隔，发布时会随机从里面取一句话')
+        "
         prop="message"
       >
         <el-input
           type="textarea"
           :autosize="{ minRows: 4, maxRows: 6 }"
-          v-model.trim="form.message"
+          v-model="form.message"
         ></el-input>
       </el-form-item>
       <el-form-item label="图片链接1">
@@ -81,15 +94,7 @@ export default {
       form: {
         ckType: 1,
       },
-      rules: {
-        message: [
-          {
-            required: true,
-            message: '请输入文字',
-            trigger: 'blur',
-          },
-        ],
-      },
+      rules: {},
     };
   },
   methods: {
@@ -126,10 +131,6 @@ export default {
           if (!userInfo) {
             return;
           }
-          this.form.message = this.form.message
-            .replace(/\s+/g, '') // 替换所有空格
-            .replace(/\s/g, '') // 替换单个空格
-            .replace(/，/g, ','); // 替换所有逗号为英文逗号
           this.$emit('submit', {
             topReply: this.form,
           });
@@ -145,6 +146,7 @@ export default {
         ...video.topReply,
         ckType: topReply.ckType ?? 1,
         cookie: topReply.ckType === 1 ? video.cookie : topReply.cookie ?? '',
+        sendTextType: topReply.sendTextType ?? 'fixed',
       };
     }
   },

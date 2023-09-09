@@ -1,15 +1,22 @@
 import { getImgSize } from '@/utils/index';
 
 export const getReplyData = async (topReply) => {
-  const message = topReply.message;
-  const messageList = message.split(',');
-  const randomMessage =
-    messageList[Math.floor(Math.random() * messageList.length)];
+  let message = topReply.message;
+  const sendTextType = topReply.sendTextType || 'fixed';
+  debugger;
+  if (sendTextType === 'random') {
+    const messageList = message
+      .replace(/\s+/g, '') // 替换所有空格
+      .replace(/\s/g, '') // 替换单个空格
+      .replace(/，/g, ',') // 替换所有逗号为英文逗号
+      .split(',');
+    message = messageList[Math.floor(Math.random() * messageList.length)];
+  }
   const img1 = topReply.img1;
   const img2 = topReply.img2;
   if (!img1 && !img2) {
     return {
-      message: randomMessage,
+      message,
       pictures: undefined,
     };
   }
