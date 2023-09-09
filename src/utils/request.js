@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:5000/bili-watch/';
+const baseUrl = 'http://localhost:5000/ks/';
 
 const service = axios.create({
   baseURL: baseUrl,
@@ -10,11 +10,11 @@ const service = axios.create({
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
-    if (res.code !== 0) {
-      uni.showToast({ title: res.message, icon: 'none' });
-      return Promise.reject(res.message);
-    }
-    return res.data;
+    // if (res.code !== 0) {
+    //   uni.showToast({ title: res.message, icon: 'none' });
+    //   return Promise.reject(res.message);
+    // }
+    return res;
   },
   (err) => {
     // 如果是超时

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { getVideoInfo, fetchVideoOnlineTotalInfo } from '@/api/bilibili';
+import { getPhotoList } from '@/api/ks';
 import { showLoading } from '@/utils';
 import { pick, uniqBy } from 'lodash-es';
 import { pickKeysFromVideo } from '@/utils/constant';

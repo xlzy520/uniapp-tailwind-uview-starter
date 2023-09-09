@@ -1,16 +1,25 @@
 <template>
-  <view class="add-video ml-1">
-    <u-button type="success" @click="visible = true">批量导入</u-button>
+  <view class="add-video">
+    <u-button type="success" @click="visible = true">根据CK批量导入</u-button>
     <el-dialog title="批量导入用户视频" :visible.sync="visible" width="60%">
+      <div class="text-center w-full mb-2">
+        <el-link
+          underline
+          class="!font-bold !text-red-500 !text-[20px]"
+          target="_blank"
+          href="https://www.yuque.com/xlzy520/doc/sc7qpq4808b4x9fa?singleDoc#"
+          >《快手获取CK教程》</el-link
+        >
+      </div>
       <el-form
         :model="form"
         label-position="top"
         label-width="100%"
         :border-bottom="false"
       >
-        <el-form-item label="用户ID" prop="mid">
+        <el-form-item label="" prop="ID">
           <div class="layout-items-center">
-            <el-input v-model="form.mid" placeholder="请输入用户的ID" />
+            <el-input v-model="form.cookie" placeholder="请输入用户的CK" />
             <el-button class="ml-2" type="primary" @click="getUserVideoList">
               查询视频列表
             </el-button>
@@ -23,9 +32,10 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column prop="aid" label="视频ID" width="180" />
+        <el-table-column prop="photoId" label="视频ID" width="180" />
         <el-table-column prop="title" label="视频标题" />
-        <el-table-column prop="ctimeText" label="发布时间" width="180" />
+        <el-table-column prop="playCount" label="播放量" />
+        <el-table-column prop="uploadTimeText" label="发布时间" width="180" />
       </el-table>
       <div class="w-full text-center">
         <el-button
@@ -41,14 +51,9 @@
 </template>
 
 <script>
-import {
-  getVideoInfo,
-  fetchVideoOnlineTotalInfo,
-  getUserVideoList,
-} from '@/api/bilibili';
-import { formatDate, showLoading } from '@/utils';
-import { pick, uniqBy } from 'lodash-es';
-import { pickKeysFromVideo } from '@/utils/constant';
+import { getPhotoList } from '@/api/ks';
+import { formatDate } from '@/utils';
+import { uniqBy } from 'lodash-es';
 
 export default {
   props: {
@@ -60,7 +65,7 @@ export default {
   data() {
     return {
       form: {
-        mid: '',
+        cookie: '',
       },
       visible: false,
       list: [],
@@ -70,34 +75,20 @@ export default {
   computed: {},
   methods: {
     getUserVideoList() {
-      if (!this.form.mid) {
+      if (!this.form.cookie) {
         this.$message.error('请输入用户ID');
         return;
       }
-      return getUserVideoList(this.form.mid).then((res) => {
-        if (res.list) {
-          const videoList = res.list?.vlist;
-          const list = videoList.map((item) => {
+      return getPhotoList(this.form.cookie).then((res) => {
+        if (res.photoList) {
+          const videoList = res.photoList;
+          this.list = videoList.map((item) => {
             return {
-              aid: item.aid,
-              bvid: item.bvid,
-              title: item.title,
-              owner: {
-                name: item.author,
-              },
-              stat: {
-                view: item.play,
-              },
-              cid: item.aid,
-              ctime: item.created,
-              ctimeText: formatDate(item.created * 1000),
-              message: '',
-              watchUpper: false,
-              isCustom: true,
-              deleteReply: false,
+              ...item,
+              uploadTimeText: formatDate(item.uploadTime),
+              cookie: this.form.cookie,
             };
           });
-          this.list = list;
         } else {
           this.$message.error('获取视频列表失败');
         }
@@ -114,86 +105,12 @@ export default {
       }
       const videoList = [...this.videoList];
       videoList.unshift(...list);
-      const uniqVideoList = uniqBy(videoList, 'aid');
+      const uniqVideoList = uniqBy(videoList, 'photoId');
       uni.setStorageSync('videoList', uniqVideoList);
       this.$emit('updateVideoList', uniqVideoList);
       this.$message.success('添加成功');
       this.visible = false;
       this.list = [];
-    },
-    submit() {
-      if (!this.form.url) {
-        uni.showToast({
-          title: '请输入链接',
-          icon: 'none',
-        });
-        return;
-      }
-      const urls = this.form.url;
-      const urlList = urls.split('\n');
-      urlList.forEach((url, index) => {
-        let aid = url.match(/av(\d+)/);
-        let bvid = url.match(/BV(\w+)/);
-        if (!aid && !bvid) {
-          uni.showToast({
-            title: '视频链接格式不正确',
-            icon: 'none',
-          });
-          return;
-        }
-        showLoading('添加中...');
-        aid = aid ? aid[1] : '';
-        bvid = bvid ? bvid[1] : '';
-        const type = aid ? 'aid' : 'bvid';
-        const videoId = aid || bvid;
-        getVideoInfo(videoId, type)
-          .then((res) => {
-            console.log(res, '===========打印的 ------ ');
-            const data = pick(res, pickKeysFromVideo);
-            if (!data) {
-              uni.showToast({
-                title: '视频不存在',
-                icon: 'none',
-              });
-              return;
-            }
-            data.watchUpper = false;
-            data.isCustom = true;
-            data.deleteReply = false;
-            return fetchVideoOnlineTotalInfo(data.aid, data.cid).then(
-              (total) => {
-                data.total = total.total;
-                const index = this.videoList.findIndex((item) => {
-                  return item.aid === aid;
-                });
-                if (index > -1) {
-                  this.videoList.splice(index, 1, data);
-                } else {
-                  this.videoList.unshift(data);
-                }
-                const uniqVideoList = uniqBy(this.videoList, 'aid');
-                uni.setStorageSync('videoList', uniqVideoList);
-                uni.showToast({
-                  title: '添加成功',
-                  icon: 'none',
-                });
-              },
-            );
-          })
-          .catch((error) => {
-            uni.showToast({
-              title: error,
-              icon: 'none',
-            });
-          })
-          .finally(() => {
-            uni.hideLoading();
-            if (index === urlList.length - 1) {
-              this.form.url = '';
-              this.visible = false;
-            }
-          });
-      });
     },
   },
 };

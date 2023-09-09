@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { checkLicense } from '@/api/bilibili';
+import { checkLicense } from '@/api/auth';
 import { isH5 } from '@/utils';
 
 export default {

@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import { fetchFollowings } from '@/api/bilibili';
 import { showLoading } from '@/utils';
 import { DefaultCookie } from '@/utils/constant';
 
