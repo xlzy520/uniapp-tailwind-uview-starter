@@ -126,22 +126,6 @@ export default {
         this.visible = true;
       }
     }
-    const noticeRemoveRecordVersion = localStorage.getItem(
-      'noticeRemoveRecordVersion',
-    );
-    if (!noticeRemoveRecordVersion) {
-      this.$alert(
-        '增加清空失效稿件、清空全部稿件的功能',
-        '2023-09-08 更新内容',
-        {
-          type: 'success',
-          confirmButtonText: '确定',
-          callback: () => {
-            localStorage.setItem('noticeRemoveRecordVersion', this.version);
-          },
-        },
-      );
-    }
   },
 };
 </script>
