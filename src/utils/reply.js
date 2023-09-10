@@ -3,7 +3,6 @@ import { getImgSize } from '@/utils/index';
 export const getReplyData = async (topReply) => {
   let message = topReply.message;
   const sendTextType = topReply.sendTextType || 'fixed';
-  debugger;
   if (sendTextType === 'random') {
     const messageList = message
       .replace(/\s+/g, '') // 替换所有空格
@@ -49,7 +48,7 @@ export const getReplyData = async (topReply) => {
   }
 
   return {
-    message: randomMessage,
+    message,
     pictures,
   };
 };
