@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { BaseOrigin } from '@/utils/index';
 
-const baseUrl = 'http://localhost:5000/bili-watch/';
+const baseUrl = BaseOrigin + '/bili-watch/';
 
 const service = axios.create({
   baseURL: baseUrl,

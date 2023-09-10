@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
 
+export const BaseOrigin =
+  'http://localhost:' + (localStorage.getItem('port') || '5000');
+
 export const formatTime = (time, template = 'YY/MM/DD HH:mm:ss') =>
   dayjs(time).format(template);
 

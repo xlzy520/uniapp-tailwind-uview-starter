@@ -3,10 +3,11 @@ import request from '@/utils/request';
 import qs from 'qs';
 import service from '@/utils/request';
 import axios from 'axios';
+import { BaseOrigin } from '@/utils';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const baseUrl = 'http://localhost:5000/bili-watch/';
+const baseUrl = BaseOrigin + '/bili-watch/';
 
 export const fetchFollowings = (mid = '7560113', cookie) => {
   const allData = [];
@@ -251,9 +252,7 @@ export const checkLicense = (license) => {
     extId = extId.padEnd(32, 'c');
   }
   return axios
-    .get(
-      `http://localhost:5000/auth?key=${license}&extId=${extId}&type=视频数据监控`,
-    )
+    .get(BaseOrigin + `/auth?key=${license}&extId=${extId}&type=视频数据监控`)
     .then((res) => {
       if (res.data.success) {
         uni.setStorageSync('licenseError', '');
