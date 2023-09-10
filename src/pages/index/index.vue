@@ -18,7 +18,7 @@
       </u-checkbox-group>
       <div class="layout-items-center ml-1">
         <div class="text-[15px] font-bold">排序属性(↓)：</div>
-        <el-select v-model="sortBy" @change="changeSortBy" class="w-5">
+        <el-select v-model="sortBy" @change="changeSortBy" class="w-6">
           <el-option
             v-for="item in sortFieldOptions"
             :key="item.value"
@@ -416,6 +416,14 @@ export default {
     },
     changeSortBy() {
       localStorage.setItem('sortBy', this.sortBy);
+      if (this.sortBy === 'upper') {
+        this.videoList = this.videoList.sort((a, b) => {
+          const aValue = a.watchUpper ? (a.upper ? -1 : 1) : -1;
+          const bValue = b.watchUpper ? (b.upper ? -1 : 1) : -1;
+          return bValue - aValue;
+        });
+        return;
+      }
       this.videoList = this.videoList.sort((a, b) => {
         const aProp = get(a, this.sortBy);
         const bProp = get(b, this.sortBy);

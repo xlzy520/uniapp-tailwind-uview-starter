@@ -17,4 +17,5 @@ export const sortFieldOptions = [
   { text: '播放量', value: 'stat.view' },
   { text: '点赞数', value: 'stat.like' },
   { text: '投币数', value: 'stat.coin' },
+  { text: '置顶评论', value: 'upper' },
 ];
