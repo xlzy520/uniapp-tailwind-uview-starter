@@ -355,10 +355,12 @@ export default {
             const index = this.videoList.findIndex(
               (item) => photo.photoId === item.photoId,
             );
-            this.videoList.splice(index, 1, {
-              ...this.videoList[index],
-              ...photoList[index],
-            });
+            if (index > -1) {
+              this.videoList.splice(index, 1, {
+                ...this.videoList[index],
+                ...photoList[index],
+              });
+            }
           });
           await sleep(100);
         } catch (err) {
@@ -395,8 +397,8 @@ export default {
         });
         return;
       }
-      video.deleteReply = !video.deleteReply;
-      this.videoList.splice(index, 1, video);
+      this.$set(video, 'deleteReply', !video.deleteReply);
+      this.videoList.splice(index, 1, { ...video });
       this.saveVideoList(this.videoList);
       if (video.deleteReply) {
         this.startDeleteReply();
