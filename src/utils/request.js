@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BaseOrigin } from '@/utils/index';
+import { Message } from 'element-ui';
 
 const baseUrl = BaseOrigin + '/bili-watch/';
 
@@ -20,9 +21,13 @@ service.interceptors.response.use(
   (err) => {
     // 如果是超时
     if (err.code === 'ECONNABORTED' && err.message.indexOf('timeout') !== -1) {
-      uni.showModal({
-        title: '提示',
-        content: '请求超时，确认是否需要重启客户端',
+      // uni.showModal({
+      //   title: '提示',
+      //   content: '请求超时，确认是否需要重启客户端',
+      // });
+      Message({
+        message: '请求超时',
+        type: 'warning',
       });
     }
   },
