@@ -569,7 +569,15 @@ export default {
           await sleep(100);
           // this.$set(this.videoList, index, video);
         } catch (err) {
-          const errMessage = isEmpty(err) ? '' : err;
+          let errMessage = isEmpty(err) ? '' : err;
+          console.log(errMessage, '===========打印的 ------ updateVideoData');
+          if (errMessage == '352') {
+            errMessage = '请求被拦截，请使用爱加速切换IP';
+            this.stopRing = false;
+            this.warnVideoTitle = '请求被拦截';
+            this.warnText = `请求被拦截，请使用爱加速切换IP`;
+            this.customRing(3);
+          }
           this.$set(video, 'message', errMessage);
           this.saveVideoList(this.videoList);
         }
