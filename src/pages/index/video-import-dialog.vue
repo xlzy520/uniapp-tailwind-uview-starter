@@ -2,7 +2,11 @@
   <view class="add-video ml-1">
     <u-button type="success" @click="visible = true">批量导入</u-button>
     <el-dialog title="批量导入用户视频" :visible.sync="visible" width="60%">
+      <el-alert type="error">
+        B站对搜索用户投稿的接口增加了加密签名，此功能暂不可用，等后续更新
+      </el-alert>
       <el-form
+        v-if="false"
         :model="form"
         label-position="top"
         label-width="100%"
@@ -18,6 +22,7 @@
         </el-form-item>
       </el-form>
       <el-table
+        v-if="false"
         :data="list"
         style="width: 100%"
         @selection-change="handleSelectionChange"
@@ -27,7 +32,7 @@
         <el-table-column prop="title" label="视频标题" />
         <el-table-column prop="ctimeText" label="发布时间" width="180" />
       </el-table>
-      <div class="w-full text-center">
+      <div v-if="false" class="w-full text-center">
         <el-button
           type="primary"
           @click="submitSelectVideos"
