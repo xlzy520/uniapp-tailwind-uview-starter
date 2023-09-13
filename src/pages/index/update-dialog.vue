@@ -10,6 +10,14 @@
       @click="visible = true"
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
+      <div
+        class="mt-4 text-center mb-2"
+        v-if="hasNewVersion || !currentVersion"
+      >
+        <el-button type="primary" @click="onDownload">
+          立即下载最新客户端
+        </el-button>
+      </div>
       <div class="max-h-[50vh] overflow-auto text-[18px]">
         <div class="text-[20px] font-bold text-black">
           v2.1.0(更新吧-2023-09-08)
@@ -75,14 +83,6 @@
         <div class="text-red-500 mt-1">
           4. 修复如果以逗号结尾，会删除全部评论的问题
         </div>
-      </div>
-      <div
-        class="mt-4 text-center mb-2"
-        v-if="hasNewVersion || !currentVersion"
-      >
-        <el-button type="primary" @click="onDownload">
-          立即下载最新客户端
-        </el-button>
       </div>
     </el-dialog>
   </view>
