@@ -313,7 +313,7 @@ export const getSpaceInfo = (cookie) => {
 
 export const getUserVideoList = (mid) => {
   return axios
-    .get(baseUrl + '/getUserVideos', {
+    .get('https://bili.xlzy520.cn/bili-watch/getUserVideos', {
       params: {
         mid,
       },
