@@ -126,6 +126,20 @@ export default {
         this.visible = true;
       }
     }
+    const fktx = localStorage.getItem('fktx');
+    if (!fktx) {
+      this.$alert(
+        '根据视频数量加大每次刷新数据的时间间隔，以提升稳定性，减少风控风险',
+        '重要提示',
+        {
+          type: 'success',
+          confirmButtonText: '确定',
+          callback: () => {
+            localStorage.setItem('fktx', 'true');
+          },
+        },
+      );
+    }
   },
 };
 </script>

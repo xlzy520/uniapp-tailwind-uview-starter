@@ -11,7 +11,7 @@
       <u-checkbox-group class="ml-1 font-bold text-black">
         <u-checkbox
           :checked="autoRefresh"
-          label="自动刷新(1分钟)"
+          label="定时刷新(根据视频数量)"
           name="autoRefresh"
           @change="changeAutoRefresh"
         ></u-checkbox>
@@ -472,9 +472,22 @@ export default {
     },
     startAutoRefresh() {
       clearInterval(this.interval);
+      const videoListLength = this.videoList.length;
+      let time = 60;
+      if (videoListLength > 20) {
+        time = 60 * 2;
+      } else if (videoListLength > 40) {
+        time = 60 * 4;
+      } else if (videoListLength > 60) {
+        time = 60 * 6;
+      } else if (videoListLength > 80) {
+        time = 60 * 8;
+      } else if (videoListLength > 100) {
+        time = 60 * 10;
+      }
       this.interval = setInterval(() => {
         this.getVideoStatsList();
-      }, 1000 * 60);
+      }, 1000 * time);
     },
     changeAutoRefresh(val) {
       this.autoRefresh = !this.autoRefresh;
@@ -588,6 +601,7 @@ export default {
       console.log(validVideoList, '===========打印的 ------ getVideoStatsList');
       for (const video of validVideoList) {
         await updateVideoData(video);
+        await sleep(300);
       }
       this.changeSortBy();
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
