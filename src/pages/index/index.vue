@@ -571,7 +571,7 @@ export default {
         } catch (err) {
           let errMessage = isEmpty(err) ? '' : err;
           console.log(errMessage, '===========打印的 ------ updateVideoData');
-          if (errMessage == '352') {
+          if (errMessage == '-352') {
             errMessage = '请求被拦截，请使用爱加速切换IP';
             this.stopRing = false;
             this.warnVideoTitle = '请求被拦截';
