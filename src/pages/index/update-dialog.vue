@@ -139,7 +139,7 @@ export default {
         type: 'success',
         confirmButtonText: '确定',
         callback: () => {
-          localStorage.setItem('fktx', 'true');
+          localStorage.setItem('fktx1', 'true');
         },
       });
     }
