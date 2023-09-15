@@ -474,14 +474,18 @@ export default {
       clearInterval(this.interval);
       const videoListLength = this.videoList.length;
       let time = 60;
-      if (videoListLength > 20) {
+      if (videoListLength > 10) {
         time = 60 * 2;
-      } else if (videoListLength > 40) {
+      } else if (videoListLength > 20) {
         time = 60 * 4;
-      } else if (videoListLength > 60) {
+      } else if (videoListLength > 30) {
         time = 60 * 6;
-      } else if (videoListLength > 80) {
+      } else if (videoListLength > 40) {
         time = 60 * 8;
+      } else if (videoListLength > 60) {
+        time = 60 * 10;
+      } else if (videoListLength > 80) {
+        time = 60 * 10;
       } else if (videoListLength > 100) {
         time = 60 * 10;
       }
@@ -534,10 +538,10 @@ export default {
       }
       const updateVideoData = async (video) => {
         try {
-          const videoInfo = await getVideoInfo(video.bvid, 'bvid');
+          const videoInfo = await getVideoInfo(video.bvid, 'bvid', video.title);
           Object.assign(video, pick(videoInfo, pickKeysFromVideo));
           video.message = '';
-          getReplyHot(video.aid).then((hotReply) => {
+          getReplyHot(video).then((hotReply) => {
             const upper = hotReply.top.upper;
             if (upper) {
               const content = upper.content;
@@ -566,7 +570,9 @@ export default {
             }
           });
 
-          fetchVideoOnlineTotalInfo(video.aid, video.cid).then((totalInfo) => {
+          await sleep(200);
+
+          fetchVideoOnlineTotalInfo(video).then((totalInfo) => {
             let total = totalInfo.total;
             if (isString(total) && total.includes('+')) {
               total = 1000;
@@ -579,7 +585,7 @@ export default {
               this.customRing(30);
             }
           });
-          await sleep(100);
+          await sleep(200);
           // this.$set(this.videoList, index, video);
         } catch (err) {
           let errMessage = isEmpty(err) ? '' : err;
@@ -722,14 +728,14 @@ export default {
     if (autoRefresh !== '') {
       this.autoRefresh = autoRefresh;
     }
-    if (this.autoRefresh) {
-      this.startAutoRefresh();
-    }
-    this.startDeleteReply();
     let videoList = uni.getStorageSync('videoList');
     if (videoList) {
       this.videoList = videoList;
     }
+    if (this.autoRefresh) {
+      this.startAutoRefresh();
+    }
+    this.startDeleteReply();
   },
   onShow() {
     // this.startAutoRefresh();

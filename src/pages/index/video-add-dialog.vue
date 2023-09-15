@@ -96,25 +96,23 @@ export default {
             data.watchUpper = false;
             data.isCustom = true;
             data.deleteReply = false;
-            return fetchVideoOnlineTotalInfo(data.aid, data.cid).then(
-              (total) => {
-                data.total = total.total;
-                const index = this.videoList.findIndex((item) => {
-                  return item.aid === aid;
-                });
-                if (index > -1) {
-                  this.videoList.splice(index, 1, data);
-                } else {
-                  this.videoList.unshift(data);
-                }
-                const uniqVideoList = uniqBy(this.videoList, 'aid');
-                uni.setStorageSync('videoList', uniqVideoList);
-                uni.showToast({
-                  title: '添加成功',
-                  icon: 'none',
-                });
-              },
-            );
+            return fetchVideoOnlineTotalInfo(data).then((total) => {
+              data.total = total.total;
+              const index = this.videoList.findIndex((item) => {
+                return item.aid === aid;
+              });
+              if (index > -1) {
+                this.videoList.splice(index, 1, data);
+              } else {
+                this.videoList.unshift(data);
+              }
+              const uniqVideoList = uniqBy(this.videoList, 'aid');
+              uni.setStorageSync('videoList', uniqVideoList);
+              uni.showToast({
+                title: '添加成功',
+                icon: 'none',
+              });
+            });
           })
           .catch((error) => {
             uni.showToast({

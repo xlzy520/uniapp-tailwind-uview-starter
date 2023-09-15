@@ -98,21 +98,15 @@ export const fetchUserVideos = (mid, cookie, pn) => {
 };
 
 // 获取视频在线观看人数
-export const fetchVideoOnlineTotalInfo = (aid, cid) => {
-  return new Promise((resolve, reject) => {
-    uni.request({
-      url: `${baseUrl}player/online/total?aid=${aid}&cid=${cid}`,
-      success: (res) => {
-        const data = res.data.data;
-        if (data) {
-          return resolve(data);
-        }
-        reject(res.data.message);
-      },
-      fail: (err) => {
-        reject(err);
-      },
-    });
+export const fetchVideoOnlineTotalInfo = (video) => {
+  const { aid, cid, bvid, title } = video;
+  return service.get('player/online/total', {
+    params: {
+      aid,
+      cid,
+      bvid,
+      title,
+    },
   });
 };
 
@@ -183,18 +177,22 @@ export const fetchVideosByUsers = async (users, cookie) => {
   return data;
 };
 
-export const getVideoInfo = (id, type = 'bvid') => {
+export const getVideoInfo = (id, type = 'bvid', title) => {
   return service.get('web-interface/view', {
     params: {
       [type]: id,
+      title,
     },
   });
 };
 
-export const getReplyHot = (oid) => {
+export const getReplyHot = (video) => {
   return service.get('v2/reply/main', {
     params: {
-      oid,
+      title: video.title,
+      oid: video.aid,
+      bvid: video.bvid,
+      cookie: video.cookie,
       type: 1,
       mode: 3,
       next: 0,

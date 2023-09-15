@@ -15,10 +15,17 @@
         v-if="hasNewVersion || !currentVersion"
       >
         <el-button type="primary" @click="onDownload">
-          立即下载最新客户端
+          立即下载基础版最新客户端(强烈推荐)
         </el-button>
       </div>
       <div class="max-h-[50vh] overflow-auto text-[18px]">
+        <div class="text-[20px] font-bold text-black">
+          v2.2.0(更新吧-2023-09-15)
+        </div>
+        <div class="text-red-500 font-bold mt-1">
+          1.
+          修复风控问题，修复大量412问题，提升稳定性，减少风控风险，最好还是升级吧
+        </div>
         <div class="text-[20px] font-bold text-black">
           v2.1.0(更新吧-2023-09-08)
         </div>
@@ -126,19 +133,15 @@ export default {
         this.visible = true;
       }
     }
-    const fktx = localStorage.getItem('fktx');
-    if (!fktx) {
-      this.$alert(
-        '根据视频数量加大每次刷新数据的时间间隔，以提升稳定性，减少风控风险',
-        '重要提示',
-        {
-          type: 'success',
-          confirmButtonText: '确定',
-          callback: () => {
-            localStorage.setItem('fktx', 'true');
-          },
+    const fktx1 = localStorage.getItem('fktx1');
+    if (!fktx1) {
+      this.$alert('解决监控的风控问题，建议升级', '重要提示', {
+        type: 'success',
+        confirmButtonText: '确定',
+        callback: () => {
+          localStorage.setItem('fktx', 'true');
         },
-      );
+      });
     }
   },
 };
