@@ -485,9 +485,9 @@ export default {
       } else if (videoListLength > 60) {
         time = 60 * 10;
       } else if (videoListLength > 80) {
-        time = 60 * 10;
+        time = 60 * 12;
       } else if (videoListLength > 100) {
-        time = 60 * 10;
+        time = 60 * 15;
       }
       this.interval = setInterval(() => {
         this.getVideoStatsList();
@@ -540,7 +540,10 @@ export default {
         try {
           const videoInfo = await getVideoInfo(video.bvid, 'bvid', video.title);
           Object.assign(video, pick(videoInfo, pickKeysFromVideo));
-          video.message = '';
+          if (video.message) {
+            video.message = '';
+            this.saveVideoList(this.videoList);
+          }
           getReplyHot(video).then((hotReply) => {
             const upper = hotReply.top.upper;
             if (upper) {

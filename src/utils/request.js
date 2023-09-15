@@ -12,6 +12,9 @@ const service = axios.create({
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
+    if (res.birthday) {
+      return res;
+    }
     if (res.code !== 0) {
       uni.showToast({ title: res.message, icon: 'none' });
       return Promise.reject(res.message);
