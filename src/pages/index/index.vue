@@ -325,7 +325,7 @@ export default {
       run();
       clearInterval(this.deleteReplyInterval);
       this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 15);
+      this.deleteReplyInterval = setInterval(run, 1000 * 20);
     },
     delDm(video) {
       let keywords = localStorage.getItem('keywords');
