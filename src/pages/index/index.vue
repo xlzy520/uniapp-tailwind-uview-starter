@@ -11,7 +11,7 @@
       <u-checkbox-group class="ml-1 font-bold text-black">
         <u-checkbox
           :checked="autoRefresh"
-          label="定时刷新(根据视频数量)"
+          :label="'定时刷新:' + intervalText"
           name="autoRefresh"
           @change="changeAutoRefresh"
         ></u-checkbox>
@@ -298,6 +298,7 @@ export default {
       sortBy: 'total',
       sortFieldOptions,
       setTopReplyVisible: false,
+      intervalText: '',
     };
   },
   computed: {
@@ -489,6 +490,7 @@ export default {
       } else if (videoListLength > 100) {
         time = 60 * 15;
       }
+      this.intervalText = `${time / 60}分钟`;
       this.interval = setInterval(() => {
         this.getVideoStatsList();
       }, 1000 * time);

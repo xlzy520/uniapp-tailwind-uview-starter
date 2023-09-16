@@ -10,16 +10,23 @@
       @click="visible = true"
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
-      <div
-        class="mt-4 text-center mb-2"
-        v-if="hasNewVersion || !currentVersion"
-      >
+      <div class="text-center mb-2" v-if="hasNewVersion || !currentVersion">
         <el-button type="primary" @click="onDownload">
-          立即下载基础版最新客户端(强烈推荐)
+          立即下载最新客户端(强烈推荐)
         </el-button>
       </div>
       <div class="max-h-[50vh] overflow-auto text-[18px]">
         <div class="text-[20px] font-bold text-black">
+          v2.3.0(更新吧-2023-09-17)
+        </div>
+        <div class="text-red-500 font-bold mt-1">
+          1. 修复删评版风控问题，删评间隔时间调到1分钟
+        </div>
+        <div class="text-red-500 font-bold mt-1">
+          2.
+          如果评论超过200条，那么会按热度读取100条，按时间读取100条，进行删除，减少风控风险
+        </div>
+        <div class="text-[20px] font-bold text-black mt-1">
           v2.2.0(更新吧-2023-09-15)
         </div>
         <div class="text-red-500 font-bold mt-1">
@@ -91,6 +98,9 @@
           4. 修复如果以逗号结尾，会删除全部评论的问题
         </div>
       </div>
+      <div class="text-center">
+        <el-button type="primary" @click="noNotice">本版本不再提醒</el-button>
+      </div>
     </el-dialog>
   </view>
 </template>
@@ -113,7 +123,10 @@ export default {
   methods: {
     close() {
       this.visible = false;
+    },
+    noNotice() {
       localStorage.setItem('noticeVersion', this.version);
+      this.visible = false;
     },
     onDownload() {
       window.open(
