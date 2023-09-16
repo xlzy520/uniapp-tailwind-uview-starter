@@ -313,6 +313,14 @@ export default {
     },
     startDeleteReply() {
       const run = () => {
+        const hour = new Date().getHours();
+        // 如果是晚上12点到早上8点，30%的概率不删
+        if (hour > 0 && hour <= 8) {
+          const random = Math.random();
+          if (random < 0.3) {
+            return;
+          }
+        }
         const validVideoList = this.videoList.filter((item) => {
           return !['稿件不可见', '啥都木有'].includes(item.message);
         });
