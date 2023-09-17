@@ -7,7 +7,7 @@
         @updateVideoList="addVideoList"
       />
       <set-keywords-dialog class="ml-1" />
-      <update-dialog />
+      <update-dialog :hasUpdate="hasUpdate" />
       <u-checkbox-group class="ml-1 font-bold text-black">
         <u-checkbox
           :checked="autoRefresh"
@@ -342,6 +342,7 @@ export default {
       selections: [],
       searchForm: {},
       searchLoading: false,
+      hasUpdate: false,
     };
   },
   computed: {
@@ -672,11 +673,11 @@ export default {
             errMessage = '查询异常';
           }
           if (errMessage === '查询异常') {
-            errMessage = '请求被拦截，请使用爱加速切换IP';
-            this.stopRing = false;
-            this.warnVideoTitle = '请求被拦截';
-            this.warnText = `请求被拦截，请使用爱加速切换IP`;
-            this.customRing(3);
+            // errMessage = '请求被拦截，请使用爱加速切换IP';
+            // this.stopRing = false;
+            // this.warnVideoTitle = '请求被拦截';
+            // this.warnText = `请求被拦截，请使用爱加速切换IP`;
+            // this.customRing(3);
           }
           this.$set(video, 'message', errMessage);
           this.saveVideoList(this.videoList);
@@ -783,7 +784,12 @@ export default {
     const licenseError = uni.getStorageSync('licenseError');
     checkLicense(license)
       .then((res) => {
-        this.license = true;
+        this.license = license;
+        const version = res.version;
+        const currentVersion = res.currentVersion;
+        if (version !== currentVersion) {
+          this.hasUpdate = true;
+        }
         this.getVideoStatsList();
       })
       .catch(() => {

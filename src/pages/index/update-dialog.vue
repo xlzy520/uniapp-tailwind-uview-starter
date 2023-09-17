@@ -1,6 +1,6 @@
 <template>
   <view class="ml-1">
-    <u-button v-if="hasNewVersion" type="error" @click="visible = true">
+    <u-button v-if="hasUpdate" type="error" @click="visible = true">
       更新客户端({{ currentVersion }} -> {{ version }})
     </u-button>
     <u-tag
@@ -10,7 +10,7 @@
       @click="visible = true"
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
-      <div class="text-center mb-2" v-if="hasNewVersion || !currentVersion">
+      <div class="text-center mb-2" v-if="hasUpdate || !currentVersion">
         <el-button type="primary" @click="onDownload">
           立即下载最新客户端(强烈推荐)
         </el-button>
@@ -107,6 +107,12 @@
 
 <script>
 export default {
+  props: {
+    hasUpdate: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       keywords: '',
@@ -115,9 +121,15 @@ export default {
       currentVersion: '',
     };
   },
-  computed: {
-    hasNewVersion() {
-      return this.version !== this.currentVersion;
+  computed: {},
+  watch: {
+    hasUpdate(val) {
+      if (val) {
+        const noticeVersion = localStorage.getItem('noticeVersion');
+        if (noticeVersion !== this.version) {
+          this.visible = true;
+        }
+      }
     },
   },
   methods: {
@@ -141,7 +153,7 @@ export default {
     if (!this.currentVersion) {
       this.visible = true;
     }
-    if (this.hasNewVersion) {
+    if (this.hasUpdate) {
       if (noticeVersion !== this.version) {
         this.visible = true;
       }
