@@ -68,7 +68,11 @@
     </div>
     <div class="layout-slide">
       <view class="layout-items-center">
-        <el-button type="primary" @click="getVideoStatsList">
+        <el-button
+          type="primary"
+          :loading="searchLoading"
+          @click="getVideoStatsList"
+        >
           更新视频数据
         </el-button>
         <el-button
@@ -337,6 +341,7 @@ export default {
       intervalText: '',
       selections: [],
       searchForm: {},
+      searchLoading: false,
     };
   },
   computed: {
@@ -619,7 +624,7 @@ export default {
             video.message = '';
             this.saveVideoList(this.videoList);
           }
-          getReplyHot(video).then((hotReply) => {
+          await getReplyHot(video).then((hotReply) => {
             const upper = hotReply.top.upper;
             if (upper) {
               const content = upper.content;
@@ -648,9 +653,7 @@ export default {
             }
           });
 
-          await sleep(200);
-
-          fetchVideoOnlineTotalInfo(video).then((totalInfo) => {
+          return fetchVideoOnlineTotalInfo(video).then((totalInfo) => {
             let total = totalInfo.total;
             if (isString(total) && total.includes('+')) {
               total = 1000;
@@ -663,8 +666,6 @@ export default {
               this.customRing(30);
             }
           });
-          await sleep(200);
-          // this.$set(this.videoList, index, video);
         } catch (err) {
           let errMessage = isEmpty(err) ? '' : err;
           if (isObject(err)) {
@@ -685,11 +686,13 @@ export default {
         return !['稿件不可见', '啥都木有'].includes(item.message);
       });
       console.log(validVideoList, '===========打印的 ------ getVideoStatsList');
+      this.searchLoading = true;
       for (const video of validVideoList) {
         await updateVideoData(video);
         await sleep(300);
       }
       this.changeSortBy();
+      this.searchLoading = false;
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
     },
     changeDeleteReply(index) {
