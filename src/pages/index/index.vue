@@ -288,7 +288,7 @@ import {
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
 import { formatDate, sleep, getImgSize } from '@/utils';
-import { isEmpty, isString, pick, get } from 'lodash-es';
+import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
 import setKeywordsDialog from './set-keywords-dialog.vue';
@@ -667,8 +667,10 @@ export default {
           // this.$set(this.videoList, index, video);
         } catch (err) {
           let errMessage = isEmpty(err) ? '' : err;
-          console.log(errMessage, '===========打印的 ------ updateVideoData');
-          if (errMessage == '-352') {
+          if (isObject(err)) {
+            errMessage = '查询异常';
+          }
+          if (errMessage === '查询异常') {
             errMessage = '请求被拦截，请使用爱加速切换IP';
             this.stopRing = false;
             this.warnVideoTitle = '请求被拦截';
@@ -690,7 +692,6 @@ export default {
       this.changeSortBy();
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
     },
-    postUpperReply() {},
     changeDeleteReply(index) {
       const video = this.videoList[index];
       if (!video.deleteReply && !video.cookie) {
