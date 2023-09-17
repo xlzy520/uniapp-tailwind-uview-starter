@@ -483,20 +483,20 @@ export default {
       clearInterval(this.interval);
       const videoListLength = this.videoList.length;
       let time = 60;
-      if (videoListLength > 10) {
-        time = 60 * 2;
-      } else if (videoListLength > 20) {
-        time = 60 * 4;
-      } else if (videoListLength > 30) {
-        time = 60 * 6;
-      } else if (videoListLength > 40) {
-        time = 60 * 8;
+      if (videoListLength > 100) {
+        time = 60 * 12;
+      } else if (videoListLength > 80) {
+        time = 60 * 11;
       } else if (videoListLength > 60) {
         time = 60 * 10;
-      } else if (videoListLength > 80) {
-        time = 60 * 12;
-      } else if (videoListLength > 100) {
-        time = 60 * 15;
+      } else if (videoListLength > 40) {
+        time = 60 * 8;
+      } else if (videoListLength > 30) {
+        time = 60 * 6;
+      } else if (videoListLength > 20) {
+        time = 60 * 4;
+      } else if (videoListLength > 10) {
+        time = 60 * 2;
       }
       this.intervalText = `${time / 60}分钟`;
       this.interval = setInterval(() => {
