@@ -45,9 +45,17 @@
       <import-and-export />
       <remove-record />
     </view>
-    <view>
-      <view class="layout-items-center">
-        <view class="text-12"> 提醒音频链接： </view>
+    <div class="layout-items-center">
+      <view
+        class="text-[14px] font-bold text-pink-500 video-length layout-slide"
+      >
+        <view class=""> 共 {{ videoList.length }} 条视频 </view>
+        <view class="ml-2">
+          上次刷新时间：{{ formatDate(lastUpdateTimeForVideo) || '暂无' }}
+        </view>
+      </view>
+      <div class="layout-items-center ml-2">
+        <view class="text-12 whitespace-nowrap">音乐链接： </view>
         <u-input
           class="u-border-bottom"
           required
@@ -56,22 +64,50 @@
           placeholder="请输入提醒音频链接"
           @change="changeAudioUrl"
         />
+      </div>
+    </div>
+    <div class="layout-slide">
+      <view class="layout-items-center">
+        <el-button type="primary" @click="getVideoStatsList">
+          更新视频数据
+        </el-button>
+        <el-button
+          :disabled="!selections.length"
+          type="danger"
+          @click="batchDeleteVideo"
+        >
+          批量删除
+        </el-button>
       </view>
-    </view>
-    <view class="">
-      <u-button type="primary" @click="getVideoStatsList">
-        查询视频热度
-      </u-button>
-    </view>
-    <view class="text-[14px] font-bold text-pink-500 video-length layout-slide">
-      <view class=""> 共 {{ videoList.length }} 条视频 </view>
-      <view class="">
-        上次刷新时间：{{ formatDate(lastUpdateTimeForVideo) }}
-      </view>
-    </view>
+
+      <el-form :inline="true" :model="searchForm" class="flex">
+        <el-form-item label="视频标题">
+          <el-input
+            v-model="searchForm.title"
+            placeholder="视频标题"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="视频作者">
+          <el-input
+            v-model="searchForm.author"
+            placeholder="视频作者"
+          ></el-input>
+        </el-form-item>
+        <el-form-item>
+          <!--          <el-button type="primary" @click="onSubmit">筛选</el-button>-->
+          <el-button type="info" @click="onResetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
     <u-divider />
     <view class="video-list">
-      <el-table :data="videoList" style="width: 100%">
+      <el-table
+        :data="showVideoList"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column label="视频" width="300">
           <template slot-scope="{ row }">
             <el-tooltip :content="formatVideoTitle(row)">
@@ -299,14 +335,43 @@ export default {
       sortFieldOptions,
       setTopReplyVisible: false,
       intervalText: '',
+      selections: [],
+      searchForm: {},
     };
   },
   computed: {
     currentVideo() {
       return this.videoList[this.currentVideoIndex];
     },
+    showVideoList() {
+      const searchForm = this.searchForm;
+      const title = searchForm.title;
+      const author = searchForm.author;
+      return this.videoList.filter((item) => {
+        return (
+          (!title || item.title.includes(title)) &&
+          (!author || item.owner.name.includes(author))
+        );
+      });
+    },
   },
   methods: {
+    onResetSearch() {
+      this.searchForm = {};
+    },
+    handleSelectionChange(val) {
+      this.selections = val;
+      console.log(val, '===========打印的 ------ handleSelectionChange');
+    },
+    batchDeleteVideo() {
+      const videoList = this.videoList;
+      const selections = this.selections;
+      const newVideoList = videoList.filter((item) => {
+        return !selections.includes(item);
+      });
+      this.saveVideoList(newVideoList);
+      this.$message.success('批量删除成功');
+    },
     addVideoList(videoList) {
       this.saveVideoList(videoList);
       this.getVideoStatsList();

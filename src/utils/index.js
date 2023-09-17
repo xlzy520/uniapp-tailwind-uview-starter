@@ -7,7 +7,10 @@ export const formatTime = (time, template = 'YY/MM/DD HH:mm:ss') =>
   dayjs(time).format(template);
 
 export const formatDate = (time) => {
-  return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+  if (dayjs(time).isValid()) {
+    return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+  }
+  return '';
 };
 
 export const sleep = (time) => {
