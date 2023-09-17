@@ -8,14 +8,18 @@
       />
       <set-keywords-dialog class="ml-1" />
       <update-dialog :hasUpdate="hasUpdate" />
-      <u-checkbox-group class="ml-1 font-bold text-black">
-        <u-checkbox
-          :checked="autoRefresh"
-          :label="'定时刷新:' + intervalText"
-          name="autoRefresh"
-          @change="changeAutoRefresh"
-        ></u-checkbox>
-      </u-checkbox-group>
+      <el-tooltip
+        content="根据视频数量，自动调整刷新间隔时间，视频越多，间隔时间越长，减少风控风险，超过100个视频，间隔时间为10分钟，超过60个视频，间隔时间为6分钟，以此类推"
+      >
+        <u-checkbox-group class="ml-1 font-bold text-black">
+          <u-checkbox
+            :checked="autoRefresh"
+            :label="'定时刷新:' + intervalText"
+            name="autoRefresh"
+            @change="changeAutoRefresh"
+          ></u-checkbox>
+        </u-checkbox-group>
+      </el-tooltip>
       <div class="layout-items-center ml-1">
         <div class="text-[15px] font-bold">排序属性(↓)：</div>
         <el-select v-model="sortBy" @change="changeSortBy" class="w-6">
