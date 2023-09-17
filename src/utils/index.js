@@ -69,3 +69,21 @@ export const getImgSize = async (imgSrc) => {
     };
   });
 };
+
+export const getRecommendRefreshMinutes = (videoListLength) => {
+  let minutes = 1;
+  if (videoListLength > 100) {
+    minutes = 10;
+  } else if (videoListLength > 80) {
+    minutes = 8;
+  } else if (videoListLength > 60) {
+    minutes = 6;
+  } else if (videoListLength > 40) {
+    minutes = 4;
+  } else if (videoListLength > 30) {
+    minutes = 3;
+  } else if (videoListLength > 20) {
+    minutes = 2;
+  }
+  return minutes;
+};

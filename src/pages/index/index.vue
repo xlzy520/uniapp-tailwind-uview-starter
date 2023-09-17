@@ -14,7 +14,7 @@
         <u-checkbox-group class="ml-1 font-bold text-black">
           <u-checkbox
             :checked="autoRefresh"
-            :label="'定时刷新:' + intervalText"
+            :label="'定时刷新:' + intervalMinutes + '分钟'"
             name="autoRefresh"
             @change="changeAutoRefresh"
           ></u-checkbox>
@@ -48,6 +48,7 @@
       </view>
       <import-and-export />
       <remove-record />
+      <setting-dialog />
     </view>
     <div class="layout-items-center">
       <view
@@ -58,17 +59,6 @@
           上次刷新时间：{{ formatDate(lastUpdateTimeForVideo) || '暂无' }}
         </view>
       </view>
-      <div class="layout-items-center ml-2">
-        <view class="text-12 whitespace-nowrap">音乐链接： </view>
-        <u-input
-          class="u-border-bottom"
-          required
-          clearable
-          v-model="audioUrl"
-          placeholder="请输入提醒音频链接"
-          @change="changeAudioUrl"
-        />
-      </div>
     </div>
     <div class="layout-slide">
       <view class="layout-items-center">
@@ -295,7 +285,12 @@ import {
   setTopReply,
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
-import { formatDate, sleep, getImgSize } from '@/utils';
+import {
+  formatDate,
+  sleep,
+  getImgSize,
+  getRecommendRefreshMinutes,
+} from '@/utils';
 import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
@@ -307,6 +302,7 @@ import setTopReplyDialog from './set-top-reply-dialog.vue';
 import { getReplyData } from '@/utils/reply';
 import videoImportDialog from './video-import-dialog.vue';
 import removeRecord from './removeRecord.vue';
+import settingDialog from './setting-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -320,6 +316,7 @@ export default {
     setTopReplyDialog,
     videoImportDialog,
     removeRecord,
+    settingDialog,
   },
   data() {
     return {
@@ -342,7 +339,7 @@ export default {
       sortBy: 'total',
       sortFieldOptions,
       setTopReplyVisible: false,
-      intervalText: '',
+      intervalMinutes: 1,
       selections: [],
       searchForm: {},
       searchLoading: false,
@@ -557,24 +554,15 @@ export default {
     startAutoRefresh() {
       clearInterval(this.interval);
       const videoListLength = this.videoList.length;
-      let time = 60;
-      if (videoListLength > 100) {
-        time = 60 * 10;
-      } else if (videoListLength > 80) {
-        time = 60 * 8;
-      } else if (videoListLength > 60) {
-        time = 60 * 6;
-      } else if (videoListLength > 40) {
-        time = 60 * 4;
-      } else if (videoListLength > 30) {
-        time = 60 * 3;
-      } else if (videoListLength > 20) {
-        time = 60 * 2;
+      let minutes = getRecommendRefreshMinutes(videoListLength);
+      const refreshInterval = localStorage.getItem('refreshInterval');
+      if (refreshInterval > minutes) {
+        minutes = refreshInterval;
       }
-      this.intervalText = `${time / 60}分钟`;
+      this.intervalMinutes = minutes;
       this.interval = setInterval(() => {
         this.getVideoStatsList();
-      }, 1000 * time);
+      }, 1000 * 60 * minutes);
     },
     changeAutoRefresh(val) {
       this.autoRefresh = !this.autoRefresh;
@@ -585,9 +573,6 @@ export default {
         this.interval = null;
       }
       uni.setStorageSync('autoRefresh', this.autoRefresh);
-    },
-    changeAudioUrl() {
-      uni.setStorageSync('audioUrl', this.audioUrl);
     },
     customRing(count) {
       if (count === 0) {
