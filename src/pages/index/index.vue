@@ -435,6 +435,11 @@ export default {
           }
         })
         .catch((err) => {
+          console.log(err, '===========打印的 ------ ');
+          const errMsg = String(err);
+          if (errMsg.includes('激活失败')) {
+            return;
+          }
           uni.showModal({
             title: '提示',
             content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
@@ -488,6 +493,10 @@ export default {
           });
         })
         .catch((err) => {
+          const errMsg = String(err);
+          if (errMsg.includes('激活失败')) {
+            return;
+          }
           uni.showModal({
             title: '提示',
             content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
