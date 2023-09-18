@@ -650,6 +650,8 @@ export default {
             }
           });
 
+          this.$message.success(`更新视频数据：${video.title} 成功`);
+
           return fetchVideoOnlineTotalInfo(video).then((totalInfo) => {
             let total = totalInfo.total;
             if (isString(total) && total.includes('+')) {
@@ -776,26 +778,6 @@ export default {
     },
   },
   mounted() {
-    const license = uni.getStorageSync('license');
-    const licenseError = uni.getStorageSync('licenseError');
-    checkLicense(license)
-      .then((res) => {
-        this.license = license;
-        const version = res.version;
-        const currentVersion = res.currentVersion;
-        if (version !== currentVersion) {
-          this.hasUpdate = true;
-        }
-        this.getVideoStatsList();
-      })
-      .catch(() => {
-        clearInterval(this.deleteReplyInterval);
-        this.deleteReplyInterval = null;
-        uni.setStorageSync('licenseError', 'true');
-        uni.navigateTo({
-          url: '/pages/index/license',
-        });
-      });
     const autoRefresh = uni.getStorageSync('autoRefresh');
     const remindNum = uni.getStorageSync('remindNum');
     const audioUrl = uni.getStorageSync('audioUrl');
@@ -816,6 +798,26 @@ export default {
     if (videoList) {
       this.videoList = videoList;
     }
+    const license = uni.getStorageSync('license');
+    const licenseError = uni.getStorageSync('licenseError');
+    checkLicense(license)
+      .then((res) => {
+        this.license = license;
+        const version = res.version;
+        const currentVersion = res.currentVersion;
+        if (version !== currentVersion) {
+          this.hasUpdate = true;
+        }
+        this.getVideoStatsList();
+      })
+      .catch(() => {
+        clearInterval(this.deleteReplyInterval);
+        this.deleteReplyInterval = null;
+        uni.setStorageSync('licenseError', 'true');
+        uni.navigateTo({
+          url: '/pages/index/license',
+        });
+      });
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
