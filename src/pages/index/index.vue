@@ -650,7 +650,7 @@ export default {
             }
           });
 
-          this.$message.success(`更新视频数据：${video.title} 成功`);
+          // this.$message.success(`更新视频数据：${video.title} 成功`);
 
           return fetchVideoOnlineTotalInfo(video).then((totalInfo) => {
             let total = totalInfo.total;
