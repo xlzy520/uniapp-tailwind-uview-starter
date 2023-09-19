@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+export const isDev = process.env.NODE_ENV === 'development';
+
 export const BaseOrigin =
   'http://localhost:' + (localStorage.getItem('port') || '5000');
 

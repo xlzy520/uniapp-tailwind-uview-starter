@@ -104,6 +104,9 @@
 .el-button{
   //display: block !important;
 }
-.el-form-item{
-  display: flex!important;
+.search-form{
+  .el-form-item{
+    display: flex!important;
+  }
+
 }

@@ -243,6 +243,10 @@ export const batchDeleteReply = (videoList) => {
   });
 };
 
+export const delReply = (video) => {
+  return service.post('/v2/reply/del', { video });
+};
+
 export const checkLicense = (license) => {
   let extId = uni.getDeviceInfo().deviceId;
   if (extId.length < 32) {

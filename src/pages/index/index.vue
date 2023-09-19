@@ -78,7 +78,7 @@
         </el-button>
       </view>
 
-      <el-form :inline="true" :model="searchForm" class="flex">
+      <el-form :inline="true" :model="searchForm" class="flex search-form">
         <el-form-item label="视频标题">
           <el-input
             v-model="searchForm.title"
@@ -207,12 +207,20 @@
                 </el-button>
               </el-tooltip>
               <el-button
-                v-if="row.watchUpper"
+                v-if="row.watchUpper || showUpdateSetTop"
                 type="primary"
                 size="mini"
                 @click="showSetTopReplyConfig($index)"
               >
                 补置顶
+              </el-button>
+              <el-button
+                v-if="showUpdateSetTop"
+                type="primary"
+                size="mini"
+                @click="updateSetTop($index)"
+              >
+                更新置顶
               </el-button>
               <el-popconfirm
                 class="ml-[5px]"
@@ -277,6 +285,7 @@
 import {
   checkLicense,
   delDm,
+  delReply,
   delReplyByVideoAndCookie,
   fetchVideoOnlineTotalInfo,
   getReplyHot,
@@ -290,6 +299,7 @@ import {
   sleep,
   getImgSize,
   getRecommendRefreshMinutes,
+  isDev,
 } from '@/utils';
 import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
@@ -360,6 +370,15 @@ export default {
           (!author || item.owner.name.includes(author))
         );
       });
+    },
+    showUpdateSetTop() {
+      if (isDev) {
+        return true;
+      }
+      return (
+        this.license ===
+        'b6c020b3131f66e314a3eb39d030c74bf7c0163336d7281726df28503961e796'
+      );
     },
   },
   methods: {
@@ -635,6 +654,7 @@ export default {
                 mid: upper.mid,
                 uname: upper.uname,
                 avatar: upper.avatar,
+                rpid: upper.rpid,
                 message,
                 pictures,
               });
@@ -775,6 +795,24 @@ export default {
         .catch((err) => {
           console.log(err, '===========打印的 ------ ');
         });
+    },
+    updateSetTop(index) {
+      const video = this.videoList[index];
+      const cookie = video.cookie;
+      if (!cookie) {
+        const message = `【${video.title}】请先配置该视频作者的CK，否则无法自动补置顶`;
+        this.$message.error(message);
+        return;
+      }
+      const upper = video.upper;
+      if (!upper) {
+        this.$message.error('该视频没有置顶');
+        return;
+      }
+      delReply(video).then(() => {
+        this.$message.success('删除置顶成功');
+        this.addTopReply(video);
+      });
     },
   },
   mounted() {
