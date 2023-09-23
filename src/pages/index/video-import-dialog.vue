@@ -1,7 +1,12 @@
 <template>
   <view class="add-video">
     <u-button type="success" @click="visible = true">根据CK批量导入</u-button>
-    <el-dialog title="批量导入用户视频" :visible.sync="visible" width="60%">
+    <el-dialog
+      title="批量导入用户视频"
+      :visible.sync="visible"
+      width="60%"
+      :close-on-click-modal="false"
+    >
       <div class="text-center w-full mb-2">
         <el-link
           underline
