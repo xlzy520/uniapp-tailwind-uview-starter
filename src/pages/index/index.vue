@@ -632,6 +632,7 @@ export default {
       if (this.videoList.length === 0) {
         return;
       }
+      let errorVideoCount = 0;
       const updateVideoData = async (video) => {
         try {
           const videoInfo = await getVideoInfo(video.bvid, 'bvid', video.title);
@@ -689,13 +690,15 @@ export default {
           let errMessage = isEmpty(err) ? '' : err;
           if (isObject(err)) {
             errMessage = '查询异常';
+            errorVideoCount += 1;
           }
-          if (errMessage === '查询异常') {
-            // errMessage = '请求被拦截，请使用爱加速切换IP';
-            // this.stopRing = false;
-            // this.warnVideoTitle = '请求被拦截';
-            // this.warnText = `请求被拦截，请使用爱加速切换IP`;
-            // this.customRing(3);
+          if (errMessage === '查询异常' && errorVideoCount > 3) {
+            errMessage =
+              '多个视频查询异常，检查请求是否被拦截，请使用爱加速切换IP';
+            this.stopRing = false;
+            this.warnVideoTitle = '多个视频查询异常';
+            this.warnText = `多个视频查询异常，检查请求是否被拦截，请使用爱加速切换IP`;
+            this.customRing(3);
           }
           this.$set(video, 'message', errMessage);
           this.saveVideoList(this.videoList);
