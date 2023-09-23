@@ -76,6 +76,9 @@
         >
           批量删除
         </el-button>
+        <el-button type="primary" @click="onProxySetting">
+          IP代理配置(新增功能，预期：查询异常时，自动切换IP)
+        </el-button>
       </view>
 
       <el-form :inline="true" :model="searchForm" class="flex search-form">
@@ -388,6 +391,9 @@ export default {
     handleSelectionChange(val) {
       this.selections = val;
       console.log(val, '===========打印的 ------ handleSelectionChange');
+    },
+    onProxySetting() {
+      this.$message.warning('开发中');
     },
     batchDeleteVideo() {
       const videoList = this.videoList;
