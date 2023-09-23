@@ -4,6 +4,7 @@
     :visible="true"
     width="60%"
     @close="close"
+    :close-on-click-modal="false"
   >
     <div class="text-center w-full mb-2">
       <el-link
@@ -87,6 +88,7 @@ export default {
     onSubmitCK() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
+          this.form.cookie = this.form.cookie.trim();
           this.$emit('submit', this.form);
         }
       });

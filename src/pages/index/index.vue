@@ -226,7 +226,7 @@ export default {
       run();
       clearInterval(this.deleteReplyInterval);
       this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 30);
+      this.deleteReplyInterval = setInterval(run, 1000 * 35);
     },
     delReplyByVideoAndCookie(video) {
       let keywords = localStorage.getItem('keywords');
