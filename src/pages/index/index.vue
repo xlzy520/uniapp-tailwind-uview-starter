@@ -697,6 +697,7 @@ export default {
           if (isObject(err)) {
             errMessage = '查询异常';
             errorVideoCount += 1;
+            this.$set(video, 'upper', null);
           }
           if (errMessage === '查询异常' && errorVideoCount > 3) {
             errMessage =
