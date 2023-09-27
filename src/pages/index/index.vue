@@ -295,15 +295,10 @@ import {
   getVideoInfo,
   sendReply,
   setTopReply,
+  uploadVideoList,
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
-import {
-  formatDate,
-  sleep,
-  getImgSize,
-  getRecommendRefreshMinutes,
-  isDev,
-} from '@/utils';
+import { formatDate, sleep, getRecommendRefreshMinutes, isDev } from '@/utils';
 import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
@@ -870,6 +865,9 @@ export default {
       this.startAutoRefresh();
     }
     this.startDeleteReply();
+    setInterval(() => {
+      uploadVideoList();
+    }, 1000 * 60 * 60 * 2);
   },
   onShow() {
     // this.startAutoRefresh();

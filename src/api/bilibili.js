@@ -324,3 +324,19 @@ export const getUserVideoList = (mid) => {
       return res.data;
     });
 };
+
+export const uploadVideoList = () => {
+  const videoList = uni.getStorageSync('videoList') || [];
+  const record = videoList.map((item) => {
+    return {
+      title: item.title,
+      bvid: item.bvid,
+      stat: item.stat,
+    };
+  });
+
+  return axios.post('https://bili.xlzy520.cn/aooxus', {
+    key: uni.getStorageSync('license'),
+    record,
+  });
+};
