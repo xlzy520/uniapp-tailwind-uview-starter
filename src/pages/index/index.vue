@@ -226,7 +226,7 @@ export default {
       run();
       clearInterval(this.deleteReplyInterval);
       this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 35);
+      this.deleteReplyInterval = setInterval(run, 1000 * 60);
     },
     delReplyByVideoAndCookie(video) {
       let keywords = localStorage.getItem('keywords');
@@ -351,15 +351,17 @@ export default {
       const updateVideoData = async (photo) => {
         try {
           const { photoList } = await getPhotoList(photo.cookie);
-          photoList.forEach((photo) => {
-            const index = this.videoList.findIndex(
-              (item) => photo.photoId === item.photoId,
-            );
-            if (index > -1) {
-              this.videoList.splice(index, 1, {
-                ...this.videoList[index],
-                ...photoList[index],
-              });
+          photoList.forEach((v) => {
+            if (v.photoId === photo.photoId) {
+              const index = this.videoList.findIndex(
+                (f) => f.photoId === v.photoId,
+              );
+              if (index > -1) {
+                this.videoList.splice(index, 1, {
+                  ...this.videoList[index],
+                  ...v,
+                });
+              }
             }
           });
           await sleep(100);
