@@ -211,22 +211,25 @@ export default {
       this.getVideoStatsList();
     },
     startDeleteReply() {
-      const run = () => {
+      const run = async () => {
         const validVideoList = this.videoList.filter((item) => {
           return true;
           return !['稿件不可见', '啥都木有'].includes(item.message);
         });
         console.log(validVideoList, '===========打印的 ------ validVideoList');
-        validVideoList.forEach((video) => {
+        for (const video of validVideoList) {
           if (video.deleteReply && video.cookie) {
-            this.delReplyByVideoAndCookie(video);
+            await this.delReplyByVideoAndCookie(video);
           }
-        });
+        }
+        setTimeout(() => {
+          run();
+        }, 1000 * 60);
       };
       run();
-      clearInterval(this.deleteReplyInterval);
-      this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 60);
+      // clearInterval(this.deleteReplyInterval);
+      // this.deleteReplyInterval = null;
+      // this.deleteReplyInterval = setInterval(run, 1000 * 60);
     },
     delReplyByVideoAndCookie(video) {
       let keywords = localStorage.getItem('keywords');
