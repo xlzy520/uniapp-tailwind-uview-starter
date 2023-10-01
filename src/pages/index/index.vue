@@ -222,9 +222,10 @@ export default {
             await this.delReplyByVideoAndCookie(video);
           }
         }
+        const randomMinuteSleep = Math.floor(Math.random() * 9) + 10;
         setTimeout(() => {
           run();
-        }, 1000 * 60);
+        }, 1000 * 60 * randomMinuteSleep);
       };
       run();
       // clearInterval(this.deleteReplyInterval);
