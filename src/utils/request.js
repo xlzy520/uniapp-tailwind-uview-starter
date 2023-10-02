@@ -4,7 +4,7 @@ const baseUrl = 'http://localhost:5000/ks/';
 
 const service = axios.create({
   baseURL: baseUrl,
-  timeout: 60 * 1000,
+  timeout: 180 * 1000,
 });
 
 service.interceptors.response.use(
