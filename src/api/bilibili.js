@@ -230,7 +230,10 @@ export const submitDynamic = ({ cookie, data }) => {
 };
 
 export const delReplyByVideoAndCookie = (video) => {
-  return service.post('/v2/reply/delByVideoAndCookie', { video });
+  return service.post('/v2/reply/delByVideoAndCookie', {
+    video,
+    useAddBlack: true,
+  });
 };
 
 export const delDm = (video) => {

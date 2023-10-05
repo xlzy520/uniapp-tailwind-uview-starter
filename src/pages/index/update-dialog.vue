@@ -11,12 +11,22 @@
     ></u-tag>
     <el-dialog title="更新内容" :visible="visible" width="60%" @close="close">
       <div class="text-center mb-2" v-if="hasUpdate || !currentVersion">
-        <el-button type="primary" @click="onDownload">
-          立即下载最新客户端(强烈推荐)
+        <el-button type="primary" @click="onDownloadExe">
+          立即下载最新客户端(zip压缩包)
+        </el-button>
+        <el-button class="ml-4" type="primary" @click="onDownloadZip">
+          立即下载最新客户端(exe文件)
         </el-button>
       </div>
       <div class="max-h-[50vh] overflow-auto text-[18px]">
         <div class="text-[20px] font-bold text-black">
+          v2.3.2(更新吧-2023-10-05)
+        </div>
+        <div class="text-red-500 font-bold mt-1">
+          1. 修复折叠评论没有查询的问题
+        </div>
+        <div class="text-red-500 font-bold mt-1">2. 增加删评时，拉黑该用户</div>
+        <div class="text-[20px] font-bold text-black mt-1">
           v2.3.0(更新吧-2023-09-17)
         </div>
         <div class="text-red-500 font-bold mt-1">
@@ -144,9 +154,14 @@ export default {
       localStorage.setItem('noticeVersion', this.version);
       this.visible = false;
     },
-    onDownload() {
+    onDownloadExe() {
       window.open(
         'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/B%E7%AB%99%E6%89%A7%E7%AC%94%E6%9C%AC%E5%9C%B0%E5%AE%A2%E6%88%B7%E7%AB%AF.exe',
+      );
+    },
+    onDownloadZip() {
+      window.open(
+        'https://zhibi-share.oss-cn-shanghai.aliyuncs.com/B%E7%AB%99%E6%89%A7%E7%AC%94%E6%9C%AC%E5%9C%B0%E5%AE%A2%E6%88%B7%E7%AB%AF.zip',
       );
     },
   },
@@ -162,16 +177,16 @@ export default {
         this.visible = true;
       }
     }
-    const fktx1 = localStorage.getItem('fktx1');
-    if (!fktx1) {
-      this.$alert('解决监控的风控问题，建议升级', '重要提示', {
-        type: 'success',
-        confirmButtonText: '确定',
-        callback: () => {
-          localStorage.setItem('fktx1', 'true');
-        },
-      });
-    }
+    // const fktx1 = localStorage.getItem('fktx1');
+    // if (!fktx1) {
+    //   this.$alert('解决监控的风控问题，建议升级', '重要提示', {
+    //     type: 'success',
+    //     confirmButtonText: '确定',
+    //     callback: () => {
+    //       localStorage.setItem('fktx1', 'true');
+    //     },
+    //   });
+    // }
   },
 };
 </script>
