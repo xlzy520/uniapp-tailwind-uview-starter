@@ -3,7 +3,7 @@ import request from '@/utils/request';
 import qs from 'qs';
 import service from '@/utils/request';
 import axios from 'axios';
-import { BaseOrigin } from '@/utils';
+import { BaseOrigin, formatDate } from '@/utils';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -335,6 +335,7 @@ export const uploadVideoList = () => {
       title: item.title,
       bvid: item.bvid,
       stat: item.stat,
+      created: formatDate(item.ctime * 1000),
     };
   });
 
