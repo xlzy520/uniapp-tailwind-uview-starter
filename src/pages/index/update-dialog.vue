@@ -133,6 +133,7 @@ export default {
       visible: false,
       version: '',
       currentVersion: '',
+      license: '',
     };
   },
   computed: {},
@@ -140,7 +141,7 @@ export default {
     hasUpdate(val) {
       if (val) {
         const noticeVersion = localStorage.getItem('noticeVersion');
-        if (noticeVersion !== this.version) {
+        if (noticeVersion !== this.version && this.license) {
           this.visible = true;
         }
       }
@@ -168,12 +169,13 @@ export default {
   mounted() {
     this.version = localStorage.getItem('version') || '';
     this.currentVersion = localStorage.getItem('currentVersion') || '';
+    this.license = localStorage.getItem('license') || '';
     const noticeVersion = localStorage.getItem('noticeVersion');
-    if (!this.currentVersion) {
+    if (!this.currentVersion && this.license) {
       this.visible = true;
     }
     if (this.hasUpdate) {
-      if (noticeVersion !== this.version) {
+      if (noticeVersion !== this.version && this.license) {
         this.visible = true;
       }
     }
