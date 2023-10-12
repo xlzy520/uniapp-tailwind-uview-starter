@@ -99,7 +99,7 @@ export default {
             return fetchVideoOnlineTotalInfo(data).then((total) => {
               data.total = total.total;
               const index = this.videoList.findIndex((item) => {
-                return item.aid === aid;
+                return item.aid === data.aid;
               });
               if (index > -1) {
                 this.videoList.splice(index, 1, data);
