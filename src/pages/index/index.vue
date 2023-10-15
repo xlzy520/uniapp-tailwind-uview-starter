@@ -139,7 +139,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="在线" width="100">
+        <el-table-column label="在线" width="100" prop="total" sortable>
           <template slot-scope="{ row }">
             <div class="video-user-total">
               <div class="flex">
@@ -168,7 +168,7 @@
             <div class="video-author">{{ row.owner && row.owner.name }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="投稿时间" width="120">
+        <el-table-column label="投稿时间" width="120" sortable prop="ctime">
           <template slot-scope="{ row }">
             <div class="video-author">
               {{ row.ctime && formatDate(row.ctime * 1000) }}
