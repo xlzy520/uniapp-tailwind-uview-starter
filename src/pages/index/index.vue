@@ -625,7 +625,7 @@ export default {
       });
     },
     formatDate,
-    async getVideoStatsList() {
+    async getVideoStatsList(defaultVideo) {
       const licenseError = uni.getStorageSync('licenseError');
       if (!this.license || licenseError) {
         return;
@@ -667,7 +667,9 @@ export default {
                 this.warnVideoTitle = video.title;
                 this.warnText = `置顶丢失`;
                 this.customRing(30);
-                this.addTopReply(video);
+                if (!defaultVideo) {
+                  this.addTopReply(video);
+                }
               }
             }
           });
@@ -707,6 +709,9 @@ export default {
         }
       };
       const validVideoList = this.videoList.filter((item) => {
+        if (defaultVideo) {
+          return item.aid === defaultVideo.aid;
+        }
         return !['稿件不可见', '啥都木有'].includes(item.message);
       });
       console.log(validVideoList, '===========打印的 ------ getVideoStatsList');
@@ -794,7 +799,7 @@ export default {
           }).then((res) => {
             this.$alert(`【${video.title}】补置顶成功`, '提示');
             this.stopRing = true;
-            this.getVideoStatsList();
+            this.getVideoStatsList(video);
           });
         })
         .catch((err) => {
