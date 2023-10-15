@@ -76,9 +76,9 @@
         >
           批量删除
         </el-button>
-        <el-button type="primary" @click="onProxySetting">
-          IP代理配置(新增功能，预期：查询异常时，自动切换IP)
-        </el-button>
+        <!--        <el-button type="primary" @click="onProxySetting">-->
+        <!--          IP代理配置(新增功能，预期：查询异常时，自动切换IP)-->
+        <!--        </el-button>-->
       </view>
 
       <el-form :inline="true" :model="searchForm" class="flex search-form">
@@ -94,8 +94,17 @@
             placeholder="视频作者"
           ></el-input>
         </el-form-item>
+        <el-form-item label="投稿时间">
+          <el-date-picker
+            v-model="searchForm.ctime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          ></el-date-picker>
+        </el-form-item>
         <el-form-item>
-          <!--          <el-button type="primary" @click="onSubmit">筛选</el-button>-->
+          <el-button type="primary">筛选</el-button>
           <el-button type="info" @click="onResetSearch">重置</el-button>
         </el-form-item>
       </el-form>
@@ -360,12 +369,16 @@ export default {
     },
     showVideoList() {
       const searchForm = this.searchForm;
+      console.log(searchForm, '===========打印的 ------ showVideoList');
       const title = searchForm.title;
       const author = searchForm.author;
       return this.videoList.filter((item) => {
         return (
           (!title || item.title.includes(title)) &&
-          (!author || item.owner.name.includes(author))
+          (!author || item.owner.name.includes(author)) &&
+          (!searchForm.ctime ||
+            (item.ctime >= searchForm.ctime[0].valueOf() / 1000 &&
+              item.ctime <= searchForm.ctime[1].valueOf() / 1000))
         );
       });
     },
