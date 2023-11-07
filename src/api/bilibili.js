@@ -236,6 +236,12 @@ export const delReplyByVideoAndCookie = (video) => {
   });
 };
 
+export const batchSendMsg = (video) => {
+  return service.post('/v2/reply/batchSendMsg', {
+    video,
+  });
+};
+
 export const delDm = (video) => {
   return service.post('/delDm', { video });
 };

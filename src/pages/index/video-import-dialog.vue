@@ -1,6 +1,6 @@
 <template>
   <view class="add-video ml-1">
-    <u-button type="success" @click="visible = true">批量导入(已修复)</u-button>
+    <u-button type="success" @click="visible = true">批量导入</u-button>
     <el-dialog title="批量导入用户视频" :visible.sync="visible" width="60%">
       <el-form
         :model="form"

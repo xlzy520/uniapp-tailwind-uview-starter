@@ -2,19 +2,21 @@
   <view class="video-list-page">
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
-      <video-import-dialog
-        :video-list="videoList"
-        @updateVideoList="addVideoList"
-      />
-      <set-keywords-dialog class="ml-1" />
-      <update-dialog :hasUpdate="hasUpdate" />
+      <!--      <video-import-dialog-->
+      <!--        :video-list="videoList"-->
+      <!--        @updateVideoList="addVideoList"-->
+      <!--      />-->
+      <add-ck-list-dialog class="ml-1" />
+      <set-msg-content-dialog class="ml-1" />
+      <!--      <set-keywords-dialog class="ml-1" />-->
+      <!--      <update-dialog :hasUpdate="hasUpdate" />-->
       <el-tooltip
         content="根据视频数量，自动调整刷新间隔时间，视频越多，间隔时间越长，减少风控风险，超过100个视频，间隔时间为10分钟，超过60个视频，间隔时间为6分钟，以此类推"
       >
         <u-checkbox-group class="ml-1 font-bold text-black">
           <u-checkbox
             :checked="autoRefresh"
-            :label="'定时刷新:' + intervalMinutes + '分钟'"
+            :label="'定时刷新: 30分钟'"
             name="autoRefresh"
             @change="changeAutoRefresh"
           ></u-checkbox>
@@ -62,6 +64,13 @@
     </div>
     <div class="layout-slide">
       <view class="layout-items-center">
+        <el-button
+          type="primary"
+          :loading="sendMsgLoading"
+          @click="startDeleteReply"
+        >
+          开始私信
+        </el-button>
         <el-button
           type="primary"
           :loading="searchLoading"
@@ -184,56 +193,59 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="删评" width="100">
+        <el-table-column label="私信进度" width="100">
           <template slot-scope="{ row }">
             <div class="">
-              {{ row.deleteReply ? '删评中' : '' }}
+              {{ row.sendMsgLoading ? '正在私信中...' : '' }}
             </div>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="">
           <template slot-scope="{ row, $index }">
             <div class="video-action">
-              <el-button
-                size="mini"
-                :type="row.watchUpper ? 'danger' : 'primary'"
-                class="video-action-button"
-                @click="watchUpper($index)"
-              >
-                {{ row.watchUpper ? '取消监控' : '监控置顶' }}
+              <!--              <el-button-->
+              <!--                size="mini"-->
+              <!--                :type="row.watchUpper ? 'danger' : 'primary'"-->
+              <!--                class="video-action-button"-->
+              <!--                @click="watchUpper($index)"-->
+              <!--              >-->
+              <!--                {{ row.watchUpper ? '取消监控' : '监控置顶' }}-->
+              <!--              </el-button>-->
+              <!--              <el-button-->
+              <!--                size="mini"-->
+              <!--                type="primary"-->
+              <!--                @click="showCKConfigDialog($index)"-->
+              <!--              >-->
+              <!--                CK配置-->
+              <!--              </el-button>-->
+              <!--              <el-tooltip content="自动私信">-->
+              <!--                <el-button-->
+              <!--                  size="mini"-->
+              <!--                  :type="row.deleteReply ? 'danger' : 'primary'"-->
+              <!--                  @click="changeDeleteReply($index)"-->
+              <!--                >-->
+              <!--                  {{ row.deleteReply ? '关闭私信' : '启动私信' }}-->
+              <!--                </el-button>-->
+              <!--              </el-tooltip>-->
+              <el-button size="mini" type="primary" @click="batchSendMsg(row)">
+                立即私信
               </el-button>
-              <el-button
-                size="mini"
-                type="primary"
-                @click="showCKConfigDialog($index)"
-              >
-                CK配置
-              </el-button>
-              <el-tooltip content="删除符合关键词的评论和弹幕">
-                <el-button
-                  size="mini"
-                  :type="row.deleteReply ? 'danger' : 'primary'"
-                  @click="changeDeleteReply($index)"
-                >
-                  {{ row.deleteReply ? '关闭删评' : '启动删评' }}
-                </el-button>
-              </el-tooltip>
-              <el-button
-                v-if="row.watchUpper || showUpdateSetTop"
-                type="primary"
-                size="mini"
-                @click="showSetTopReplyConfig($index)"
-              >
-                补置顶
-              </el-button>
-              <el-button
-                v-if="showUpdateSetTop"
-                type="primary"
-                size="mini"
-                @click="updateSetTop($index)"
-              >
-                更新置顶
-              </el-button>
+              <!--              <el-button-->
+              <!--                v-if="row.watchUpper || showUpdateSetTop"-->
+              <!--                type="primary"-->
+              <!--                size="mini"-->
+              <!--                @click="showSetTopReplyConfig($index)"-->
+              <!--              >-->
+              <!--                补置顶-->
+              <!--              </el-button>-->
+              <!--              <el-button-->
+              <!--                v-if="showUpdateSetTop"-->
+              <!--                type="primary"-->
+              <!--                size="mini"-->
+              <!--                @click="updateSetTop($index)"-->
+              <!--              >-->
+              <!--                更新置顶-->
+              <!--              </el-button>-->
               <el-popconfirm
                 class="ml-[5px]"
                 title="确定删除该视频吗？"
@@ -294,11 +306,12 @@
 </template>
 
 <script>
+import dayjs from 'dayjs';
 import {
   checkLicense,
   delDm,
   delReply,
-  delReplyByVideoAndCookie,
+  batchSendMsg,
   fetchVideoOnlineTotalInfo,
   getReplyHot,
   getVideoInfo,
@@ -312,6 +325,7 @@ import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
 import setKeywordsDialog from './set-keywords-dialog.vue';
+import setMsgContentDialog from './set-msg-content-dialog.vue';
 import updateDialog from './update-dialog.vue';
 import ImportAndExport from './importAndExport.vue';
 import setCkDialog from './set-ck-dialog.vue';
@@ -320,6 +334,7 @@ import { getReplyData } from '@/utils/reply';
 import videoImportDialog from './video-import-dialog.vue';
 import removeRecord from './removeRecord.vue';
 import settingDialog from './setting-dialog.vue';
+import addCkListDialog from './add-ck-list-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -334,6 +349,8 @@ export default {
     videoImportDialog,
     removeRecord,
     settingDialog,
+    setMsgContentDialog,
+    addCkListDialog,
   },
   data() {
     return {
@@ -361,6 +378,10 @@ export default {
       searchForm: {},
       searchLoading: false,
       hasUpdate: false,
+      sendMsgCookies: [
+        `buvid3=E3F42A62-C6CC-4E4D-841F-B05EAE79AD2819386infoc; b_nut=1693240519; i-wanna-go-back=-1; b_ut=7; b_lsid=8BD2EC1E_18A3CFFEC7C; bsource=search_baidu; _uuid=DA105EB61-DB35-6A8D-9792-36D9C5C2EA5719819infoc; home_feed_column=5; browser_resolution=2560-950; buvid4=7062A504-A7E0-ACD4-F8F5-6FEF1EB5431120568-023082900-J+KZ1sWDfaVSU7YgVaUNaw==; csrf_state=542aaec5cfde6ff861a067b439ca0235; SESSDATA=6e397df7,1708792528,7663f*82g-rjOcf8Kp7IMoPxWX_fJtqmJaLYUa9laDRTf2P5eZFpk-sv6-QVTYGFANafUCfnEEoSWgAADAA; bili_jct=e8b7674d8af0713976d3904029f8369f; DedeUserID=385751312; DedeUserID__ckMd5=73f1315e8356dec4; sid=fa158hja; rpdid=|()k~RYJmmJ0J'uYmJkR|ll)`,
+      ],
+      sendMsgLoading: false,
     };
   },
   computed: {
@@ -369,7 +390,6 @@ export default {
     },
     showVideoList() {
       const searchForm = this.searchForm;
-      console.log(searchForm, '===========打印的 ------ showVideoList');
       const title = searchForm.title;
       const author = searchForm.author;
       return this.videoList.filter((item) => {
@@ -417,29 +437,21 @@ export default {
       this.getVideoStatsList();
     },
     startDeleteReply() {
-      const run = () => {
-        const hour = new Date().getHours();
-        // 如果是晚上12点到早上8点，30%的概率不删
-        if (hour > 0 && hour <= 8) {
-          const random = Math.random();
-          if (random < 0.3) {
-            return;
-          }
-        }
+      const run = async () => {
+        this.sendMsgLoading = true;
         const validVideoList = this.videoList.filter((item) => {
           return !['稿件不可见', '啥都木有'].includes(item.message);
         });
-        validVideoList.forEach((video) => {
-          if (video.deleteReply && video.cookie) {
-            this.delReplyByVideoAndCookie(video);
-            this.delDm(video);
-          }
-        });
+        for (const video of validVideoList) {
+          await this.batchSendMsg(video);
+          await sleep(1000 * 60 * 3);
+        }
+        this.sendMsgLoading = false;
       };
       run();
       clearInterval(this.deleteReplyInterval);
       this.deleteReplyInterval = null;
-      this.deleteReplyInterval = setInterval(run, 1000 * 60);
+      this.deleteReplyInterval = setInterval(run, 1000 * 60 * 30);
     },
     delDm(video) {
       let keywords = localStorage.getItem('keywords');
@@ -480,22 +492,75 @@ export default {
           });
         });
     },
-    delReplyByVideoAndCookie(video) {
+    batchSendMsg(video) {
       let keywords = localStorage.getItem('keywords');
       if (!keywords) {
         return;
       }
-      keywords = keywords
-        .split(',')
-        .filter((item) => item)
-        .join(',');
-      const maxWords = localStorage.getItem('maxWords') || 30;
-      return delReplyByVideoAndCookie({
+
+      const userListStr = localStorage.getItem('userList') || '[]';
+      const userList = JSON.parse(userListStr);
+      const shouldSendMsgUserList = userList.filter((item) => {
+        const today = dayjs().format('YYYY-MM-DD');
+        const todaySendMsgCount = item.sendMsgRecordMap[today] || 0;
+        console.log(
+          todaySendMsgCount,
+          item,
+          '===========打印的 ------ todaySendMsgCount',
+        );
+        return todaySendMsgCount < 10 && item.cookieExpired !== 'true';
+      });
+      console.log(userList, '===========打印的 ------ batchSendMsg');
+      if (shouldSendMsgUserList.length === 0) {
+        this.$message.warning('已经没有可用的cookie了');
+        return;
+      }
+      const videoIndex = this.videoList.findIndex((item) => {
+        return item.bvid === video.bvid;
+      });
+      this.$set(this.videoList, videoIndex, {
+        ...video,
+        sendMsgLoading: true,
+      });
+      // keywords = keywords
+      //   .split(',')
+      //   .filter((item) => item)
+      //   .join(',');
+      // const maxWords = localStorage.getItem('maxWords') || 30;
+      const sender = shouldSendMsgUserList[0];
+      return batchSendMsg({
         ...video,
         keywords,
-        maxWords,
+        sendMsgCookie: sender.originCookie,
+        // shouldSendMsgUserList,
+        // maxWords,
       })
         .then((res) => {
+          const index = userList.findIndex((item) => {
+            return item.mid === sender.mid;
+          });
+          if (res.cookieExpired) {
+            if (index > -1) {
+              const user = userList[index];
+              user.cookieExpired = 'true';
+              localStorage.setItem('userList', JSON.stringify(userList));
+              this.$message.warning(
+                'cookie已过期，已自动切换到下一个cookie，如果没有下一个cookie，将不会再自动私信',
+              );
+              this.batchSendMsg(video);
+              return;
+            }
+          }
+          if (res.todaySendCountLimit) {
+            if (index > -1) {
+              const today = dayjs().format('YYYY-MM-DD');
+              const user = userList[index];
+              user.sendMsgRecordMap[today] = 10;
+              this.$message.warning('该账号今日私信已达上限');
+              localStorage.setItem('userList', JSON.stringify(userList));
+              return;
+            }
+          }
           const fullReplyList = res.fullReplyList;
           const successDelResult = res.delResult
             .filter((item) => {
@@ -513,17 +578,26 @@ export default {
             this.$message.success(
               '总评论数：' +
                 fullReplyList.length +
-                '，删除评论数：' +
+                '，私信评论数：' +
                 successDelResult.length,
             );
+
+            console.log(index, '===========打印的 ------ index');
+            if (index > -1) {
+              const user = userList[index];
+              const today = dayjs().format('YYYY-MM-DD');
+              user.sendMsgRecordMap[today] =
+                user.sendMsgRecordMap[today] || 0 + successDelResult.length;
+              console.log(user, '===========打印的 ------ user');
+              localStorage.setItem('userList', JSON.stringify(userList));
+            }
           }
-          const index = this.videoList.findIndex((item) => {
-            return item.aid === video.aid;
-          });
-          this.videoList.splice(index, 1, {
-            ...video,
-            replyCount: fullReplyList.length,
-          });
+
+          // this.videoList.splice(index, 1, {
+          //   ...video,
+          //   replyCount: fullReplyList.length,
+          // });
+          return successDelResult;
         })
         .catch((err) => {
           const errMsg = String(err);
@@ -534,6 +608,12 @@ export default {
             title: '提示',
             content: '视频：【' + video.title + '】 出现错误，错误信息：' + err,
             showCancel: false,
+          });
+        })
+        .finally(() => {
+          this.$set(this.videoList, videoIndex, {
+            ...video,
+            sendMsgLoading: false,
           });
         });
     },
@@ -739,21 +819,21 @@ export default {
     },
     changeDeleteReply(index) {
       const video = this.videoList[index];
-      if (!video.deleteReply && !video.cookie) {
-        uni.showToast({
-          title: '请先配置该视频作者的CK',
-          icon: 'none',
-        });
-        return;
-      }
-      const keywords = localStorage.getItem('keywords');
-      if (!keywords) {
-        uni.showToast({
-          title: '请先设置删评关键词',
-          icon: 'none',
-        });
-        return;
-      }
+      // if (!video.deleteReply && !video.cookie) {
+      //   uni.showToast({
+      //     title: '请先配置该视频作者的CK',
+      //     icon: 'none',
+      //   });
+      //   return;
+      // }
+      // const keywords = localStorage.getItem('keywords');
+      // if (!keywords) {
+      //   uni.showToast({
+      //     title: '请先设置删评关键词',
+      //     icon: 'none',
+      //   });
+      //   return;
+      // }
       video.deleteReply = !video.deleteReply;
       this.videoList.splice(index, 1, video);
       this.saveVideoList(this.videoList);
@@ -882,7 +962,7 @@ export default {
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
-    this.startDeleteReply();
+    // this.startDeleteReply();
     setInterval(() => {
       uploadVideoList();
     }, 1000 * 60 * 60 * 2);
