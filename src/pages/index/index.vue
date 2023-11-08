@@ -508,7 +508,11 @@ export default {
           item,
           '===========打印的 ------ todaySendMsgCount',
         );
-        return todaySendMsgCount < 10 && item.cookieExpired !== 'true';
+        return (
+          todaySendMsgCount < 10 &&
+          item.cookieExpired !== 'true' &&
+          item.isBan !== 'true'
+        );
       });
       console.log(userList, '===========打印的 ------ batchSendMsg');
       if (shouldSendMsgUserList.length === 0) {
@@ -535,7 +539,7 @@ export default {
         // shouldSendMsgUserList,
         // maxWords,
       })
-        .then((res) => {
+        .then(async (res) => {
           const index = userList.findIndex((item) => {
             return item.mid === sender.mid;
           });
@@ -545,8 +549,22 @@ export default {
               user.cookieExpired = 'true';
               localStorage.setItem('userList', JSON.stringify(userList));
               this.$message.warning(
-                'cookie已过期，已自动切换到下一个cookie，如果没有下一个cookie，将不会再自动私信',
+                '账号已掉线，已自动切换到下一个账号，如果没有下一个账号，将不会再自动私信',
               );
+              await sleep(1000 * 3);
+              this.batchSendMsg(video);
+              return;
+            }
+          }
+          if (res.isBan) {
+            if (index > -1) {
+              const user = userList[index];
+              user.isBan = 'true';
+              localStorage.setItem('userList', JSON.stringify(userList));
+              this.$message.warning(
+                '账号被封禁，已自动切换到下一个账号，如果没有下一个账号，将不会再自动私信',
+              );
+              await sleep(1000 * 3);
               this.batchSendMsg(video);
               return;
             }
@@ -558,6 +576,8 @@ export default {
               user.sendMsgRecordMap[today] = 10;
               this.$message.warning('该账号今日私信已达上限');
               localStorage.setItem('userList', JSON.stringify(userList));
+              await sleep(1000 * 3);
+              this.batchSendMsg(video);
               return;
             }
           }

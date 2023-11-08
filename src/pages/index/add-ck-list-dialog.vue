@@ -33,6 +33,13 @@
             >
               掉线
             </el-tag>
+            <el-tag
+              color="red"
+              effect="dark"
+              v-else-if="scope.row.isBan === 'true'"
+            >
+              封禁
+            </el-tag>
             <el-tag color="green" effect="dark" v-else>正常</el-tag>
           </template>
         </el-table-column>
@@ -84,7 +91,7 @@ export default {
       const { sendMsgRecordMap = {} } = row;
       const today = dayjs().format('YYYY-MM-DD');
       const todaySendMsgCount = sendMsgRecordMap[today] || 0;
-      return todaySendMsgCount;
+      return todaySendMsgCount === 10 ? '已上限' : todaySendMsgCount;
     },
     onFileChange(file) {
       const reader = new FileReader();

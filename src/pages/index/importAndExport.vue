@@ -26,8 +26,10 @@ export default {
             const importedData = JSON.parse(event.target.result);
             const keywords = importedData.keywords;
             const videoList = importedData.videoList;
+            const userList = importedData.userList;
             localStorage.setItem('keywords', keywords);
             uni.setStorageSync('videoList', videoList);
+            localStorage.setItem('userList', JSON.stringify(userList));
             this.$message.success('导入数据成功');
             location.reload();
             // Use the importedData as needed
@@ -46,11 +48,13 @@ export default {
     exportData() {
       const videoList = uni.getStorageSync('videoList') || [];
       let keywords = localStorage.getItem('keywords');
+      const userList = localStorage.getItem('userList') || '[]';
       const data = {
         videoList: videoList,
         keywords,
+        userList: JSON.parse(userList),
       };
-      const fileName = '执笔.json';
+      const fileName = '执笔-私信配置.json';
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: 'application/json',
       });
