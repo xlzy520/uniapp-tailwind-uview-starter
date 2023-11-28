@@ -607,10 +607,6 @@ export default {
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
-    this.startDeleteReply();
-    setInterval(() => {
-      uploadVideoList();
-    }, 1000 * 60 * 60 * 2);
   },
   onShow() {
     // this.startAutoRefresh();
