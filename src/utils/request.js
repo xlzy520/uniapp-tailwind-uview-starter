@@ -13,9 +13,6 @@ service.interceptors.response.use(
   (response) => {
     const res = response.data;
     const url = response.config.url;
-    if (url === '/v2/reply/top') {
-      return { data: res };
-    }
     if (res.birthday || res.dialog === 0) {
       return res;
     }

@@ -236,6 +236,41 @@ export const delReplyByVideoAndCookie = (video) => {
   });
 };
 
+export const getAutoMsgContent = (cookie) => {
+  return service.post('/link_setting/get_sys_setting', {
+    cookie,
+  });
+};
+
+export const getLinkSetting = (cookie, name) => {
+  return service.post('/link_setting/get', {
+    cookie,
+    name,
+  });
+};
+
+export const setLinkSetting = (cookie, key) => {
+  return service.post('/link_setting/set', {
+    cookie,
+    key,
+  });
+};
+
+export const getReplyText = (cookie, key) => {
+  return service.post('/auto_reply/get_reply_text', {
+    cookie,
+    key,
+  });
+};
+
+export const setReplyText = (cookie, key, content) => {
+  return service.post('/auto_reply/set_reply_text', {
+    cookie,
+    key,
+    content,
+  });
+};
+
 export const delDm = (video) => {
   return service.post('/delDm', { video });
 };

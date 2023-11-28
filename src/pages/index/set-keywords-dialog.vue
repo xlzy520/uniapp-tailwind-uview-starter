@@ -1,63 +1,72 @@
 <template>
-  <view class="">
-    <u-button type="primary" @click="visible = true">配置删评关键词</u-button>
-    <el-dialog title="关键词配置" :visible="visible" width="60%" @close="close">
-      <el-form ref="form" label-width="200px" label-position="top">
-        <el-form-item label="需要删除的关键词， 以逗号分隔">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 6, maxRows: 10 }"
-            v-model="keywords"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="超过多少字直接删除">
-          <el-input-number v-model="maxWords" :min="0"></el-input-number>
-        </el-form-item>
+  <el-dialog :title="title" :visible="true" width="60%" @close="close">
+    <el-form ref="form" label-width="200px" label-position="top">
+      <el-form-item label="自动回复的内容">
+        <el-input
+          type="textarea"
+          :autosize="{ minRows: 6, maxRows: 10 }"
+          v-model="keywords"
+        ></el-input>
+      </el-form-item>
 
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">确定</el-button>
-          <el-button @click="close">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-  </view>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">确定</el-button>
+        <el-button @click="close">取消</el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script>
+import { uniqBy } from 'lodash-es';
+
 export default {
+  props: {
+    video: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  computed: {
+    title() {
+      return this.video.name + ' 的自动回复的内容配置';
+    },
+  },
   data() {
     return {
       keywords: '',
       visible: false,
-      maxWords: 30,
     };
   },
   methods: {
     close() {
-      this.visible = false;
+      this.$emit('close');
     },
     onSubmit() {
-      const keywords = this.keywords
-        .replace(/\s+/g, '') // 替换所有空格
-        .replace(/\s/g, '') // 替换单个空格
-        .replace(/，/g, ','); // 替换所有逗号为英文逗号
-      const lastKeywords = keywords
-        .split(',')
-        .filter((item) => item)
-        .join(',');
-      localStorage.setItem('keywords', lastKeywords);
-      localStorage.setItem('maxWords', this.maxWords);
-      const splitKeywords = lastKeywords.split(',');
-      this.$message({
-        message: `关键词配置成功，共${splitKeywords.length}个`,
-        type: 'success',
+      const userInfo = {
+        ...this.video,
+        content: this.keywords,
+      };
+      const videoList = uni.getStorageSync('videoList') || [];
+      const index = videoList.findIndex((item) => {
+        return item.mid === String(userInfo.mid);
+      });
+      if (index > -1) {
+        videoList.splice(index, 1, userInfo);
+      } else {
+        videoList.unshift(userInfo);
+      }
+      const uniqVideoList = uniqBy(videoList, 'mid');
+      uni.setStorageSync('videoList', uniqVideoList);
+      uni.showToast({
+        title: '配置成功',
+        icon: 'none',
       });
       this.close();
     },
   },
   mounted() {
-    this.keywords = localStorage.getItem('keywords') || '';
-    this.maxWords = localStorage.getItem('maxWords') || 30;
+    this.keywords = this.video.content;
   },
 };
 </script>
