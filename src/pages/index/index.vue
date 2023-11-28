@@ -108,13 +108,19 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <!--        <el-table-column label="自动回复内容" width="300" prop="content">-->
-        <!--          <template slot-scope="{ row }">-->
-        <!--            <el-tooltip :content="row.content">-->
-        <!--              <div class="text-blue-500">{{ row.content }}</div>-->
-        <!--            </el-tooltip>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
+        <el-table-column
+          label="自定义的自动回复内容"
+          width="200"
+          prop="content"
+        >
+          <template slot-scope="{ row }">
+            <el-tooltip :content="row.content">
+              <div :class="row.conten ? 'text-blue-500' : 'text-red-500'">
+                {{ row.content ? row.content : '未填写，无法自动补' }}
+              </div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="">
           <template slot-scope="{ row, $index }">
             <div class="video-action">
