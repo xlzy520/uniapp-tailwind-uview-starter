@@ -115,7 +115,7 @@
         >
           <template slot-scope="{ row }">
             <el-tooltip :content="row.content">
-              <div :class="row.conten ? 'text-blue-500' : 'text-red-500'">
+              <div :class="row.content ? 'text-blue-500' : 'text-red-500'">
                 {{ row.content ? row.content : '未填写，无法自动补' }}
               </div>
             </el-tooltip>
