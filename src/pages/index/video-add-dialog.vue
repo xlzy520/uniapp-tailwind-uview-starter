@@ -46,8 +46,8 @@
 </template>
 
 <script>
-import { getSpaceInfo } from '@/api/bilibili';
-import { uniqBy } from 'lodash-es';
+import { getReplyText, getSpaceInfo, setReplyText } from '@/api/bilibili';
+import { get, uniqBy } from 'lodash-es';
 
 export default {
   props: {
@@ -95,6 +95,9 @@ export default {
         });
     },
     onSubmitCK() {
+      const getReplyTextFormData = (data) => {
+        return get(data, 'texts.0.reply', '');
+      };
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           const cookie = this.form.cookie;
@@ -111,6 +114,16 @@ export default {
             return;
           }
           userInfo.cookie = cookie;
+          let followReplyTextData = await getReplyText(
+            cookie,
+            'followed_reply',
+          );
+          const followed_reply_text = getReplyTextFormData(followReplyTextData);
+          userInfo.followed_reply_text = followed_reply_text;
+
+          const recvReplyTextData = await getReplyText(cookie, 'recv_reply');
+          const recv_reply_text = getReplyTextFormData(recvReplyTextData);
+          userInfo.recv_reply_text = recv_reply_text;
 
           console.log(userInfo, '===========打印的 ------ ');
           const index = this.videoList.findIndex((item) => {

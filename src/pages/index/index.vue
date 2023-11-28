@@ -3,10 +3,10 @@
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
       <!--      <set-keywords-dialog class="ml-1" />-->
-      <update-dialog :hasUpdate="hasUpdate" />
-      <view class="" v-if="false">
-        <el-button type="success">有更新(客户端有更新，立即下载)</el-button>
-      </view>
+      <!--      <update-dialog :hasUpdate="hasUpdate" />-->
+      <!--      <view class="" v-if="false">-->
+      <!--        <el-button type="success">有更新(客户端有更新，立即下载)</el-button>-->
+      <!--      </view>-->
       <!--      <import-and-export />-->
       <!--      <remove-record />-->
       <!--      <setting-dialog />-->
