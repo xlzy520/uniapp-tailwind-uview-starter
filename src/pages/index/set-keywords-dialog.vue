@@ -62,6 +62,9 @@ export default {
         title: '配置成功',
         icon: 'none',
       });
+      this.$emit('submit', {
+        content: this.keywords,
+      });
       this.close();
     },
   },
