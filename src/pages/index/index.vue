@@ -135,6 +135,22 @@
               >
                 编辑内容
               </el-button>
+              <!--              <el-popconfirm-->
+              <!--                class="ml-[5px]"-->
+              <!--                title="确定清空B站的关注、私信自动回复内容吗？"-->
+              <!--                @confirm="removeVideo($index)"-->
+              <!--              >-->
+              <!--                <el-button-->
+              <!--                  slot="reference"-->
+              <!--                  size="mini"-->
+              <!--                  class="video-action-button"-->
+              <!--                  type="primary"-->
+              <!--                  @click="onClearRemoteContent(row)"-->
+              <!--                >-->
+              <!--                  清空B站私信内容-->
+              <!--                </el-button>-->
+              <!--              </el-popconfirm>-->
+
               <!--              <el-button-->
               <!--                size="mini"-->
               <!--                class="video-action-button"-->
@@ -492,6 +508,12 @@ export default {
       console.log(this.videoList, '===========打印的 ------ getVideoStatsList');
       this.searchLoading = false;
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
+    },
+    async onClearRemoteContent(row) {
+      await setReplyText(row.cookie, 'followed_reply', '');
+      this.$message.success(`清空用户${row.name} 的 【关注】自动回复内容成功`);
+      await setReplyText(row.cookie, 'recv_reply', '');
+      this.$message.success(`清空用户${row.name} 的 【私信】自动回复内容成功`);
     },
     onUpdateVideoConfig(config) {
       const video = {
