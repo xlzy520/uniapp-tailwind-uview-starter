@@ -1,8 +1,9 @@
 <template>
   <el-dialog
-    title="配置该视频的UP的CK"
+    title="更新CK"
     :visible="true"
     width="60%"
+    :close-on-click-modal="false"
     @close="close"
   >
     <div class="">
@@ -41,7 +42,8 @@
 </template>
 
 <script>
-import { getSpaceInfo } from '@/api/bilibili';
+import { getReplyText, getSpaceInfo, setReplyText } from '@/api/bilibili';
+import { get, uniqBy } from 'lodash-es';
 
 export default {
   props: {
@@ -74,11 +76,12 @@ export default {
     getSpaceInfo() {
       return getSpaceInfo(this.form.cookie)
         .then((res) => {
-          const ownerMid = this.video.owner.mid;
-          if (ownerMid === res.mid) {
-            this.$message.success('配置的CK是当前视频UP主的CK');
+          console.log(res, '===========打印的 ------ ');
+          const follower = res.follower;
+          if (follower > 1000) {
+            this.$message.success('配置的CK是千粉CK');
           } else {
-            this.$message.error('配置的CK不是当前视频UP主的CK, 无法操作该视频');
+            this.$message.error('配置的CK不是千粉CK, 无法操作该视频');
           }
           return res;
         })
@@ -87,6 +90,9 @@ export default {
         });
     },
     onSubmitCK() {
+      const getReplyTextFormData = (data) => {
+        return get(data, 'texts.0.reply', '');
+      };
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           const cookie = this.form.cookie;
@@ -102,8 +108,35 @@ export default {
           if (!userInfo) {
             return;
           }
+          userInfo.cookie = cookie;
+          let followReplyTextData = await getReplyText(
+            cookie,
+            'followed_reply',
+          );
+          const followed_reply_text = getReplyTextFormData(followReplyTextData);
+          userInfo.followed_reply_text = followed_reply_text;
 
-          this.$emit('submit', { cookie });
+          const recvReplyTextData = await getReplyText(cookie, 'recv_reply');
+          const recv_reply_text = getReplyTextFormData(recvReplyTextData);
+          userInfo.recv_reply_text = recv_reply_text;
+
+          console.log(userInfo, '===========打印的 ------ ');
+          const videoList = uni.getStorageSync('videoList') || [];
+          const index = videoList.findIndex((item) => {
+            return item.mid === String(userInfo.mid);
+          });
+          if (index > -1) {
+            videoList.splice(index, 1, userInfo);
+          } else {
+            videoList.unshift(userInfo);
+          }
+          const uniqVideoList = uniqBy(videoList, 'mid');
+          uni.setStorageSync('videoList', uniqVideoList);
+          uni.showToast({
+            title: '添加成功',
+            icon: 'none',
+          });
+          location.reload();
         }
       });
     },

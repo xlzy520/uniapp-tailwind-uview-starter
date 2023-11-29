@@ -54,6 +54,9 @@
             <div class="layout-items-center">
               <el-avatar :src="row.face" size="small"></el-avatar>
               <div class="text-[14px] ml-[5px]">{{ row.name }}</div>
+              <div v-if="row.message" class="text-red-500">
+                ({{ row.message }})
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -90,9 +93,10 @@
         <!--        </el-table-column>-->
         <el-table-column label="关注回复内容" prop="followed_reply" width="300">
           <template slot-scope="{ row }">
-            <el-tooltip :content="row.followed_reply_text">
+            <el-tooltip v-if="!row.message" :content="row.followed_reply_text">
               <div class="truncate">{{ row.followed_reply_text }}</div>
             </el-tooltip>
+            <span v-else class="text-red-500">{{ row.message }}</span>
           </template>
         </el-table-column>
         <!--        <el-table-column label="私信的回复" prop="recv_reply" width="120">-->
@@ -103,9 +107,10 @@
         <!--        </el-table-column>-->
         <el-table-column label="私信回复内容" prop="recv_reply" width="300">
           <template slot-scope="{ row }">
-            <el-tooltip :content="row.recv_reply_text">
+            <el-tooltip v-if="!row.message" :content="row.recv_reply_text">
               <div class="truncate">{{ row.recv_reply_text }}</div>
             </el-tooltip>
+            <span v-else class="text-red-500">{{ row.message }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -135,6 +140,15 @@
               >
                 编辑内容
               </el-button>
+              <el-button
+                size="mini"
+                class="video-action-button"
+                type="primary"
+                @click="onUpdateCookie($index)"
+              >
+                更新CK
+              </el-button>
+
               <!--              <el-popconfirm-->
               <!--                class="ml-[5px]"-->
               <!--                title="确定清空B站的关注、私信自动回复内容吗？"-->
@@ -249,6 +263,7 @@ import {
   setLinkSetting,
   getReplyText,
   setReplyText,
+  getSpaceInfo,
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
 import { formatDate, sleep, getRecommendRefreshMinutes, isDev } from '@/utils';
@@ -334,6 +349,10 @@ export default {
     onEditContent(index) {
       this.currentVideoIndex = index;
       this.setContentVisible = true;
+    },
+    onUpdateCookie(index) {
+      this.currentVideoIndex = index;
+      this.addCkVisible = true;
     },
     async onStartAll(row) {
       await setLinkSetting(row.cookie, 'followed_reply');
@@ -454,6 +473,7 @@ export default {
             );
             followed_reply_text = getReplyTextFormData(followReplyTextData);
           }
+          await sleep(300);
 
           let recvReplyTextData = await getReplyText(
             video.cookie,
@@ -466,12 +486,20 @@ export default {
             recvReplyTextData = await getReplyText(video.cookie, 'recv_reply');
             recv_reply_text = getReplyTextFormData(recvReplyTextData);
           }
+          await sleep(300);
+
+          if (Math.random() < 0.3) {
+            const userInfo = await getSpaceInfo(video.cookie);
+            Object.assign(video, userInfo);
+            await sleep(300);
+          }
 
           Object.assign(video, {
             // followed_reply: linkSetting.followed_reply, // 关注自动回复
             // recv_reply: linkSetting.recv_reply, // 私信自动回复
             followed_reply_text,
             recv_reply_text,
+            message: '',
           });
 
           console.log(video, '===========打印的 ------ updateVideoData');
@@ -481,6 +509,7 @@ export default {
 
           // this.$message.success(`更新千粉CK数据：${video.title} 成功`);
         } catch (err) {
+          console.log(err, '===========打印的 ------ updateVideoData');
           let errMessage = isEmpty(err) ? '' : err;
           if (isObject(err)) {
             errMessage = '查询异常';
