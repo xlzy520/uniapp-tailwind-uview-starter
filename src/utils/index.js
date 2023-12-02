@@ -83,9 +83,9 @@ export const getRecommendRefreshMinutes = (videoListLength) => {
   } else if (videoListLength > 10) {
     minutes = 4;
   } else if (videoListLength > 6) {
-    minutes = 3.5;
-  } else if (videoListLength > 4) {
     minutes = 3;
+  } else if (videoListLength > 4) {
+    minutes = 2.5;
   }
   return minutes;
 };
