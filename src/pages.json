@@ -39,7 +39,7 @@
   "sitemapLocation": "sitemap.json",
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "执笔（视频数据监控，置顶评论监控，评论、弹幕删除，自动补充置顶评论）",
+    "navigationBarTitleText": "执笔（私信自动回复内容设置监控）",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },
