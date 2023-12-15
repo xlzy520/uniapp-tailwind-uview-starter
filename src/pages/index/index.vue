@@ -382,6 +382,7 @@ export default {
         `buvid3=E3F42A62-C6CC-4E4D-841F-B05EAE79AD2819386infoc; b_nut=1693240519; i-wanna-go-back=-1; b_ut=7; b_lsid=8BD2EC1E_18A3CFFEC7C; bsource=search_baidu; _uuid=DA105EB61-DB35-6A8D-9792-36D9C5C2EA5719819infoc; home_feed_column=5; browser_resolution=2560-950; buvid4=7062A504-A7E0-ACD4-F8F5-6FEF1EB5431120568-023082900-J+KZ1sWDfaVSU7YgVaUNaw==; csrf_state=542aaec5cfde6ff861a067b439ca0235; SESSDATA=6e397df7,1708792528,7663f*82g-rjOcf8Kp7IMoPxWX_fJtqmJaLYUa9laDRTf2P5eZFpk-sv6-QVTYGFANafUCfnEEoSWgAADAA; bili_jct=e8b7674d8af0713976d3904029f8369f; DedeUserID=385751312; DedeUserID__ckMd5=73f1315e8356dec4; sid=fa158hja; rpdid=|()k~RYJmmJ0J'uYmJkR|ll)`,
       ],
       sendMsgLoading: false,
+      MaxSendMsgCount: 20,
     };
   },
   computed: {
@@ -509,7 +510,7 @@ export default {
           '===========打印的 ------ todaySendMsgCount',
         );
         return (
-          todaySendMsgCount < 10 &&
+          todaySendMsgCount < this.MaxSendMsgCount &&
           item.cookieExpired !== 'true' &&
           item.isBan !== 'true'
         );
@@ -573,7 +574,7 @@ export default {
             if (index > -1) {
               const today = dayjs().format('YYYY-MM-DD');
               const user = userList[index];
-              user.sendMsgRecordMap[today] = 10;
+              user.sendMsgRecordMap[today] = this.MaxSendMsgCount;
               this.$message.warning('该账号今日私信已达上限');
               localStorage.setItem('userList', JSON.stringify(userList));
               await sleep(1000 * 3);
