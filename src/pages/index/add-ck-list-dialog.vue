@@ -91,7 +91,7 @@ export default {
       const { sendMsgRecordMap = {} } = row;
       const today = dayjs().format('YYYY-MM-DD');
       const todaySendMsgCount = sendMsgRecordMap[today] || 0;
-      return todaySendMsgCount === 10 ? '已上限' : todaySendMsgCount;
+      return todaySendMsgCount === 20 ? '已上限' : todaySendMsgCount;
     },
     onFileChange(file) {
       const reader = new FileReader();
