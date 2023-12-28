@@ -39,7 +39,7 @@
   "sitemapLocation": "sitemap.json",
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "执笔（私信自动回复内容设置监控）",
+    "navigationBarTitleText": "执笔（B站起飞监控）",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },

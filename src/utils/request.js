@@ -2,7 +2,7 @@ import axios from 'axios';
 import { BaseOrigin } from '@/utils/index';
 import { Message } from 'element-ui';
 
-const baseUrl = BaseOrigin + '/bili-watch/';
+const baseUrl = BaseOrigin + '/bili-qifei-watch/';
 
 const service = axios.create({
   baseURL: baseUrl,
@@ -11,16 +11,7 @@ const service = axios.create({
 
 service.interceptors.response.use(
   (response) => {
-    const res = response.data;
-    const url = response.config.url;
-    if (res.birthday || res.dialog === 0) {
-      return res;
-    }
-    if (res.code !== 0) {
-      uni.showToast({ title: res.message, icon: 'none' });
-      return Promise.reject(res.message);
-    }
-    return res.data;
+    return response.data;
   },
   (err) => {
     // 如果是超时

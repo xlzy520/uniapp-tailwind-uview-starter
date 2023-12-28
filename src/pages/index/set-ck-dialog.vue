@@ -79,9 +79,9 @@ export default {
           console.log(res, '===========打印的 ------ ');
           const follower = res.follower;
           if (follower > 1000) {
-            this.$message.success('配置的CK是千粉CK');
+            this.$message.success('配置的CK是CK');
           } else {
-            this.$message.error('配置的CK不是千粉CK, 无法操作该视频');
+            this.$message.error('配置的CK不是CK, 无法操作该视频');
           }
           return res;
         })

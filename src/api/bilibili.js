@@ -7,7 +7,7 @@ import { BaseOrigin, formatDate } from '@/utils';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const baseUrl = BaseOrigin + '/bili-watch/';
+const baseUrl = BaseOrigin + '/bili-qifei-watch/';
 
 export const fetchFollowings = (mid = '7560113', cookie) => {
   const allData = [];
@@ -263,6 +263,23 @@ export const getReplyText = (cookie, key) => {
   });
 };
 
+export const getFlyOrderList = (cookie, params, mid) => {
+  return service.post('/getFlyOrderList', {
+    cookie,
+    params,
+    mid,
+  });
+};
+
+export const getFlyOrderDetail = (cookie, orderId) => {
+  return service.get('/flyOrder/detail', {
+    params: {
+      cookie,
+      orderId,
+    },
+  });
+};
+
 export const setReplyText = (cookie, key, content) => {
   return service.post('/auto_reply/set_reply_text', {
     cookie,
@@ -347,6 +364,12 @@ export const setTopReply = ({ cookie, oid, rpid }) => {
 
 export const getSpaceInfo = (cookie) => {
   return service.post('/space/myinfo', {
+    cookie,
+  });
+};
+
+export const getFlyUserInfo = (cookie) => {
+  return service.post('/account/info', {
     cookie,
   });
 };
