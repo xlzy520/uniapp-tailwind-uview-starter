@@ -79,9 +79,9 @@ export default {
           console.log(res, '===========打印的 ------ ');
           const follower = res.follower;
           if (follower > 1000) {
-            this.$message.success('配置的CK是千粉CK');
+            this.$message.success('配置的CK是CK');
           } else {
-            this.$message.error('配置的CK不是千粉CK, 无法操作该视频');
+            this.$message.error('配置的CK不是CK, 无法操作该视频');
           }
           return res;
         })
@@ -109,26 +109,27 @@ export default {
             return;
           }
           userInfo.cookie = cookie;
-          let followReplyTextData = await getReplyText(
-            cookie,
-            'followed_reply',
-          );
-          const followed_reply_text = getReplyTextFormData(followReplyTextData);
-          userInfo.followed_reply_text = followed_reply_text;
-
-          const recvReplyTextData = await getReplyText(cookie, 'recv_reply');
-          const recv_reply_text = getReplyTextFormData(recvReplyTextData);
-          userInfo.recv_reply_text = recv_reply_text;
-
-          console.log(userInfo, '===========打印的 ------ ');
+          // let followReplyTextData = await getReplyText(
+          //   cookie,
+          //   'followed_reply',
+          // );
+          // const followed_reply_text = getReplyTextFormData(followReplyTextData);
+          // userInfo.followed_reply_text = followed_reply_text;
+          //
+          // const recvReplyTextData = await getReplyText(cookie, 'recv_reply');
+          // const recv_reply_text = getReplyTextFormData(recvReplyTextData);
+          // userInfo.recv_reply_text = recv_reply_text;
+          //
+          // console.log(userInfo, '===========打印的 ------ ');
           const videoList = uni.getStorageSync('videoList') || [];
           const index = videoList.findIndex((item) => {
-            return item.mid === String(userInfo.mid);
+            return item.mid === String(this.video.mid);
           });
+          const info = { ...this.video, ...userInfo };
           if (index > -1) {
-            videoList.splice(index, 1, userInfo);
+            videoList.splice(index, 1, info);
           } else {
-            videoList.unshift(userInfo);
+            videoList.unshift(info);
           }
           const uniqVideoList = uniqBy(videoList, 'mid');
           uni.setStorageSync('videoList', uniqVideoList);

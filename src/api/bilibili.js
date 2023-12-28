@@ -217,17 +217,17 @@ export const getReply = (oid, pn = 1, cookie) => {
   });
 };
 
-export const submitDynamic = ({ cookie, data }) => {
-  const csrf = cookie.match(/bili_jct=(.+?);/)[1];
-  return service.post('/x/dynamic/feed/create/dyn?csrf=' + csrf, {
-    dyn_req: {
-      ...data,
-      attach_card: null,
-      upload_id: '7560113_1684937710_6116',
-      meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
-    },
-  });
-};
+// export const submitDynamic = ({ cookie, data }) => {
+//   const csrf = cookie.match(/bili_jct=(.+?);/)[1];
+//   return service.post('/x/dynamic/feed/create/dyn?csrf=' + csrf, {
+//     dyn_req: {
+//       ...data,
+//       attach_card: null,
+//       upload_id: '7560113_1684937710_6116',
+//       meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
+//     },
+//   });
+// };
 
 export const delReplyByVideoAndCookie = (video) => {
   return service.post('/v2/reply/delByVideoAndCookie', {
@@ -260,6 +260,19 @@ export const getReplyText = (cookie, key) => {
   return service.post('/auto_reply/get_reply_text', {
     cookie,
     key,
+  });
+};
+
+export const getDynamicList = (cookie) => {
+  return service.post('/getDynamicList', {
+    cookie,
+  });
+};
+
+export const submitDynamic = (cookie, body) => {
+  return service.post('/submitDynamic', {
+    cookie,
+    body,
   });
 };
 

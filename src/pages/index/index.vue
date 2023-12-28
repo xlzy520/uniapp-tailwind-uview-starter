@@ -2,6 +2,9 @@
   <view class="video-list-page">
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
+      <span class="text-[14px] ml-2">
+        (每 {{ intervalMinutes }} 分钟更新一次)
+      </span>
       <!--      <set-keywords-dialog class="ml-1" />-->
       <!--      <update-dialog :hasUpdate="hasUpdate" />-->
       <!--      <view class="" v-if="false">-->
@@ -28,7 +31,7 @@
           :loading="searchLoading"
           @click="getVideoStatsList"
         >
-          更新千粉CK数据
+          更新CK数据
         </el-button>
         <el-button
           :disabled="!selections.length"
@@ -60,12 +63,27 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="粉丝数" prop="follower" width="100">
-        </el-table-column>
+        <!--        <el-table-column label="粉丝数" prop="follower" width="100">-->
+        <!--        </el-table-column>-->
         <el-table-column label="是否封禁" prop="silence" width="100">
           <template slot-scope="{ row }">
             <div v-if="row.silence" class="text-red-500">已封禁</div>
             <div v-else class="text-green-500">正常</div>
+          </template>
+        </el-table-column>
+        <!--        <el-table-column prop="type" label="类型" width="100">-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column prop="tag" label="置顶"> </el-table-column>-->
+        <!--        <el-table-column prop="text" label="文字"></el-table-column>-->
+        <el-table-column label="内容">
+          <template slot-scope="{ row }">
+            <div>{{ row.dynamicItem && row.dynamicItem.text }}</div>
+            <el-image
+              v-if="row.dynamicItem && row.dynamicItem.image"
+              style="width: 100px; height: 100px"
+              :src="row.dynamicItem && row.dynamicItem.image"
+              fit="cover"
+            ></el-image>
           </template>
         </el-table-column>
         <!--        <el-table-column label="置顶" width="160">-->
@@ -91,54 +109,53 @@
         <!--            <div v-else class="text-green-500">开启</div>-->
         <!--          </template>-->
         <!--        </el-table-column>-->
-        <el-table-column label="关注回复内容" prop="followed_reply" width="300">
-          <template slot-scope="{ row }">
-            <el-tooltip v-if="!row.message" :content="row.followed_reply_text">
-              <div class="truncate">{{ row.followed_reply_text }}</div>
-            </el-tooltip>
-            <span v-else class="text-red-500">{{ row.message }}</span>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column label="关注回复内容" prop="followed_reply" width="300">-->
+        <!--          <template slot-scope="{ row }">-->
+        <!--            <el-tooltip v-if="!row.message" :content="row.followed_reply_text">-->
+        <!--              <div class="truncate">{{ row.followed_reply_text }}</div>-->
+        <!--            </el-tooltip>-->
+        <!--            <span v-else class="text-red-500">{{ row.message }}</span>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <!--        <el-table-column label="私信的回复" prop="recv_reply" width="120">-->
         <!--          <template slot-scope="{ row }">-->
         <!--            <div v-if="row.recv_reply === 0" class="text-red-500">关闭</div>-->
         <!--            <div v-else class="text-green-500">开启</div>-->
         <!--          </template>-->
         <!--        </el-table-column>-->
-        <el-table-column label="私信回复内容" prop="recv_reply" width="300">
-          <template slot-scope="{ row }">
-            <el-tooltip v-if="!row.message" :content="row.recv_reply_text">
-              <div class="truncate">{{ row.recv_reply_text }}</div>
-            </el-tooltip>
-            <span v-else class="text-red-500">{{ row.message }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="自定义的自动回复内容"
-          width="200"
-          prop="content"
-        >
-          <template slot-scope="{ row }">
-            <el-tooltip :content="row.content">
-              <div
-                class="truncate"
-                :class="row.content ? 'text-blue-500' : 'text-red-500'"
-              >
-                {{ row.content ? row.content : '未填写，无法自动补' }}
-              </div>
-            </el-tooltip>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column label="私信回复内容" prop="recv_reply" width="300">-->
+        <!--          <template slot-scope="{ row }">-->
+        <!--            <el-tooltip v-if="!row.message" :content="row.recv_reply_text">-->
+        <!--              <div class="truncate">{{ row.recv_reply_text }}</div>-->
+        <!--            </el-tooltip>-->
+        <!--            <span v-else class="text-red-500">{{ row.message }}</span>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column-->
+        <!--          label="自定义的自动回复内容"-->
+        <!--          width="200"-->
+        <!--          prop="content"-->
+        <!--        >-->
+        <!--          <template slot-scope="{ row }">-->
+        <!--            <el-tooltip :content="row.content">-->
+        <!--              <div-->
+        <!--                class="truncate"-->
+        <!--                :class="row.content ? 'text-blue-500' : 'text-red-500'"-->
+        <!--              >-->
+        <!--                {{ row.content ? row.content : '未填写，无法自动补' }}-->
+        <!--              </div>-->
+        <!--            </el-tooltip>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column label="操作" width="">
           <template slot-scope="{ row, $index }">
             <div class="video-action">
               <el-button
-                size="mini"
-                class="video-action-button"
                 type="primary"
-                @click="onEditContent($index)"
+                size="mini"
+                @click="showSetTopReplyConfig($index)"
               >
-                编辑内容
+                动态内容设置
               </el-button>
               <el-button
                 size="mini"
@@ -183,7 +200,7 @@
               <!--              </el-button>-->
               <el-popconfirm
                 class="ml-[5px]"
-                title="确定删除该千粉CK吗？"
+                title="确定删除该CK吗？"
                 @confirm="removeVideo($index)"
               >
                 <el-button
@@ -217,9 +234,7 @@
     </u-modal>
     <u-modal :show="!stopRing" title="警告" @confirm="stopRingNotice">
       <view class="flex flex-col text-[18px]">
-        <view class="font-bold text-black">
-          千粉CK：【{{ warnVideoTitle }}】
-        </view>
+        <view class="font-bold text-black"> CK：【{{ warnVideoTitle }}】 </view>
         <view class="font-bold text-red-600">
           {{ warnText }}
         </view>
@@ -264,9 +279,17 @@ import {
   getReplyText,
   setReplyText,
   getSpaceInfo,
+  getDynamicList,
+  submitDynamic,
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
-import { formatDate, sleep, getRecommendRefreshMinutes, isDev } from '@/utils';
+import {
+  formatDate,
+  sleep,
+  getRecommendRefreshMinutes,
+  isDev,
+  getImgSize,
+} from '@/utils';
 import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
@@ -333,6 +356,27 @@ export default {
     },
   },
   methods: {
+    getDynamicTextAndImage(row) {
+      if (!row) {
+        return {};
+      }
+      const modules = row.modules;
+      console.log(
+        row,
+        modules,
+        '===========打印的 ------ getDynamicTextAndImage',
+      );
+      if (!modules) {
+        return {};
+      }
+      const text =
+        modules.module_dynamic.desc?.text ||
+        modules.module_dynamic.major.opus?.summary.text;
+      const image = modules.module_dynamic.major?.opus?.pics?.[0].url;
+      console.log(image, '===========打印的 ------ getDynamicTextAndImage');
+
+      return { text, image };
+    },
     handleSelectionChange(val) {
       this.selections = val;
     },
@@ -459,55 +503,30 @@ export default {
         try {
           // const linkSetting = await getLinkSetting(video.cookie, video.name);
 
-          let followReplyTextData = await getReplyText(
-            video.cookie,
-            'followed_reply',
+          const dynamicList = await getDynamicList(video.cookie);
+          console.log(
+            dynamicList,
+            video,
+            '===========打印的 ------ dynamicList',
           );
-          let followed_reply_text = getReplyTextFormData(followReplyTextData);
-          if (!followed_reply_text && video.content) {
-            await setReplyText(video.cookie, 'followed_reply', video.content);
-            this.$message.success(`用户${video.name} 的 关注自动回复设置成功`);
-            followReplyTextData = await getReplyText(
-              video.cookie,
-              'followed_reply',
-            );
-            followed_reply_text = getReplyTextFormData(followReplyTextData);
+          const items = dynamicList.items;
+          if (items.length === 0) {
+            this.customRing(3);
+            this.$message({
+              message: `【${video.name}】该账号没有发布任何动态, 触发自动补动态`,
+              type: 'warning',
+            });
+            await this.submitDynamic(video);
           }
-          await sleep(300);
-
-          let recvReplyTextData = await getReplyText(
-            video.cookie,
-            'recv_reply',
-          );
-          let recv_reply_text = getReplyTextFormData(recvReplyTextData);
-          if (!recv_reply_text && video.content) {
-            await setReplyText(video.cookie, 'recv_reply', video.content);
-            this.$message.success(`用户${video.name} 的 私信自动回复设置成功`);
-            recvReplyTextData = await getReplyText(video.cookie, 'recv_reply');
-            recv_reply_text = getReplyTextFormData(recvReplyTextData);
-          }
-          await sleep(300);
-
-          if (Math.random() < 0.3) {
-            const userInfo = await getSpaceInfo(video.cookie);
-            Object.assign(video, userInfo);
-            await sleep(300);
-          }
-
           Object.assign(video, {
-            // followed_reply: linkSetting.followed_reply, // 关注自动回复
-            // recv_reply: linkSetting.recv_reply, // 私信自动回复
-            followed_reply_text,
-            recv_reply_text,
             message: '',
+            dynamicItem: this.getDynamicTextAndImage(items?.[0]),
           });
 
           console.log(video, '===========打印的 ------ updateVideoData');
-          // const videoInfo = await getAutoMsgContent(video);
-          // Object.assign(video, pick(videoInfo, pickKeysFromVideo));
           this.saveVideoList(this.videoList);
 
-          // this.$message.success(`更新千粉CK数据：${video.title} 成功`);
+          // this.$message.success(`更新CK数据：${video.title} 成功`);
         } catch (err) {
           console.log(err, '===========打印的 ------ updateVideoData');
           let errMessage = isEmpty(err) ? '' : err;
@@ -518,10 +537,10 @@ export default {
           }
           if (errMessage === '查询异常' && errorVideoCount > 3) {
             errMessage =
-              '多个千粉CK查询异常，检查请求是否被拦截，请使用爱加速切换IP';
+              '多个CK查询异常，检查请求是否被拦截，请使用爱加速切换IP';
             this.stopRing = false;
-            this.warnVideoTitle = '多个千粉CK查询异常';
-            this.warnText = `多个千粉CK查询异常，检查请求是否被拦截，请使用爱加速切换IP`;
+            this.warnVideoTitle = '多个CK查询异常';
+            this.warnText = `多个CK查询异常，检查请求是否被拦截，请使用爱加速切换IP`;
             this.customRing(3);
           }
           this.$set(video, 'message', errMessage);
@@ -537,6 +556,58 @@ export default {
       console.log(this.videoList, '===========打印的 ------ getVideoStatsList');
       this.searchLoading = false;
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
+    },
+    async submitDynamic(user) {
+      let useText = !user.dynamicContent?.img1;
+      let payload;
+      if (useText) {
+        payload = {
+          content: {
+            contents: [
+              { raw_text: user.dynamicContent.text, type: 1, biz_id: '' },
+            ],
+          },
+          scene: 1,
+        };
+      } else {
+        const imgSizeObject = await getImgSize(user.dynamicContent.img1);
+        payload = {
+          content: {
+            contents: [
+              { raw_text: user.dynamicContent.text, type: 1, biz_id: '' },
+            ],
+          },
+          pics: [
+            {
+              img_src: user.dynamicContent.img1,
+              img_width: imgSizeObject.width,
+              img_height: imgSizeObject.height,
+              img_size: imgSizeObject.size,
+            },
+          ],
+          scene: 2,
+        };
+      }
+      const data = {
+        dyn_req: {
+          ...payload,
+          attach_card: null,
+          upload_id: '1838750034_1684937710_6116',
+          meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
+        },
+      };
+      return submitDynamic(user.cookie, data).then((res) => {
+        console.log(res, '===========打印的 ------ 补发');
+        if (res.code === 0) {
+          this.$alert(`【${user.name}】补发动态成功`, '提示');
+          // setTimeout(() => {
+          //   this.getDynamicList();
+          // }, 1000);
+        } else {
+          // alert('补发失败');
+          this.$alert(`【${user.name}】补发动态失败`, '提示');
+        }
+      });
     },
     async onClearRemoteContent(row) {
       await setReplyText(row.cookie, 'followed_reply', '');
@@ -565,13 +636,13 @@ export default {
         return;
       }
       if (!topReply.message) {
-        const message = `【${video.title}】请先配置该千粉CK需要补充的置顶内容，否则无法自动补置顶`;
+        const message = `【${video.title}】请先配置该CK需要补充的置顶内容，否则无法自动补置顶`;
         this.$alert(message, '提示');
         return;
       }
       const cookie = video.cookie;
       if (!cookie) {
-        const message = `【${video.title}】请先配置该千粉CK作者的CK，否则无法自动补置顶`;
+        const message = `【${video.title}】请先配置该CK作者的CK，否则无法自动补置顶`;
         this.$alert(message, '提示');
         return;
       }
@@ -602,13 +673,13 @@ export default {
       const video = this.videoList[index];
       const cookie = video.cookie;
       if (!cookie) {
-        const message = `【${video.title}】请先配置该千粉CK作者的CK，否则无法自动补置顶`;
+        const message = `【${video.title}】请先配置该CK作者的CK，否则无法自动补置顶`;
         this.$message.error(message);
         return;
       }
       const upper = video.upper;
       if (!upper) {
-        this.$message.error('该千粉CK没有置顶');
+        this.$message.error('该CK没有置顶');
         return;
       }
       delReply(video).then(() => {

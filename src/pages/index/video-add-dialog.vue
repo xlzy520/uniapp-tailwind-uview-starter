@@ -1,8 +1,8 @@
 <template>
   <view class="add-video">
-    <u-button type="success" @click="visible = true">添加千粉CK</u-button>
+    <u-button type="success" @click="visible = true">添加CK</u-button>
     <el-dialog
-      title="添加千粉CK"
+      title="添加CK"
       :visible.sync="visible"
       width="60%"
       @close="close"
@@ -82,12 +82,6 @@ export default {
       return getSpaceInfo(this.form.cookie)
         .then((res) => {
           console.log(res, '===========打印的 ------ ');
-          const follower = res.follower;
-          if (follower > 1000) {
-            this.$message.success('配置的CK是千粉CK');
-          } else {
-            this.$message.error('配置的CK不是千粉CK, 无法操作该视频');
-          }
           return res;
         })
         .catch(() => {
@@ -95,9 +89,6 @@ export default {
         });
     },
     onSubmitCK() {
-      const getReplyTextFormData = (data) => {
-        return get(data, 'texts.0.reply', '');
-      };
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           const cookie = this.form.cookie;
@@ -113,18 +104,6 @@ export default {
           if (!userInfo) {
             return;
           }
-          userInfo.cookie = cookie;
-          let followReplyTextData = await getReplyText(
-            cookie,
-            'followed_reply',
-          );
-          const followed_reply_text = getReplyTextFormData(followReplyTextData);
-          userInfo.followed_reply_text = followed_reply_text;
-
-          const recvReplyTextData = await getReplyText(cookie, 'recv_reply');
-          const recv_reply_text = getReplyTextFormData(recvReplyTextData);
-          userInfo.recv_reply_text = recv_reply_text;
-
           console.log(userInfo, '===========打印的 ------ ');
           const index = this.videoList.findIndex((item) => {
             return item.mid === String(userInfo.mid);
@@ -142,6 +121,7 @@ export default {
           });
           this.form.cookie = '';
           this.visible = false;
+          location.reload();
         }
       });
     },
