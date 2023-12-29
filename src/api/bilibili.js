@@ -276,6 +276,14 @@ export const submitDynamic = (cookie, body) => {
   });
 };
 
+// 开启精选
+export const startReplyJingXuan = (cookie, oid) => {
+  return service.post('/reply/jingxuan', {
+    cookie,
+    oid,
+  });
+};
+
 export const setReplyText = (cookie, key, content) => {
   return service.post('/auto_reply/set_reply_text', {
     cookie,

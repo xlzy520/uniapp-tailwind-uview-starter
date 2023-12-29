@@ -56,10 +56,26 @@
           <template slot-scope="{ row }">
             <div class="layout-items-center">
               <el-avatar :src="row.face" size="small"></el-avatar>
-              <div class="text-[14px] ml-[5px]">{{ row.name }}</div>
+              <el-link
+                type="primary"
+                target="_blank"
+                :href="`https://space.bilibili.com/${row.mid}/dynamic`"
+                class="text-[14px] ml-[5px]"
+                >{{ row.name }}</el-link
+              >
               <div v-if="row.message" class="text-red-500">
                 ({{ row.message }})
               </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" prop="remark" width="200">
+          <template slot-scope="{ row }">
+            <div class="layout-items-center">
+              <el-input
+                v-model="row.remark"
+                @blur="updateRemark(row)"
+              ></el-input>
             </div>
           </template>
         </el-table-column>
@@ -281,6 +297,7 @@ import {
   getSpaceInfo,
   getDynamicList,
   submitDynamic,
+  startReplyJingXuan,
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
 import {
@@ -356,6 +373,16 @@ export default {
     },
   },
   methods: {
+    updateRemark(row) {
+      console.log(row, '===========打印的 ------ updateRemark');
+      const index = this.videoList.findIndex((item) => {
+        return item.mid === row.mid;
+      });
+      if (index > -1) {
+        this.videoList.splice(index, 1, row);
+      }
+      this.saveVideoList(this.videoList);
+    },
     getDynamicTextAndImage(row) {
       if (!row) {
         return {};
@@ -372,7 +399,7 @@ export default {
       const text =
         modules.module_dynamic.desc?.text ||
         modules.module_dynamic.major.opus?.summary.text;
-      const image = modules.module_dynamic.major?.opus?.pics?.[0].url;
+      const image = modules.module_dynamic.major?.opus?.pics?.[0]?.url;
       console.log(image, '===========打印的 ------ getDynamicTextAndImage');
 
       return { text, image };
@@ -549,6 +576,10 @@ export default {
       };
 
       this.searchLoading = true;
+      if (defaultVideo) {
+        updateVideoData(defaultVideo);
+        return;
+      }
       for (const video of this.videoList) {
         await updateVideoData(video);
         await sleep(300);
@@ -596,13 +627,16 @@ export default {
           meta: { app_meta: { from: 'create.dynamic.web', mobi_app: 'web' } },
         },
       };
-      return submitDynamic(user.cookie, data).then((res) => {
+      return submitDynamic(user.cookie, data).then(async (res) => {
         console.log(res, '===========打印的 ------ 补发');
-        if (res.code === 0) {
-          this.$alert(`【${user.name}】补发动态成功`, '提示');
-          // setTimeout(() => {
-          //   this.getDynamicList();
-          // }, 1000);
+        if (res.dyn_id_str) {
+          this.$alert(`【${user.name}】补发动态成功`, '提示', {
+            type: 'success',
+          });
+          startReplyJingXuan(user.cookie, res.dyn_id_str);
+          setTimeout(() => {
+            this.getVideoStatsList(user);
+          }, 2000);
         } else {
           // alert('补发失败');
           this.$alert(`【${user.name}】补发动态失败`, '提示');

@@ -104,6 +104,7 @@ export default {
           if (!userInfo) {
             return;
           }
+          userInfo.cookie = cookie;
           console.log(userInfo, '===========打印的 ------ ');
           const index = this.videoList.findIndex((item) => {
             return item.mid === String(userInfo.mid);
