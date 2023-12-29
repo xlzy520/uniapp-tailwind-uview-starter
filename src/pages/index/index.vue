@@ -589,6 +589,11 @@ export default {
       this.lastUpdateTimeForVideo = this.formatDate(new Date());
     },
     async submitDynamic(user) {
+      console.log(user, '===========打印的 ------ submitDynamic');
+      if (!user.dynamicContent) {
+        this.$alert(`【${user.name}】没有配置自动补充的动态内容`, '提示');
+        return;
+      }
       let useText = !user.dynamicContent?.img1;
       let payload;
       if (useText) {
