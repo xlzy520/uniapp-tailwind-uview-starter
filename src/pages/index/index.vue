@@ -2,9 +2,11 @@
   <view class="video-list-page">
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
-      <span class="text-[14px] ml-2">
-        (每 {{ intervalMinutes }} 分钟更新一次)
-      </span>
+      <div class="flex items-center ml-2 text-[14px] w-[300px]">
+        <span class="whitespace-nowrap">间隔时间：</span>
+        <el-input v-model="intervalMinutes" @change="saveInterval"></el-input>
+        <span class="whitespace-nowrap">分钟</span>
+      </div>
       <!--      <set-keywords-dialog class="ml-1" />-->
       <!--      <update-dialog :hasUpdate="hasUpdate" />-->
       <!--      <view class="" v-if="false">-->
@@ -373,6 +375,14 @@ export default {
     },
   },
   methods: {
+    saveInterval() {
+      console.log(
+        this.intervalMinutes,
+        '===========打印的 ------ saveInterval',
+      );
+      localStorage.setItem('refreshInterval', this.intervalMinutes);
+      this.startAutoRefresh();
+    },
     updateRemark(row) {
       console.log(row, '===========打印的 ------ updateRemark');
       const index = this.videoList.findIndex((item) => {
@@ -471,15 +481,11 @@ export default {
     startAutoRefresh() {
       clearInterval(this.interval);
       const videoListLength = this.videoList.length;
-      let minutes = getRecommendRefreshMinutes(videoListLength);
-      const refreshInterval = localStorage.getItem('refreshInterval');
-      if (refreshInterval > minutes) {
-        minutes = refreshInterval;
-      }
-      this.intervalMinutes = minutes;
+      const refreshInterval = localStorage.getItem('refreshInterval') || 2;
+      this.intervalMinutes = refreshInterval;
       this.interval = setInterval(() => {
         this.getVideoStatsList();
-      }, 1000 * 60 * minutes);
+      }, 1000 * 60 * refreshInterval);
     },
     changeAutoRefresh(val) {
       this.autoRefresh = !this.autoRefresh;
