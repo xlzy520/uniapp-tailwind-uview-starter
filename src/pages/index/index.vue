@@ -784,9 +784,9 @@ export default {
           url: '/pages/index/license',
         });
       });
-    if (this.autoRefresh) {
-      this.startAutoRefresh();
-    }
+    // if (this.autoRefresh) {
+    //   this.startAutoRefresh();
+    // }
   },
   onShow() {
     // this.startAutoRefresh();
