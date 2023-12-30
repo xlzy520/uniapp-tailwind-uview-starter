@@ -577,7 +577,8 @@ export default {
 
       this.searchLoading = true;
       if (defaultVideo) {
-        updateVideoData(defaultVideo);
+        await updateVideoData(defaultVideo);
+        this.searchLoading = false;
         return;
       }
       for (const video of this.videoList) {
@@ -638,8 +639,8 @@ export default {
           this.$alert(`【${user.name}】补发动态成功`, '提示', {
             type: 'success',
           });
-          startReplyJingXuan(user.cookie, res.dyn_id_str);
           setTimeout(() => {
+            startReplyJingXuan(user.cookie, res.dyn_id_str);
             this.getVideoStatsList(user);
           }, 2000);
         } else {

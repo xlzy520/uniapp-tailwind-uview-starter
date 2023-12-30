@@ -73,7 +73,7 @@ export const getImgSize = async (imgSrc) => {
 };
 
 export const getRecommendRefreshMinutes = (videoListLength) => {
-  let minutes = 2;
+  let minutes = 1.5;
   if (videoListLength > 100) {
     minutes = 10;
   } else if (videoListLength > 80) {
@@ -85,7 +85,7 @@ export const getRecommendRefreshMinutes = (videoListLength) => {
   } else if (videoListLength > 6) {
     minutes = 3;
   } else if (videoListLength > 4) {
-    minutes = 2.5;
+    minutes = 2;
   }
   return minutes;
 };
