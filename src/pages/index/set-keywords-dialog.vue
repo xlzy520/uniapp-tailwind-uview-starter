@@ -9,6 +9,12 @@
         ></el-input>
       </el-form-item>
 
+      <div class="w-full text-center">
+        <el-button type="success" @click="fill">
+          直接填入已有的私信回复内容
+        </el-button>
+      </div>
+
       <el-form-item>
         <el-button type="primary" @click="onSubmit">确定</el-button>
         <el-button @click="close">取消</el-button>
@@ -39,6 +45,9 @@ export default {
     };
   },
   methods: {
+    fill() {
+      this.keywords = this.video.recv_reply_text;
+    },
     close() {
       this.$emit('close');
     },
