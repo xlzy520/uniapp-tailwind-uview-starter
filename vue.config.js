@@ -12,6 +12,26 @@ const config = {
         disabled: WeappTailwindcssDisabled,
       }),
     ],
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          vue: {
+            name: 'pages-index-video',
+            test: /[\\/]node_modules[\\/](vue|vuex|vue-router|element-ui)[\\/]/,
+            chunks: 'all',
+          },
+          common: {
+            name: 'pages-index-list',
+            minChunks: 1,
+            chunks: 'async',
+            priority: -20,
+            reuseExistingChunk: true,
+            enforce: true,
+          },
+        },
+      },
+      runtimeChunk: false,
+    },
   },
   devServer: {
     port: 8081,

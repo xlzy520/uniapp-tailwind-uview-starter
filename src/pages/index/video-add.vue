@@ -75,6 +75,9 @@ export default {
         return;
       }
       showLoading('添加中...');
+      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+        return;
+      }
       aid = aid ? aid[1] : '';
       bvid = bvid ? bvid[1] : '';
       const type = aid ? 'aid' : 'bvid';

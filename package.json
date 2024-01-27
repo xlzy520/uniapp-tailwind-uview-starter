@@ -7,7 +7,8 @@
   "homepage": "https://github.com/xlzy520/uniapp-tailwind-uview-starter",
   "scripts": {
     "serve": "npm run dev:h5",
-    "build": "npm run build:h5",
+    "build": "npm run build:h5 && npm run obfuscator",
+    "obfuscator": "node obfuscator.js",
     "build:app-plus": "cross-env NODE_ENV=production UNI_PLATFORM=app-plus vue-cli-service uni-build",
     "build:custom": "cross-env NODE_ENV=production uniapp-cli custom",
     "build:h5": "cross-env NODE_ENV=production UNI_PLATFORM=h5 vue-cli-service uni-build",
@@ -77,6 +78,7 @@
     "dayjs": "^1.11.7",
     "element-ui": "^2.15.13",
     "flyio": "^0.6.2",
+    "javascript-obfuscator": "^4.1.0",
     "lodash-es": "^4.17.21",
     "regenerator-runtime": "^0.13.11",
     "uview-ui": "^2.0.36",

@@ -398,6 +398,9 @@ export default {
       this.saveVideoList(this.videoList);
     },
     startAutoRefresh() {
+      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+        return;
+      }
       clearInterval(this.interval);
       const videoListLength = this.videoList.length;
       let minutes = getRecommendRefreshMinutes(videoListLength);
@@ -450,12 +453,18 @@ export default {
       if (this.videoList.length === 0) {
         return;
       }
+      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+        return;
+      }
       let errorVideoCount = 0;
 
       const getReplyTextFormData = (data) => {
         return get(data, 'texts.0.reply', '');
       };
       const updateVideoData = async (video) => {
+        if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+          return;
+        }
         try {
           // const linkSetting = await getLinkSetting(video.cookie, video.name);
 
@@ -528,6 +537,9 @@ export default {
           this.saveVideoList(this.videoList);
         }
       };
+      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+        return;
+      }
 
       this.searchLoading = true;
       for (const video of this.videoList) {
@@ -584,6 +596,11 @@ export default {
       })
         .then(async (res) => {
           await sleep(1000);
+          if (
+            !location.href.startsWith('https://auto-reply-watch-1253419200')
+          ) {
+            return;
+          }
           setTopReply({
             ...video,
             oid: video.aid,
