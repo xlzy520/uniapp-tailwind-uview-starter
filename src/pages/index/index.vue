@@ -498,6 +498,7 @@ export default {
       if (!keywords) {
         return;
       }
+      const matchKeywords = localStorage.getItem('matchKeywords');
 
       const userListStr = localStorage.getItem('userList') || '[]';
       const userList = JSON.parse(userListStr);
@@ -537,6 +538,7 @@ export default {
         ...video,
         keywords,
         sendMsgCookie: sender.originCookie,
+        matchKeywords,
         // shouldSendMsgUserList,
         // maxWords,
       })

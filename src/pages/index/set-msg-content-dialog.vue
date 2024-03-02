@@ -15,6 +15,13 @@
             v-model="keywords"
           ></el-input>
         </el-form-item>
+        <el-form-item label="匹配评论的关键词，用逗号分隔">
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 6, maxRows: 10 }"
+            v-model="matchKeywords"
+          ></el-input>
+        </el-form-item>
         <!--        <el-form-item label="超过多少字直接删除">-->
         <!--          <el-input-number v-model="maxWords" :min="0"></el-input-number>-->
         <!--        </el-form-item>-->
@@ -35,6 +42,7 @@ export default {
       keywords: '',
       visible: false,
       maxWords: 30,
+      matchKeywords: '',
     };
   },
   methods: {
@@ -44,7 +52,8 @@ export default {
     onSubmit() {
       const keywords = this.keywords;
       localStorage.setItem('keywords', keywords);
-      // const splitKeywords = lastKeywords.split(',');
+      const matchKeywords = this.matchKeywords.replace(/，/g, ',');
+      localStorage.setItem('matchKeywords', matchKeywords);
       this.$message({
         message: `私信内容配置成功`,
         type: 'success',
@@ -54,6 +63,7 @@ export default {
   },
   mounted() {
     this.keywords = localStorage.getItem('keywords') || '';
+    this.matchKeywords = localStorage.getItem('matchKeywords') || '';
     this.maxWords = localStorage.getItem('maxWords') || 30;
   },
 };
