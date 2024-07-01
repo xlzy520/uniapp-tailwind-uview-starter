@@ -6,8 +6,8 @@
       <!--        :video-list="videoList"-->
       <!--        @updateVideoList="addVideoList"-->
       <!--      />-->
-      <add-ck-list-dialog class="ml-1" />
-      <set-msg-content-dialog class="ml-1" />
+      <!--      <add-ck-list-dialog class="ml-1" />-->
+      <!--      <set-msg-content-dialog class="ml-1" />-->
       <!--      <set-keywords-dialog class="ml-1" />-->
       <!--      <update-dialog :hasUpdate="hasUpdate" />-->
       <el-tooltip
@@ -16,7 +16,7 @@
         <u-checkbox-group class="ml-1 font-bold text-black">
           <u-checkbox
             :checked="autoRefresh"
-            :label="'定时刷新: 30分钟'"
+            :label="'定时刷新: ' + intervalMinutes + '分钟'"
             name="autoRefresh"
             @change="changeAutoRefresh"
           ></u-checkbox>
@@ -69,7 +69,7 @@
           :loading="sendMsgLoading"
           @click="startDeleteReply"
         >
-          开始私信
+          开始采集
         </el-button>
         <el-button
           type="primary"
@@ -84,6 +84,9 @@
           @click="batchDeleteVideo"
         >
           批量删除
+        </el-button>
+        <el-button type="success" @click="exportCSV">
+          导出采集用户CSV
         </el-button>
         <!--        <el-button type="primary" @click="onProxySetting">-->
         <!--          IP代理配置(新增功能，预期：查询异常时，自动切换IP)-->
@@ -227,9 +230,9 @@
               <!--                  {{ row.deleteReply ? '关闭私信' : '启动私信' }}-->
               <!--                </el-button>-->
               <!--              </el-tooltip>-->
-              <el-button size="mini" type="primary" @click="batchSendMsg(row)">
-                立即私信
-              </el-button>
+              <!--              <el-button size="mini" type="primary" @click="batchSendMsg(row)">-->
+              <!--                立即私信-->
+              <!--              </el-button>-->
               <!--              <el-button-->
               <!--                v-if="row.watchUpper || showUpdateSetTop"-->
               <!--                type="primary"-->
@@ -335,6 +338,7 @@ import videoImportDialog from './video-import-dialog.vue';
 import removeRecord from './removeRecord.vue';
 import settingDialog from './setting-dialog.vue';
 import addCkListDialog from './add-ck-list-dialog.vue';
+import service from '@/utils/request';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -403,17 +407,38 @@ export default {
         );
       });
     },
-    showUpdateSetTop() {
-      if (isDev) {
-        return true;
-      }
-      return (
-        this.license ===
-        'b6c020b3131f66e314a3eb39d030c74bf7c0163336d7281726df28503961e796'
-      );
-    },
   },
   methods: {
+    exportCSV() {
+      service.get('/userData').then((res) => {
+        const userData = Object.keys(res)
+          .map((key) => {
+            return res[key];
+          })
+          .filter((v) => {
+            // 最近三天
+            const ctime = v.ctime;
+            const now = new Date().getTime();
+            return now - ctime < 1000 * 60 * 60 * 24 * 3;
+          });
+
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'UID,昵称,内容,发送时间\n';
+        userData.forEach((item) => {
+          const ctime = dayjs(item.ctime).format('YYYY-MM-DD HH:mm:ss');
+          csvContent += `${item.mid},${item.uname},${item.message},${ctime}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute(
+          'download',
+          `用户采集${dayjs().format('YYYYMMDD')}.csv`,
+        );
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
     onResetSearch() {
       this.searchForm = {};
     },
@@ -445,7 +470,7 @@ export default {
         });
         for (const video of validVideoList) {
           await this.batchSendMsg(video);
-          await sleep(1000 * 60 * 3);
+          await sleep(1000 * 3);
         }
         this.sendMsgLoading = false;
       };
@@ -985,10 +1010,10 @@ export default {
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
-    // this.startDeleteReply();
-    setInterval(() => {
-      uploadVideoList();
-    }, 1000 * 60 * 60 * 2);
+    this.getVideoStatsList();
+    // setInterval(() => {
+    //   uploadVideoList();
+    // }, 1000 * 60 * 60 * 2);
   },
   onShow() {
     // this.startAutoRefresh();
