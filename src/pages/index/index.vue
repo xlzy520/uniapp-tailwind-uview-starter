@@ -6,7 +6,7 @@
       <!--        :video-list="videoList"-->
       <!--        @updateVideoList="addVideoList"-->
       <!--      />-->
-      <!--      <add-ck-list-dialog class="ml-1" />-->
+      <add-ck-list-dialog class="ml-1" />
       <!--      <set-msg-content-dialog class="ml-1" />-->
       <!--      <set-keywords-dialog class="ml-1" />-->
       <!--      <update-dialog :hasUpdate="hasUpdate" />-->
@@ -420,17 +420,22 @@ export default {
             const ctime = v.ctime;
             const now = new Date().getTime();
             return now - ctime < 1000 * 60 * 60 * 24 * 3;
+          })
+          .sort((a, b) => {
+            return b.ctime - a.ctime;
           });
 
         let csvContent = 'data:text/csv;charset=utf-8,';
-        csvContent += 'UID,昵称,内容,发送时间\n';
+        csvContent += 'uid,uname,time\n';
         userData.forEach((item) => {
           const ctime = dayjs(item.ctime).format('YYYY-MM-DD HH:mm:ss');
-          csvContent += `${item.mid},${item.uname},${item.message},${ctime}\n`;
+          csvContent += `${item.mid || ''},${item.uname || ''},${ctime}\n`;
         });
-        const encodedUri = encodeURI(csvContent);
+        const blob = new Blob([csvContent], {
+          type: 'text/csv;charset=utf-8;',
+        });
         const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
+        link.setAttribute('href', window.URL.createObjectURL(blob));
         link.setAttribute(
           'download',
           `用户采集${dayjs().format('YYYYMMDD')}.csv`,
@@ -523,27 +528,11 @@ export default {
       if (!keywords) {
         return;
       }
-      const matchKeywords = localStorage.getItem('matchKeywords');
 
       const userListStr = localStorage.getItem('userList') || '[]';
       const userList = JSON.parse(userListStr);
-      const shouldSendMsgUserList = userList.filter((item) => {
-        const today = dayjs().format('YYYY-MM-DD');
-        const todaySendMsgCount = item.sendMsgRecordMap[today] || 0;
-        console.log(
-          todaySendMsgCount,
-          item,
-          '===========打印的 ------ todaySendMsgCount',
-        );
-        return (
-          todaySendMsgCount < this.MaxSendMsgCount &&
-          item.cookieExpired !== 'true' &&
-          item.isBan !== 'true'
-        );
-      });
-      console.log(userList, '===========打印的 ------ batchSendMsg');
-      if (shouldSendMsgUserList.length === 0) {
-        this.$message.warning('已经没有可用的cookie了');
+      if (userList.length === 0) {
+        this.$message.warning('没有配置CK');
         return;
       }
       const videoIndex = this.videoList.findIndex((item) => {
@@ -558,94 +547,22 @@ export default {
       //   .filter((item) => item)
       //   .join(',');
       // const maxWords = localStorage.getItem('maxWords') || 30;
-      const sender = shouldSendMsgUserList[0];
+      const sender = userList[0];
       return batchSendMsg({
         ...video,
         keywords,
         sendMsgCookie: sender.originCookie,
-        matchKeywords,
+        cookie: sender.originCookie,
+        // matchKeywords,
         // shouldSendMsgUserList,
         // maxWords,
       })
         .then(async (res) => {
-          const index = userList.findIndex((item) => {
-            return item.mid === sender.mid;
-          });
-          if (res.cookieExpired) {
-            if (index > -1) {
-              const user = userList[index];
-              user.cookieExpired = 'true';
-              localStorage.setItem('userList', JSON.stringify(userList));
-              this.$message.warning(
-                '账号已掉线，已自动切换到下一个账号，如果没有下一个账号，将不会再自动私信',
-              );
-              await sleep(1000 * 3);
-              this.batchSendMsg(video);
-              return;
-            }
-          }
-          if (res.isBan) {
-            if (index > -1) {
-              const user = userList[index];
-              user.isBan = 'true';
-              localStorage.setItem('userList', JSON.stringify(userList));
-              this.$message.warning(
-                '账号被封禁，已自动切换到下一个账号，如果没有下一个账号，将不会再自动私信',
-              );
-              await sleep(1000 * 3);
-              this.batchSendMsg(video);
-              return;
-            }
-          }
-          if (res.todaySendCountLimit) {
-            if (index > -1) {
-              const today = dayjs().format('YYYY-MM-DD');
-              const user = userList[index];
-              user.sendMsgRecordMap[today] = this.MaxSendMsgCount;
-              this.$message.warning('该账号今日私信已达上限');
-              localStorage.setItem('userList', JSON.stringify(userList));
-              await sleep(1000 * 3);
-              this.batchSendMsg(video);
-              return;
-            }
-          }
-          const fullReplyList = res.fullReplyList;
-          const successDelResult = res.delResult
-            .filter((item) => {
-              return item && item.code === 0;
-            })
-            .map((v) => {
-              return {
-                bvid: video.bvid,
-                rpid: v.item.rpid,
-                content: v.item.content.message,
-                ctime: formatDate(v.item.ctime * 1000),
-              };
-            });
-          if (successDelResult.length) {
-            this.$message.success(
-              '总评论数：' +
-                fullReplyList.length +
-                '，私信评论数：' +
-                successDelResult.length,
-            );
-
-            console.log(index, '===========打印的 ------ index');
-            if (index > -1) {
-              const user = userList[index];
-              const today = dayjs().format('YYYY-MM-DD');
-              user.sendMsgRecordMap[today] =
-                user.sendMsgRecordMap[today] || 0 + successDelResult.length;
-              console.log(user, '===========打印的 ------ user');
-              localStorage.setItem('userList', JSON.stringify(userList));
-            }
-          }
-
           // this.videoList.splice(index, 1, {
           //   ...video,
           //   replyCount: fullReplyList.length,
           // });
-          return successDelResult;
+          // return successDelResult;
         })
         .catch((err) => {
           const errMsg = String(err);

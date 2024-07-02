@@ -1,12 +1,7 @@
 <template>
   <view class="">
-    <u-button type="primary" @click="openDialog">私信账号列表</u-button>
-    <el-dialog
-      title="私信内容配置"
-      :visible="visible"
-      width="60%"
-      @close="close"
-    >
+    <u-button type="primary" @click="openDialog">采集CK账号列表</u-button>
+    <el-dialog title="采集CK配置" :visible="visible" width="60%" @close="close">
       <el-upload
         action=""
         accept="text/plain"
@@ -14,16 +9,16 @@
         :show-file-list="false"
         :on-change="onFileChange"
       >
-        <el-button slot="trigger" type="success"> 导入私信CK </el-button>
+        <el-button slot="trigger" type="success"> 导入采集CK </el-button>
       </el-upload>
       <el-table :data="userList" style="width: 100%">
         <!--        <el-table-column type="selection" width="55"> </el-table-column>-->
         <el-table-column prop="mid" label="用户ID" />
-        <el-table-column prop="sendMsgCountToday" label="今日私信次数">
-          <template slot-scope="scope">
-            {{ formatSendMsgCountToday(scope.row) }}
-          </template>
-        </el-table-column>
+        <!--        <el-table-column prop="sendMsgCountToday" label="今日私信次数">-->
+        <!--          <template slot-scope="scope">-->
+        <!--            {{ formatSendMsgCountToday(scope.row) }}-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column prop="cookieExpired" label="是否掉线">
           <template slot-scope="scope">
             <el-tag
