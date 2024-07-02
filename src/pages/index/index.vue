@@ -425,11 +425,10 @@ export default {
             return b.ctime - a.ctime;
           });
 
-        let csvContent = 'data:text/csv;charset=utf-8,';
-        csvContent += 'uid,uname,time\n';
+        let csvContent = 'uid,time\n';
         userData.forEach((item) => {
           const ctime = dayjs(item.ctime).format('YYYY-MM-DD HH:mm:ss');
-          csvContent += `${item.mid || ''},${item.uname || ''},${ctime}\n`;
+          csvContent += `${item.mid || ''},${ctime}\n`;
         });
         const blob = new Blob([csvContent], {
           type: 'text/csv;charset=utf-8;',
