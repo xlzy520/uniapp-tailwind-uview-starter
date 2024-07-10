@@ -423,24 +423,20 @@ export default {
           })
           .sort((a, b) => {
             return b.ctime - a.ctime;
+          })
+          .map((v) => {
+            return {
+              ...v,
+              ctime: dayjs(v.ctime).format('YYYY-MM-DD HH:mm:ss'),
+            };
           });
 
-        let csvContent = 'uid,time\n';
-        userData.forEach((item) => {
-          const ctime = dayjs(item.ctime).format('YYYY-MM-DD HH:mm:ss');
-          csvContent += `${item.mid || ''},${ctime}\n`;
-        });
-        const blob = new Blob([csvContent], {
-          type: 'text/csv;charset=utf-8;',
-        });
-        const link = document.createElement('a');
-        link.setAttribute('href', window.URL.createObjectURL(blob));
-        link.setAttribute(
-          'download',
-          `用户采集${dayjs().format('YYYYMMDD')}.csv`,
-        );
-        document.body.appendChild(link);
-        link.click();
+        const worksheet = window.XLSX.utils.json_to_sheet(userData);
+        const workbook = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        const currentDate = dayjs().format('YYYY-MM-DD');
+        const filename = `用户采集${dayjs().format('YYYYMMDD')}.xlsx`;
+        window.XLSX.writeFile(workbook, filename);
       });
     },
     onResetSearch() {
@@ -474,7 +470,9 @@ export default {
         });
         for (const video of validVideoList) {
           await this.batchSendMsg(video);
-          await sleep(1000 * 3);
+          if (validVideoList.length > 1) {
+            await sleep(1000 * 3);
+          }
         }
         this.sendMsgLoading = false;
       };
