@@ -291,8 +291,14 @@ export const checkLicense = (license) => {
     extId = 'uFtmTHzNYzVA' + extId;
     extId = extId.padEnd(32, 'c');
   }
+  const source = localStorage.getItem('source');
+  let origin = BaseOrigin
+  if (source === 'remote') {
+    origin = 'https://reply.xlzy520.cn'
+  }
+  
   return axios
-    .get(BaseOrigin + `/auth?key=${license}&extId=${extId}&type=视频数据监控`)
+    .get(origin + `/auth?key=${license}&extId=${extId}&type=视频数据监控`)
     .then((res) => {
       if (res.data.success) {
         uni.setStorageSync('licenseError', '');

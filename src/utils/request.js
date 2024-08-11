@@ -2,7 +2,13 @@ import axios from 'axios';
 import { BaseOrigin } from '@/utils/index';
 import { Message } from 'element-ui';
 
-const baseUrl = BaseOrigin + '/bili-watch/';
+const source = localStorage.getItem('source');
+let origin = BaseOrigin
+if (source === 'remote') {
+  origin = 'https://reply.xlzy520.cn'
+}
+
+const baseUrl = origin + '/bili-watch/';
 
 const service = axios.create({
   baseURL: baseUrl,

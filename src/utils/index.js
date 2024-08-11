@@ -89,3 +89,12 @@ export const getRecommendRefreshMinutes = (videoListLength) => {
   }
   return minutes;
 };
+
+
+export const getCurrentTime = () => {
+  return dayjs().format('YYYY-MM-DD HH:mm:ss');
+};
+
+export const getCurrentTimeLogText = () => {
+  return `[${getCurrentTime()}]`;
+};

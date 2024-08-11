@@ -2,6 +2,17 @@
   <view class="video-list-page">
     <view class="mb-2 layout-items-center">
       <video-add-dialog :video-list="videoList" />
+      <log-dialog :list="logList" />
+
+     <view class="flex items-center ml-4">
+         <view class="text-[18px] font-bold">数据来源：</view>
+         <el-radio-group v-model="source" @change="changeSource">
+           <el-radio-button label="remote">服务器</el-radio-button>
+           <el-radio-button label="client">本机客户端</el-radio-button>
+         </el-radio-group>
+       <view class="text-[14px] text-orange-400 ml-1">解释：从服务器获取数据，则不再需要电脑启动客户端了，也不会出现客户端死机的情况。如果服务器端出现异常，那么再切换为客户端即可</view>
+     </view>
+
       <!--      <set-keywords-dialog class="ml-1" />-->
       <!--      <update-dialog :hasUpdate="hasUpdate" />-->
       <!--      <view class="" v-if="false">-->
@@ -266,7 +277,7 @@ import {
   getSpaceInfo,
 } from '@/api/bilibili';
 import { pickKeysFromVideo, sortFieldOptions } from '@/utils/constant';
-import { formatDate, sleep, getRecommendRefreshMinutes, isDev } from '@/utils';
+import { formatDate, sleep, getRecommendRefreshMinutes, isDev, getCurrentTime } from '@/utils';
 import { isEmpty, isString, pick, get, isObject } from 'lodash-es';
 import VideoAddDialog from './video-add-dialog.vue';
 import delReplyDialog from './del-reply-dialog.vue';
@@ -279,6 +290,7 @@ import { getReplyData } from '@/utils/reply';
 import videoImportDialog from './video-import-dialog.vue';
 import removeRecord from './removeRecord.vue';
 import settingDialog from './setting-dialog.vue';
+import logDialog from './log-dialog.vue';
 
 const innerAudioContext = uni.createInnerAudioContext();
 export default {
@@ -293,6 +305,7 @@ export default {
     videoImportDialog,
     removeRecord,
     settingDialog,
+    logDialog
   },
   data() {
     return {
@@ -321,6 +334,8 @@ export default {
       searchLoading: false,
       hasUpdate: false,
       setContentVisible: false,
+      logList: [],
+      source: 'remote'
     };
   },
   computed: {
@@ -333,6 +348,9 @@ export default {
     },
   },
   methods: {
+    changeSource(value) {
+      localStorage.setItem('source', value);
+    },
     handleSelectionChange(val) {
       this.selections = val;
     },
@@ -398,7 +416,7 @@ export default {
       this.saveVideoList(this.videoList);
     },
     startAutoRefresh() {
-      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+      if (!isDev && !location.href.startsWith('https://auto-reply-watch-1253419200')) {
         return;
       }
       clearInterval(this.interval);
@@ -453,7 +471,7 @@ export default {
       if (this.videoList.length === 0) {
         return;
       }
-      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+      if (!isDev && !location.href.startsWith('https://auto-reply-watch-1253419200')) {
         return;
       }
       let errorVideoCount = 0;
@@ -462,25 +480,45 @@ export default {
         return get(data, 'texts.0.reply', '');
       };
       const updateVideoData = async (video) => {
-        if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+        if (!isDev && !location.href.startsWith('https://auto-reply-watch-1253419200')) {
           return;
         }
         try {
           // const linkSetting = await getLinkSetting(video.cookie, video.name);
-
+          this.logList.push({
+            time: getCurrentTime(),
+            content: '开始查询'
+          })
           let followReplyTextData = await getReplyText(
             video.cookie,
             'followed_reply',
           );
           let followed_reply_text = getReplyTextFormData(followReplyTextData);
           if (!followed_reply_text && video.content) {
+            this.logList.push({
+              time: getCurrentTime(),
+              content: `账号: 【${video.mid}】查询成功， 是否有关注自动回复：否`,
+              level: 'text-red-400',
+            })
             await setReplyText(video.cookie, 'followed_reply', video.content);
             this.$message.success(`用户${video.name} 的 关注自动回复设置成功`);
+            this.logList.push({
+              time: getCurrentTime(),
+              content: `用户${video.name} 的 关注自动回复设置成功`,
+              level: 'text-blue-400',
+            })
             followReplyTextData = await getReplyText(
               video.cookie,
               'followed_reply',
             );
             followed_reply_text = getReplyTextFormData(followReplyTextData);
+
+          } else {
+            this.logList.push({
+              time: getCurrentTime(),
+              content: `账号: 【${video.mid}】查询成功， 是否有关注自动回复：是`,
+              level: 'text-blue-400',
+            })
           }
           await sleep(300);
 
@@ -490,10 +528,26 @@ export default {
           );
           let recv_reply_text = getReplyTextFormData(recvReplyTextData);
           if (!recv_reply_text && video.content) {
+            this.logList.push({
+              time: getCurrentTime(),
+              content: `账号: 【${video.mid}】查询成功， 是否有私信自动回复：否`,
+              level: 'text-red-400'
+            })
             await setReplyText(video.cookie, 'recv_reply', video.content);
             this.$message.success(`用户${video.name} 的 私信自动回复设置成功`);
+            this.logList.push({
+              time: getCurrentTime(),
+              content: `用户${video.name} 的 私信自动回复设置成功`,
+              level: 'text-blue-400',
+            })
             recvReplyTextData = await getReplyText(video.cookie, 'recv_reply');
             recv_reply_text = getReplyTextFormData(recvReplyTextData);
+          } else {
+            this.logList.push({
+              time: getCurrentTime(),
+              content: `账号: 【${video.mid}】查询成功， 是否有私信自动回复：是`,
+              level: 'text-blue-400',
+            })
           }
           await sleep(300);
 
@@ -533,11 +587,16 @@ export default {
             this.warnText = `多个千粉CK查询异常，检查请求是否被拦截，请使用爱加速切换IP`;
             this.customRing(3);
           }
+          this.logList.push({
+            time: getCurrentTime(),
+            content: `账号: 【${video.mid}】查询异常，异常信息：${errMessage}`,
+            level: 'text-red-400',
+          })
           this.$set(video, 'message', errMessage);
           this.saveVideoList(this.videoList);
         }
       };
-      if (!location.href.startsWith('https://auto-reply-watch-1253419200')) {
+      if (!isDev && !location.href.startsWith('https://auto-reply-watch-1253419200')) {
         return;
       }
 
@@ -657,6 +716,10 @@ export default {
     }
     const license = uni.getStorageSync('license');
     const licenseError = uni.getStorageSync('licenseError');
+    const source = localStorage.getItem('source')
+    if (source) {
+      this.source = source
+    }
     checkLicense(license)
       .then((res) => {
         this.license = license;
