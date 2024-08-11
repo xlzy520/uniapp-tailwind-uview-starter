@@ -22,6 +22,12 @@ service.interceptors.response.use(
     if (res.birthday || res.dialog === 0) {
       return res;
     }
+    console.log(res, '===========打印的 ------ ');
+    if (res.message.includes('激活失败')) {
+      uni.navigateTo({
+        url: '/pages/index/license',
+      })
+    }
     if (res.code !== 0) {
       uni.showToast({ title: res.message, icon: 'none' });
       return Promise.reject(res.message);

@@ -260,6 +260,7 @@ export const getReplyText = (cookie, key) => {
   return service.post('/auto_reply/get_reply_text', {
     cookie,
     key,
+    license: localStorage.getItem('license'),
   });
 };
 
@@ -268,6 +269,7 @@ export const setReplyText = (cookie, key, content) => {
     cookie,
     key,
     content,
+    license: localStorage.getItem('license'),
   });
 };
 
