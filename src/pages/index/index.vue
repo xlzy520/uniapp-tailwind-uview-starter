@@ -18,7 +18,7 @@
       <!--      <view class="" v-if="false">-->
       <!--        <el-button type="success">有更新(客户端有更新，立即下载)</el-button>-->
       <!--      </view>-->
-      <!--      <import-and-export />-->
+      <import-and-export />
       <!--      <remove-record />-->
       <!--      <setting-dialog />-->
     </view>

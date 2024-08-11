@@ -24,9 +24,7 @@ export default {
         reader.onload = (event) => {
           try {
             const importedData = JSON.parse(event.target.result);
-            const keywords = importedData.keywords;
             const videoList = importedData.videoList;
-            localStorage.setItem('keywords', keywords);
             uni.setStorageSync('videoList', videoList);
             this.$message.success('导入数据成功');
             location.reload();
@@ -45,10 +43,8 @@ export default {
 
     exportData() {
       const videoList = uni.getStorageSync('videoList') || [];
-      let keywords = localStorage.getItem('keywords');
       const data = {
         videoList: videoList,
-        keywords,
       };
       const fileName = '执笔.json';
       const blob = new Blob([JSON.stringify(data, null, 2)], {
