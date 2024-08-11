@@ -2,7 +2,7 @@ import axios from 'axios';
 import { BaseOrigin } from '@/utils/index';
 import { Message } from 'element-ui';
 
-const source = localStorage.getItem('source');
+const source = localStorage.getItem('source') || 'remote'
 let origin = BaseOrigin
 if (source === 'remote') {
   origin = 'https://reply.xlzy520.cn'

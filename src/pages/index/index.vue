@@ -716,7 +716,7 @@ export default {
     }
     const license = uni.getStorageSync('license');
     const licenseError = uni.getStorageSync('licenseError');
-    const source = localStorage.getItem('source')
+    const source = localStorage.getItem('source') || 'remote'
     if (source) {
       this.source = source
     }

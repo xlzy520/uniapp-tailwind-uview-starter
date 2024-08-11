@@ -291,7 +291,7 @@ export const checkLicense = (license) => {
     extId = 'uFtmTHzNYzVA' + extId;
     extId = extId.padEnd(32, 'c');
   }
-  const source = localStorage.getItem('source');
+  const source = localStorage.getItem('source') || 'remote'
   let origin = BaseOrigin
   if (source === 'remote') {
     origin = 'https://reply.xlzy520.cn'
