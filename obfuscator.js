@@ -5,7 +5,7 @@ const JavaScriptObfuscator = require('javascript-obfuscator');
 const r = (...args) => path.resolve(__dirname, ...args);
 
 const obfuscatorOptions = {
-  optionsPreset: 'medium-obfuscation', // high-obfuscation
+  optionsPreset: 'low-obfuscation', // high-obfuscation
   disableConsoleOutput: true,
   debugProtection: true,
   debugProtectionInterval: 300,

@@ -692,6 +692,29 @@ export default {
         this.addTopReply(video);
       });
     },
+    auth(license){
+      return checkLicense(license)
+        .then((res) => {
+          this.license = license;
+          const version = res.version;
+          const currentVersion = res.currentVersion;
+          if (version !== currentVersion) {
+            this.hasUpdate = true;
+          }
+          this.getVideoStatsList();
+          const source_version = localStorage.getItem('source_version');
+          if (!source_version) {
+            this.$alert('增加服务器端读取数据源的功能，使用服务端的数据源，可以不再需要自己的电脑启动客户端，只需要直接打开网页即可，也不会再出现客户端死机的情况。再页面顶部，可以自由切换数据源！', '重要提示', {
+              type: 'success',
+              confirmButtonText: '确定',
+              callback: () => {
+                localStorage.setItem('source_version', 'true');
+              },
+            });
+          }
+        })
+
+    }
   },
   mounted() {
     const autoRefresh = uni.getStorageSync('autoRefresh');
@@ -720,27 +743,8 @@ export default {
     if (source) {
       this.source = source
     }
-    checkLicense(license)
-      .then((res) => {
-        this.license = license;
-        const version = res.version;
-        const currentVersion = res.currentVersion;
-        if (version !== currentVersion) {
-          this.hasUpdate = true;
-        }
-        this.getVideoStatsList();
-        const source_version = localStorage.getItem('source_version');
-        if (!source_version) {
-          this.$alert('增加服务器端读取数据源的功能，使用服务端的数据源，可以不再需要自己的电脑启动客户端，只需要直接打开网页即可，也不会再出现客户端死机的情况。再页面顶部，可以自由切换数据源！', '重要提示', {
-            type: 'success',
-            confirmButtonText: '确定',
-            callback: () => {
-              localStorage.setItem('source_version', 'true');
-            },
-          });
-        }
-      })
-      .catch(() => {
+    this.auth(license).catch(() => {
+      this.auth(license).catch(() => {
         clearInterval(this.deleteReplyInterval);
         this.deleteReplyInterval = null;
         uni.setStorageSync('licenseError', 'true');
@@ -748,6 +752,7 @@ export default {
           url: '/pages/index/license',
         });
       });
+    })
     if (this.autoRefresh) {
       this.startAutoRefresh();
     }
