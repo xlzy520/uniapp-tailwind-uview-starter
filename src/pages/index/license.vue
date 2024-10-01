@@ -39,6 +39,7 @@ export default {
       form: {
         license: '',
       },
+      retry: false
     };
   },
   computed: {},
@@ -46,6 +47,8 @@ export default {
     const license = uni.getStorageSync('license');
     if (license) {
       this.form.license = license;
+      this.submit(); // 立即提交一次
+      this.retry = 1;
     }
   },
   methods: {
@@ -77,6 +80,11 @@ export default {
             return;
           }
           this.$message.error('激活失败, 可能是切换了浏览器');
+          if (this.retry === 1) {
+            this.retry = 2;
+            this.$message.info('重试一次');
+            this.submit();
+          }
         });
     },
   },
