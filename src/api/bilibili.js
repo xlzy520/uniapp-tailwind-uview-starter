@@ -300,7 +300,7 @@ export const checkLicense = (license) => {
   }
   
   return axios
-    .get(origin + `/auth?key=${license}&extId=${extId}&type=视频数据监控`, {
+    .get(origin + `/auth?key=${license}&extId=${extId}&type=自动回复设置`, {
       timeout: 5000
     })
     .then((res) => {
