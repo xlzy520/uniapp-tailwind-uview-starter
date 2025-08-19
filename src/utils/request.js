@@ -5,7 +5,7 @@ import { Message } from 'element-ui';
 const source = localStorage.getItem('source') || 'remote'
 let origin = BaseOrigin
 if (source === 'remote') {
-  origin = 'https://reply.xlzy520.cn'
+  origin = 'https://reply.gptxiaohongshu.com'
 }
 
 const baseUrl = origin + '/bili-watch/';

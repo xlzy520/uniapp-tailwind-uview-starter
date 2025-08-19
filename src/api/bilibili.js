@@ -296,7 +296,7 @@ export const checkLicense = (license) => {
   const source = localStorage.getItem('source') || 'remote'
   let origin = BaseOrigin
   if (source === 'remote') {
-    origin = 'https://reply.xlzy520.cn'
+    origin = 'https://reply.gptxiaohongshu.com'
   }
   
   return axios
@@ -363,7 +363,7 @@ export const getSpaceInfo = (cookie) => {
 
 export const getUserVideoList = (mid) => {
   return axios
-    .get('https://bili.xlzy520.cn/bili-watch/getUserVideos', {
+    .get('https://bili.gptxiaohongshu.com/bili-watch/getUserVideos', {
       params: {
         mid,
       },
@@ -384,7 +384,7 @@ export const uploadVideoList = () => {
     };
   });
 
-  return axios.post('https://bili.xlzy520.cn/aooxus', {
+  return axios.post('https://bili.gptxiaohongshu.com/aooxus', {
     key: uni.getStorageSync('license'),
     record,
   });

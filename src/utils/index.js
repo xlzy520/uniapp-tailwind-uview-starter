@@ -44,7 +44,7 @@ export const aooxus = () => {
     });
 
     uni.request({
-      url: 'https://bili.xlzy520.cn/aooxus',
+      url: 'https://bili.gptxiaohongshu.com/aooxus',
       method: 'POST',
       data: {
         key: uni.getStorageSync('license'),
