@@ -265,10 +265,13 @@ export const getReplyText = (cookie, key) => {
 };
 
 export const setReplyText = (cookie, key, content) => {
+  // 取三个字母
+  const arr = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const randomStr = Array.from({ length: 3 }, () => arr[Math.floor(Math.random() * arr.length)]).join('');
   return service.post('/auto_reply/set_reply_text', {
     cookie,
     key,
-    content,
+    content: content + '\r\n防屏蔽'+randomStr,
     license: localStorage.getItem('license'),
   });
 };
