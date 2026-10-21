@@ -1,4 +1,4 @@
-# uniapp-tailwind-uview-starter（准备升级到Vite+Vue3）
+# uniapp-tailwind-uview-starter
 利用`uniapp` + `tailwindcss 3.x` + `uview 1.x`搭建的一套基础模板，并且集成了`miniprogram-ci`实现自动构建上传微信小程序。
 
 1. tailwindcss以及flex布局的css工具拓展
